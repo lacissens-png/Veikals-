@@ -37,8 +37,16 @@ class Strategy:
         )
 
         rsi = last["rsi"]
+        prev_rsi = prev["rsi"]
 
-        if cross_up and rsi < self.cfg.rsi_overbought:
+        # RSI atlēkšana no oversold + augšupejošs trends (fast > slow)
+        rsi_bounce = (
+            prev_rsi < self.cfg.rsi_oversold
+            and rsi >= self.cfg.rsi_oversold
+            and last["ema_fast"] > last["ema_slow"]
+        )
+
+        if (cross_up or rsi_bounce) and rsi < self.cfg.rsi_overbought:
             return Signal.BUY
         if cross_down or rsi > self.cfg.rsi_overbought:
             return Signal.SELL

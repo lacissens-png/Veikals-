@@ -44,11 +44,11 @@ class Config:
         default_factory=lambda: float(os.getenv("MIN_TAKE_PROFIT_PERCENT", "5.0"))
     )
     lookback_candles: int = field(
-        default_factory=lambda: int(os.getenv("LOOKBACK_CANDLES", "20"))
+        default_factory=lambda: int(os.getenv("LOOKBACK_CANDLES", "50"))
     )
 
-    ema_fast: int = field(default_factory=lambda: int(os.getenv("EMA_FAST", "9")))
-    ema_slow: int = field(default_factory=lambda: int(os.getenv("EMA_SLOW", "21")))
+    ema_fast: int = field(default_factory=lambda: int(os.getenv("EMA_FAST", "5")))
+    ema_slow: int = field(default_factory=lambda: int(os.getenv("EMA_SLOW", "13")))
     rsi_period: int = field(default_factory=lambda: int(os.getenv("RSI_PERIOD", "14")))
     rsi_oversold: float = field(
         default_factory=lambda: float(os.getenv("RSI_OVERSOLD", "35"))
