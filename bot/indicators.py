@@ -1,7 +1,19 @@
-"""Tehniskie indikatori: EMA un RSI."""
+"""Tehniskie indikatori: EMA un RSI (bez ārējām atkarībām)."""
 import pandas as pd
-from ta.trend import EMAIndicator
-from ta.momentum import RSIIndicator
+
+
+def ema(series: pd.Series, period: int) -> pd.Series:
+    return series.ewm(span=period, adjust=False).mean()
+
+
+def rsi(series: pd.Series, period: int = 14) -> pd.Series:
+    delta = series.diff()
+    gain = delta.clip(lower=0)
+    loss = -delta.clip(upper=0)
+    avg_gain = gain.ewm(alpha=1 / period, adjust=False).mean()
+    avg_loss = loss.ewm(alpha=1 / period, adjust=False).mean()
+    rs = avg_gain / avg_loss.replace(0, 1e-10)
+    return 100 - (100 / (1 + rs))
 
 
 def add_indicators(
@@ -9,7 +21,7 @@ def add_indicators(
 ) -> pd.DataFrame:
     """Pievieno EMA un RSI kolonnas datu rāmim."""
     df = df.copy()
-    df["ema_fast"] = EMAIndicator(df["close"], window=ema_fast).ema_indicator()
-    df["ema_slow"] = EMAIndicator(df["close"], window=ema_slow).ema_indicator()
-    df["rsi"] = RSIIndicator(df["close"], window=rsi_period).rsi()
+    df["ema_fast"] = ema(df["close"], ema_fast)
+    df["ema_slow"] = ema(df["close"], ema_slow)
+    df["rsi"] = rsi(df["close"], rsi_period)
     return df
