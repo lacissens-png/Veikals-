@@ -43,3 +43,12 @@ class Strategy:
         if cross_down or rsi > self.cfg.rsi_overbought:
             return Signal.SELL
         return Signal.HOLD
+
+    def tp_upside_percent(self, df: pd.DataFrame, current_price: float) -> float:
+        """
+        Cik % virs pašreizējās cenas ir pēdējo LOOKBACK_CANDLES sveču maksimums.
+        Izmantojam kā indikatoru tam, vai TP vispār ir reāli sasniedzams.
+        """
+        window = df.tail(self.cfg.lookback_candles)
+        recent_high = float(window["high"].max())
+        return (recent_high - current_price) / current_price * 100

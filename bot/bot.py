@@ -51,6 +51,13 @@ class TradingBot:
                         f"izlaižam {symbol}"
                     )
                     return
+                upside = self.strategy.tp_upside_percent(df, current_price)
+                if upside < self.cfg.min_take_profit_percent:
+                    log.info(
+                        f"{symbol}: izlaižam — potenciāls augšup {upside:.2f}% "
+                        f"< min TP {self.cfg.min_take_profit_percent}%"
+                    )
+                    return
                 order = self.exchange.market_buy(symbol, self.cfg.trade_amount_usdt)
                 entry = float(order["price"])
                 sl, tp = calc_sl_tp(

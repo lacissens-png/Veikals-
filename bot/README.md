@@ -53,7 +53,14 @@ Katru ciklu (pēc noklusējuma ik 60 s) bots katram tirdzniecības pārim:
 4. Ja pozīcijas nav — meklē signālu:
    - **PIRKT**: fast EMA šķērso slow EMA uz augšu **un** RSI < overbought.
    - **PĀRDOT**: fast EMA šķērso slow EMA uz leju **vai** RSI > overbought.
-5. Ja PIRKT signāls un vēl nav sasniegts `MAX_OPEN_POSITIONS` — atver pozīciju.
+5. Ja PIRKT signāls un vēl nav sasniegts `MAX_OPEN_POSITIONS`:
+   - Pārbauda **iespējamības filtru**: pēdējo `LOOKBACK_CANDLES` sveču
+     maksimumam jābūt vismaz par `MIN_TAKE_PROFIT_PERCENT` % virs
+     pašreizējās cenas. Ja nav — signāls tiek izlaists.
+   - Ja filtrs izturēts — atver pozīciju ar konfigurēto TP/SL.
+
+Tas nozīmē, ka bots **netirgo** pāri, kur tuvāko sveču vēsture neliecina
+par vismaz 5% augšupvirziena potenciālu.
 
 ## Drošība
 

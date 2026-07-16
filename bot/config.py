@@ -38,7 +38,13 @@ class Config:
         default_factory=lambda: float(os.getenv("STOP_LOSS_PERCENT", "2.0"))
     )
     take_profit_percent: float = field(
-        default_factory=lambda: float(os.getenv("TAKE_PROFIT_PERCENT", "4.0"))
+        default_factory=lambda: float(os.getenv("TAKE_PROFIT_PERCENT", "5.0"))
+    )
+    min_take_profit_percent: float = field(
+        default_factory=lambda: float(os.getenv("MIN_TAKE_PROFIT_PERCENT", "5.0"))
+    )
+    lookback_candles: int = field(
+        default_factory=lambda: int(os.getenv("LOOKBACK_CANDLES", "20"))
     )
 
     ema_fast: int = field(default_factory=lambda: int(os.getenv("EMA_FAST", "9")))
@@ -64,3 +70,8 @@ class Config:
             raise ValueError("EMA_FAST jābūt mazākam par EMA_SLOW")
         if not self.trading_pairs:
             raise ValueError("Jānorāda vismaz viens tirdzniecības pāris")
+        if self.take_profit_percent < self.min_take_profit_percent:
+            raise ValueError(
+                f"TAKE_PROFIT_PERCENT ({self.take_profit_percent}) nevar būt "
+                f"mazāks par MIN_TAKE_PROFIT_PERCENT ({self.min_take_profit_percent})"
+            )
