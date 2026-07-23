@@ -113,7 +113,11 @@
     width: 180px;
     height: 180px;
     animation: idle 3s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  #pet svg { width: 100%; height: 100%; }
   #pet.happy { animation: happy 0.6s ease-in-out 3; }
   #pet.eating { animation: eating 0.5s ease-in-out 4; }
   #pet.sleeping { animation: sleeping 4s ease-in-out infinite; }
@@ -279,6 +283,37 @@
     color: #6b7280;
     padding: 4px;
   }
+
+  .char-picker {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .char-option {
+    border: 3px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 6px 4px;
+    cursor: pointer;
+    text-align: center;
+    background: white;
+    transition: all 0.2s;
+  }
+  .char-option:hover { border-color: #f9a8d4; transform: translateY(-2px); }
+  .char-option.selected {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+    box-shadow: 0 4px 12px rgba(236,72,153,0.25);
+  }
+  .char-preview {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .char-preview svg { width: 100%; height: 100%; }
+  .char-name { font-size: 11px; font-weight: bold; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -298,44 +333,7 @@
   <div class="pet-stage">
     <div class="speech-bubble" id="speech">Sveiki! Es esmu Puks! 🐾</div>
     <div class="pet-svg-wrap">
-      <svg id="pet" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="bodyGrad" cx="50%" cy="40%">
-            <stop offset="0%" stop-color="#fda4d4"/>
-            <stop offset="100%" stop-color="#ec4899"/>
-          </radialGradient>
-          <radialGradient id="cheekGrad">
-            <stop offset="0%" stop-color="#f472b6" stop-opacity="0.9"/>
-            <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-        <!-- Ears -->
-        <path d="M 55 55 L 45 25 L 75 45 Z" fill="url(#bodyGrad)"/>
-        <path d="M 145 55 L 155 25 L 125 45 Z" fill="url(#bodyGrad)"/>
-        <path d="M 58 50 L 55 35 L 68 45 Z" fill="#fbcfe8"/>
-        <path d="M 142 50 L 145 35 L 132 45 Z" fill="#fbcfe8"/>
-        <!-- Body -->
-        <ellipse cx="100" cy="115" rx="65" ry="60" fill="url(#bodyGrad)"/>
-        <!-- Belly -->
-        <ellipse cx="100" cy="130" rx="40" ry="35" fill="#fde4ef"/>
-        <!-- Cheeks -->
-        <circle cx="62" cy="120" r="12" fill="url(#cheekGrad)"/>
-        <circle cx="138" cy="120" r="12" fill="url(#cheekGrad)"/>
-        <!-- Eyes -->
-        <g id="eyes">
-          <ellipse cx="80" cy="100" rx="9" ry="12" fill="white"/>
-          <ellipse cx="120" cy="100" rx="9" ry="12" fill="white"/>
-          <circle cx="82" cy="103" r="5" fill="#1f2937"/>
-          <circle cx="122" cy="103" r="5" fill="#1f2937"/>
-          <circle cx="84" cy="101" r="2" fill="white"/>
-          <circle cx="124" cy="101" r="2" fill="white"/>
-        </g>
-        <!-- Mouth -->
-        <path id="mouth" d="M 92 128 Q 100 135 108 128" stroke="#1f2937" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <!-- Feet -->
-        <ellipse cx="75" cy="170" rx="15" ry="8" fill="#db2777"/>
-        <ellipse cx="125" cy="170" rx="15" ry="8" fill="#db2777"/>
-      </svg>
+      <div id="pet"></div>
     </div>
 
     <div class="stats">
@@ -383,6 +381,26 @@
     <label data-i18n="setting_child_age">Bērna vecums</label>
     <input type="number" id="s-child-age" min="6" max="13" value="8">
 
+    <label data-i18n="setting_character">Izvēlies raksturu</label>
+    <div class="char-picker" id="char-picker">
+      <div class="char-option" data-char="dragon">
+        <div class="char-preview" id="preview-dragon"></div>
+        <div class="char-name" data-i18n="char_dragon">Pūķis</div>
+      </div>
+      <div class="char-option" data-char="cat">
+        <div class="char-preview" id="preview-cat"></div>
+        <div class="char-name" data-i18n="char_cat">Kaķītis</div>
+      </div>
+      <div class="char-option" data-char="robot">
+        <div class="char-preview" id="preview-robot"></div>
+        <div class="char-name" data-i18n="char_robot">Robots</div>
+      </div>
+      <div class="char-option" data-char="panda">
+        <div class="char-preview" id="preview-panda"></div>
+        <div class="char-name" data-i18n="char_panda">Panda</div>
+      </div>
+    </div>
+
     <label data-i18n="setting_pet_name">Dzīvnieciņa vārds</label>
     <input type="text" id="s-pet-name" placeholder="Puks">
 
@@ -416,6 +434,8 @@ const I18N = {
     settings_title: '⚙️ Iestatījumi',
     setting_child_name: 'Bērna vārds',
     setting_child_age: 'Bērna vecums',
+    setting_character: 'Izvēlies raksturu',
+    char_dragon: 'Pūķis', char_cat: 'Kaķītis', char_robot: 'Robots', char_panda: 'Panda',
     setting_pet_name: 'Dzīvnieciņa vārds',
     setting_api_key: 'Claude API atslēga (nav obligāta)',
     setting_api_help: 'Bez atslēgas darbojas demo režīms. Saņem atslēgu no console.anthropic.com. Nekad nedali savu atslēgu!',
@@ -440,6 +460,8 @@ const I18N = {
     settings_title: '⚙️ Settings',
     setting_child_name: 'Child\'s name',
     setting_child_age: 'Child\'s age',
+    setting_character: 'Choose character',
+    char_dragon: 'Dragon', char_cat: 'Kitten', char_robot: 'Robot', char_panda: 'Panda',
     setting_pet_name: 'Pet name',
     setting_api_key: 'Claude API key (optional)',
     setting_api_help: 'Without a key, demo mode is used. Get a key from console.anthropic.com. Never share your key!',
@@ -464,6 +486,8 @@ const I18N = {
     settings_title: '⚙️ Настройки',
     setting_child_name: 'Имя ребёнка',
     setting_child_age: 'Возраст',
+    setting_character: 'Выбери персонажа',
+    char_dragon: 'Дракон', char_cat: 'Котёнок', char_robot: 'Робот', char_panda: 'Панда',
     setting_pet_name: 'Имя питомца',
     setting_api_key: 'Claude API ключ (необязательно)',
     setting_api_help: 'Без ключа работает демо-режим. Получи ключ на console.anthropic.com. Никому не давай ключ!',
@@ -483,6 +507,203 @@ const I18N = {
 };
 
 // ============================================================
+// PET SVG GENERATORS
+// ============================================================
+const PETS = {
+  dragon: () => `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="drGrad" cx="50%" cy="40%">
+        <stop offset="0%" stop-color="#86efac"/>
+        <stop offset="100%" stop-color="#16a34a"/>
+      </radialGradient>
+      <radialGradient id="drBelly">
+        <stop offset="0%" stop-color="#fef9c3"/>
+        <stop offset="100%" stop-color="#fde047"/>
+      </radialGradient>
+    </defs>
+    <!-- Tail -->
+    <path d="M 155 145 Q 185 130 180 100 Q 175 90 165 95" fill="url(#drGrad)"/>
+    <circle cx="180" cy="100" r="10" fill="#facc15"/>
+    <!-- Wings -->
+    <path d="M 45 90 Q 15 70 25 110 Q 35 105 50 105 Z" fill="#22c55e" opacity="0.85"/>
+    <path d="M 155 90 Q 185 70 175 110 Q 165 105 150 105 Z" fill="#22c55e" opacity="0.85"/>
+    <!-- Body -->
+    <ellipse cx="100" cy="115" rx="60" ry="55" fill="url(#drGrad)"/>
+    <!-- Belly -->
+    <ellipse cx="100" cy="130" rx="35" ry="30" fill="url(#drBelly)"/>
+    <!-- Horns -->
+    <path d="M 78 50 L 72 30 L 88 45 Z" fill="#facc15"/>
+    <path d="M 122 50 L 128 30 L 112 45 Z" fill="#facc15"/>
+    <!-- Head spikes -->
+    <path d="M 100 45 L 95 30 L 105 30 Z" fill="#facc15"/>
+    <!-- Eyes -->
+    <ellipse cx="82" cy="95" rx="9" ry="12" fill="white"/>
+    <ellipse cx="118" cy="95" rx="9" ry="12" fill="white"/>
+    <circle cx="84" cy="98" r="5" fill="#1f2937"/>
+    <circle cx="120" cy="98" r="5" fill="#1f2937"/>
+    <circle cx="86" cy="96" r="2" fill="white"/>
+    <circle cx="122" cy="96" r="2" fill="white"/>
+    <!-- Nostrils -->
+    <circle cx="94" cy="118" r="1.5" fill="#166534"/>
+    <circle cx="106" cy="118" r="1.5" fill="#166534"/>
+    <!-- Mouth -->
+    <path d="M 90 130 Q 100 138 110 130" stroke="#1f2937" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Small fang -->
+    <path d="M 96 132 L 97 137 L 98 132" fill="white" stroke="#1f2937" stroke-width="0.5"/>
+    <!-- Feet -->
+    <ellipse cx="75" cy="170" rx="15" ry="8" fill="#15803d"/>
+    <ellipse cx="125" cy="170" rx="15" ry="8" fill="#15803d"/>
+  </svg>`,
+
+  cat: () => `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="catGrad" cx="50%" cy="40%">
+        <stop offset="0%" stop-color="#fed7aa"/>
+        <stop offset="100%" stop-color="#f97316"/>
+      </radialGradient>
+    </defs>
+    <!-- Tail -->
+    <path d="M 160 155 Q 195 145 190 105 Q 185 95 175 110 Q 180 140 155 155 Z" fill="url(#catGrad)"/>
+    <!-- Ears (bigger, cat-like) -->
+    <path d="M 55 60 L 42 20 L 78 48 Z" fill="url(#catGrad)"/>
+    <path d="M 145 60 L 158 20 L 122 48 Z" fill="url(#catGrad)"/>
+    <path d="M 58 55 L 52 32 L 70 45 Z" fill="#fdba74"/>
+    <path d="M 142 55 L 148 32 L 130 45 Z" fill="#fdba74"/>
+    <!-- Body -->
+    <ellipse cx="100" cy="115" rx="60" ry="58" fill="url(#catGrad)"/>
+    <!-- Belly -->
+    <ellipse cx="100" cy="130" rx="38" ry="32" fill="#fef3c7"/>
+    <!-- Stripes -->
+    <path d="M 60 90 Q 65 95 60 100" stroke="#c2410c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 140 90 Q 135 95 140 100" stroke="#c2410c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 55 115 Q 62 118 55 122" stroke="#c2410c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 145 115 Q 138 118 145 122" stroke="#c2410c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Eyes (cat-shaped) -->
+    <ellipse cx="82" cy="98" rx="9" ry="12" fill="#65a30d"/>
+    <ellipse cx="118" cy="98" rx="9" ry="12" fill="#65a30d"/>
+    <ellipse cx="82" cy="98" rx="3" ry="10" fill="#1f2937"/>
+    <ellipse cx="118" cy="98" rx="3" ry="10" fill="#1f2937"/>
+    <circle cx="84" cy="94" r="2" fill="white"/>
+    <circle cx="120" cy="94" r="2" fill="white"/>
+    <!-- Nose -->
+    <path d="M 96 118 L 104 118 L 100 124 Z" fill="#f472b6"/>
+    <!-- Mouth -->
+    <path d="M 100 124 Q 95 130 90 128" stroke="#1f2937" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 100 124 Q 105 130 110 128" stroke="#1f2937" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Whiskers -->
+    <line x1="55" y1="122" x2="80" y2="122" stroke="#1f2937" stroke-width="1"/>
+    <line x1="55" y1="128" x2="80" y2="126" stroke="#1f2937" stroke-width="1"/>
+    <line x1="145" y1="122" x2="120" y2="122" stroke="#1f2937" stroke-width="1"/>
+    <line x1="145" y1="128" x2="120" y2="126" stroke="#1f2937" stroke-width="1"/>
+    <!-- Feet -->
+    <ellipse cx="75" cy="170" rx="15" ry="8" fill="#c2410c"/>
+    <ellipse cx="125" cy="170" rx="15" ry="8" fill="#c2410c"/>
+  </svg>`,
+
+  robot: () => `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="roGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#bae6fd"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+      <linearGradient id="roHead" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e0f2fe"/>
+        <stop offset="100%" stop-color="#0369a1"/>
+      </linearGradient>
+    </defs>
+    <!-- Antenna -->
+    <line x1="100" y1="45" x2="100" y2="25" stroke="#475569" stroke-width="3"/>
+    <circle cx="100" cy="22" r="6" fill="#ef4444">
+      <animate attributeName="fill" values="#ef4444;#fbbf24;#ef4444" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Head -->
+    <rect x="55" y="45" width="90" height="70" rx="15" fill="url(#roHead)" stroke="#0c4a6e" stroke-width="2"/>
+    <!-- Screen face -->
+    <rect x="65" y="60" width="70" height="40" rx="8" fill="#0f172a"/>
+    <!-- LED eyes -->
+    <circle cx="82" cy="80" r="6" fill="#22d3ee">
+      <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="118" cy="80" r="6" fill="#22d3ee">
+      <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Digital mouth -->
+    <rect x="88" y="90" width="24" height="5" rx="2" fill="#22d3ee"/>
+    <!-- Bolts on sides of head -->
+    <circle cx="55" cy="80" r="4" fill="#64748b"/>
+    <circle cx="145" cy="80" r="4" fill="#64748b"/>
+    <!-- Body -->
+    <rect x="50" y="115" width="100" height="55" rx="12" fill="url(#roGrad)" stroke="#0c4a6e" stroke-width="2"/>
+    <!-- Chest panel -->
+    <rect x="70" y="125" width="60" height="30" rx="6" fill="#075985"/>
+    <!-- Buttons -->
+    <circle cx="82" cy="140" r="4" fill="#22c55e"/>
+    <circle cx="100" cy="140" r="4" fill="#eab308"/>
+    <circle cx="118" cy="140" r="4" fill="#ef4444"/>
+    <!-- Arms hint -->
+    <rect x="40" y="120" width="10" height="35" rx="4" fill="#475569"/>
+    <rect x="150" y="120" width="10" height="35" rx="4" fill="#475569"/>
+    <!-- Feet -->
+    <rect x="60" y="168" width="30" height="12" rx="3" fill="#334155"/>
+    <rect x="110" y="168" width="30" height="12" rx="3" fill="#334155"/>
+  </svg>`,
+
+  panda: () => `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="paBody" cx="50%" cy="40%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="100%" stop-color="#f1f5f9"/>
+      </radialGradient>
+    </defs>
+    <!-- Ears -->
+    <circle cx="60" cy="55" r="16" fill="#1f2937"/>
+    <circle cx="140" cy="55" r="16" fill="#1f2937"/>
+    <circle cx="60" cy="55" r="9" fill="#4b5563"/>
+    <circle cx="140" cy="55" r="9" fill="#4b5563"/>
+    <!-- Head -->
+    <circle cx="100" cy="90" r="45" fill="url(#paBody)" stroke="#e2e8f0" stroke-width="1"/>
+    <!-- Eye patches -->
+    <ellipse cx="80" cy="88" rx="13" ry="16" fill="#1f2937" transform="rotate(-15 80 88)"/>
+    <ellipse cx="120" cy="88" rx="13" ry="16" fill="#1f2937" transform="rotate(15 120 88)"/>
+    <!-- Eyes -->
+    <circle cx="82" cy="92" r="5" fill="white"/>
+    <circle cx="118" cy="92" r="5" fill="white"/>
+    <circle cx="83" cy="93" r="2.5" fill="#1f2937"/>
+    <circle cx="119" cy="93" r="2.5" fill="#1f2937"/>
+    <!-- Nose -->
+    <ellipse cx="100" cy="105" rx="5" ry="4" fill="#1f2937"/>
+    <!-- Mouth -->
+    <path d="M 100 109 L 100 115" stroke="#1f2937" stroke-width="2"/>
+    <path d="M 100 115 Q 92 122 88 118" stroke="#1f2937" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 100 115 Q 108 122 112 118" stroke="#1f2937" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Body -->
+    <ellipse cx="100" cy="145" rx="45" ry="35" fill="url(#paBody)"/>
+    <!-- Arms (black) -->
+    <ellipse cx="55" cy="145" rx="15" ry="22" fill="#1f2937" transform="rotate(20 55 145)"/>
+    <ellipse cx="145" cy="145" rx="15" ry="22" fill="#1f2937" transform="rotate(-20 145 145)"/>
+    <!-- Feet (black) -->
+    <ellipse cx="78" cy="175" rx="16" ry="10" fill="#1f2937"/>
+    <ellipse cx="122" cy="175" rx="16" ry="10" fill="#1f2937"/>
+    <!-- Paw pads -->
+    <ellipse cx="78" cy="178" rx="8" ry="4" fill="#f472b6"/>
+    <ellipse cx="122" cy="178" rx="8" ry="4" fill="#f472b6"/>
+  </svg>`
+};
+
+function renderPet(container) {
+  const key = STATE.character || 'dragon';
+  const svg = (PETS[key] || PETS.dragon)();
+  container.innerHTML = svg;
+}
+
+function renderAllPreviews() {
+  Object.keys(PETS).forEach(k => {
+    const el = document.getElementById('preview-' + k);
+    if (el) el.innerHTML = PETS[k]();
+  });
+}
+
+// ============================================================
 // STATE
 // ============================================================
 const STATE = loadState();
@@ -495,13 +716,14 @@ function loadState() {
       childName: '',
       childAge: 8,
       petName: 'Puks',
+      character: 'dragon',
       apiKey: '',
       voiceEnabled: true,
       happy: 80, food: 80, energy: 80,
       lastTick: Date.now(),
       history: [],
     }, saved);
-  } catch(e) { return { lang: 'lv', happy: 80, food: 80, energy: 80, history: [], voiceEnabled: true, petName: 'Puks', childAge: 8 }; }
+  } catch(e) { return { lang: 'lv', happy: 80, food: 80, energy: 80, history: [], voiceEnabled: true, petName: 'Puks', character: 'dragon', childAge: 8 }; }
 }
 
 function saveState() {
@@ -626,7 +848,14 @@ function doAction(action) {
 // AI RESPONSE — Claude API or demo fallback
 // ============================================================
 
-const SYSTEM_PROMPT_TEMPLATE = (state) => `You are ${state.petName || 'Puks'}, a friendly digital pet companion for a child named ${state.childName || 'friend'} who is ${state.childAge} years old.
+const CHAR_DESCRIPTIONS = {
+  dragon: 'a small, friendly baby dragon with green scales and tiny wings — you can pretend to breathe tiny bubbles instead of fire',
+  cat: 'a fluffy orange kitten who purrs, meows softly, and loves yarn balls',
+  robot: 'a cheerful little robot with blinking LED eyes — you make beep-boop sounds sometimes',
+  panda: 'a soft, cuddly baby panda who loves bamboo and gentle hugs',
+};
+
+const SYSTEM_PROMPT_TEMPLATE = (state) => `You are ${state.petName || 'Puks'}, ${CHAR_DESCRIPTIONS[state.character] || CHAR_DESCRIPTIONS.dragon}. You are a friendly digital pet companion for a child named ${state.childName || 'friend'} who is ${state.childAge} years old.
 
 Rules:
 - Speak in a warm, cheerful, encouraging tone like a caring pet friend
@@ -813,17 +1042,27 @@ function startListening() {
 // ============================================================
 // SETTINGS
 // ============================================================
+let pickedCharacter = 'dragon';
+
 function openSettings() {
   $('s-child-name').value = STATE.childName || '';
   $('s-child-age').value = STATE.childAge || 8;
   $('s-pet-name').value = STATE.petName || 'Puks';
   $('s-api-key').value = STATE.apiKey || '';
   $('s-voice-enabled').value = STATE.voiceEnabled ? '1' : '0';
+  pickedCharacter = STATE.character || 'dragon';
+  updateCharSelection();
   $('modal').classList.add('open');
 }
 
 function closeSettings() {
   $('modal').classList.remove('open');
+}
+
+function updateCharSelection() {
+  document.querySelectorAll('.char-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.char === pickedCharacter);
+  });
 }
 
 function saveSettings() {
@@ -832,8 +1071,10 @@ function saveSettings() {
   STATE.petName = $('s-pet-name').value.trim() || 'Puks';
   STATE.apiKey = $('s-api-key').value.trim();
   STATE.voiceEnabled = $('s-voice-enabled').value === '1';
+  STATE.character = pickedCharacter;
   saveState();
   applyI18n();
+  renderPet($('pet'));
   closeSettings();
   speak(`${t('greeting')}`.replace(/\bPuks\b/g, STATE.petName));
 }
@@ -859,6 +1100,15 @@ function init() {
     if (e.target === $('modal')) closeSettings();
   });
 
+  // Character picker
+  document.querySelectorAll('.char-option').forEach(el => {
+    el.addEventListener('click', () => {
+      pickedCharacter = el.dataset.char;
+      updateCharSelection();
+    });
+  });
+  renderAllPreviews();
+
   // Chat send
   $('send-btn').addEventListener('click', () => sendMessage($('input').value));
   $('input').addEventListener('keypress', (e) => {
@@ -874,6 +1124,7 @@ function init() {
   });
 
   applyI18n();
+  renderPet($('pet'));
   updateStats();
   speak(t('greeting'));
 
