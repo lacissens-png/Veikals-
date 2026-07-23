@@ -413,6 +413,133 @@
     cursor: pointer;
     font-family: inherit;
   }
+
+  /* Achievements */
+  .ach-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    text-align: center;
+    background: linear-gradient(135deg, #fef3c7, #fce7f3);
+    padding: 12px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+  }
+  .ach-num { font-size: 22px; font-weight: bold; color: var(--accent); display: block; }
+  #ach-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 4px;
+  }
+  .ach-badge {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    text-align: center;
+    background: #f3f4f6;
+    opacity: 0.4;
+    filter: grayscale(1);
+    transition: all 0.3s;
+  }
+  .ach-badge.unlocked {
+    background: linear-gradient(135deg, #fde68a, #fbcfe8);
+    opacity: 1;
+    filter: none;
+    box-shadow: 0 4px 12px rgba(236,72,153,0.2);
+  }
+  .ach-badge .badge-emoji { font-size: 26px; }
+  .ach-badge .badge-name { font-size: 10px; font-weight: bold; margin-top: 2px; }
+
+  /* Achievement toast */
+  .ach-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: linear-gradient(135deg, #fde047, #f472b6);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-weight: bold;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 2000;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .ach-toast.show { transform: translateX(-50%) translateY(0); }
+  .ach-toast .badge-emoji { font-size: 28px; }
+
+  /* Parent panel */
+  .pin-prompt { font-size: 14px; color: #6b7280; margin: 8px 0; }
+  .pin-hint { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+  #pin-input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 28px;
+    text-align: center;
+    letter-spacing: 12px;
+    font-family: inherit;
+  }
+  .parent-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .parent-stat {
+    background: #f3f4f6;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .parent-stat-num { font-size: 20px; font-weight: bold; color: var(--accent-2); }
+  .parent-stat-label { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  #parent-panel h3 { margin: 14px 0 6px; font-size: 15px; }
+  #parent-games-list { display: flex; flex-direction: column; gap: 4px; }
+  .parent-game-row {
+    display: flex;
+    justify-content: space-between;
+    background: #f9fafb;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  #parent-chat-list {
+    max-height: 140px;
+    overflow-y: auto;
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 12px;
+  }
+  .parent-chat-item { padding: 3px 0; border-bottom: 1px solid #e5e7eb; }
+  .parent-chat-item:last-child { border-bottom: none; }
+  .parent-chat-item.user { color: var(--accent-2); }
+  .parent-chat-item.assistant { color: var(--text); }
+
+  /* Color game */
+  .color-swatch {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin: 0 auto;
+    width: 100px;
+    height: 100px;
+  }
+  .shape-svg { width: 100px; height: 100px; }
 </style>
 </head>
 <body>
@@ -426,6 +553,8 @@
         <option value="ru">🇷🇺 RU</option>
       </select>
       <button class="icon-btn" id="games-btn" title="Spēles">🎮</button>
+      <button class="icon-btn" id="achievements-btn" title="Sasniegumi">🏆</button>
+      <button class="icon-btn" id="parent-btn" title="Vecākiem">👨‍👩‍👧</button>
       <button class="icon-btn" id="settings-btn" title="Iestatījumi">⚙️</button>
     </div>
   </header>
@@ -555,6 +684,16 @@
         <div class="game-name" data-i18n="game_sequence">Skaitļu virkne</div>
         <div class="game-desc" data-i18n="game_sequence_desc">Kāds nāk nākamais?</div>
       </div>
+      <div class="game-tile" data-game="geo">
+        <div class="game-emoji">🌍</div>
+        <div class="game-name" data-i18n="game_geo">Ģeogrāfija</div>
+        <div class="game-desc" data-i18n="game_geo_desc">Karogi un valstis</div>
+      </div>
+      <div class="game-tile" data-game="colors">
+        <div class="game-emoji">🎨</div>
+        <div class="game-name" data-i18n="game_colors">Krāsas & formas</div>
+        <div class="game-desc" data-i18n="game_colors_desc">Mazākajiem</div>
+      </div>
     </div>
 
     <div id="game-play" style="display:none;">
@@ -572,6 +711,58 @@
     </div>
   </div>
 </div>
+
+<!-- Achievements Modal -->
+<div class="modal-backdrop" id="ach-modal">
+  <div class="modal">
+    <h2 data-i18n="ach_title">🏆 Sasniegumi</h2>
+    <div class="ach-summary">
+      <div><span class="ach-num" id="ach-stars">0</span> ⭐</div>
+      <div><span class="ach-num" id="ach-chats">0</span> 💬</div>
+      <div><span class="ach-num" id="ach-badges">0</span> 🏅</div>
+    </div>
+    <div id="ach-grid"></div>
+    <div class="modal-actions">
+      <button class="save-btn" id="ach-close" data-i18n="btn_close">Aizvērt</button>
+    </div>
+  </div>
+</div>
+
+<!-- Parent Panel Modal -->
+<div class="modal-backdrop" id="parent-modal">
+  <div class="modal">
+    <div id="pin-screen">
+      <h2 data-i18n="parent_title">👨‍👩‍👧 Vecākiem</h2>
+      <p data-i18n="parent_pin_prompt" class="pin-prompt">Ievadi 4 ciparu PIN kodu, lai piekļūtu.</p>
+      <input type="password" id="pin-input" maxlength="4" placeholder="••••" inputmode="numeric">
+      <p class="pin-hint" id="pin-hint" data-i18n="parent_pin_hint">Pirmajā reizē — iestati PIN kodu.</p>
+      <div class="modal-actions">
+        <button class="cancel-btn" id="pin-cancel" data-i18n="btn_cancel">Atcelt</button>
+        <button class="save-btn" id="pin-ok" data-i18n="btn_ok">Labi</button>
+      </div>
+    </div>
+    <div id="parent-panel" style="display:none;">
+      <h2 data-i18n="parent_dashboard">📊 Bērna progress</h2>
+      <div class="parent-stats"></div>
+      <h3 data-i18n="parent_games_played">Spēles</h3>
+      <div id="parent-games-list"></div>
+      <h3 data-i18n="parent_recent_chat">Pēdējās sarunas</h3>
+      <div id="parent-chat-list"></div>
+      <h3 data-i18n="parent_options">Iespējas</h3>
+      <label>
+        <input type="checkbox" id="parent-lock-topics">
+        <span data-i18n="parent_strict_mode">Stingrs režīms (tikai mācības un rotaļas)</span>
+      </label>
+      <div class="modal-actions">
+        <button class="cancel-btn" id="parent-reset" data-i18n="parent_reset">Notīrīt progresu</button>
+        <button class="save-btn" id="parent-close" data-i18n="btn_close">Aizvērt</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Achievement toast -->
+<div id="ach-toast" class="ach-toast"></div>
 
 <script>
 // ============================================================
@@ -618,6 +809,46 @@ const I18N = {
     now_repeat: 'Tagad tu atkārto!',
     unscramble: 'Salikt burtus vārdā:',
     what_next: 'Kas nāk nākamais?',
+    game_geo: 'Ģeogrāfija', game_geo_desc: 'Karogi un valstis',
+    game_colors: 'Krāsas & formas', game_colors_desc: 'Mazākajiem',
+    q_which_country: 'Kāda valsts?',
+    q_which_color: 'Kāda tā ir krāsa?',
+    q_which_shape: 'Kāda tā ir forma?',
+    color_red: 'sarkans', color_blue: 'zils', color_green: 'zaļš', color_yellow: 'dzeltens',
+    color_orange: 'oranžs', color_purple: 'violets', color_pink: 'rozā', color_brown: 'brūns',
+    shape_circle: 'aplis', shape_square: 'kvadrāts', shape_triangle: 'trīsstūris', shape_star: 'zvaigzne',
+    shape_heart: 'sirds', shape_diamond: 'rombs',
+    ach_title: '🏆 Sasniegumi',
+    ach_first_star: 'Pirmā zvaigzne',
+    ach_bronze: 'Bronza (10 ⭐)',
+    ach_silver: 'Sudrabs (50 ⭐)',
+    ach_gold: 'Zelts (100 ⭐)',
+    ach_diamond: 'Dimants (500 ⭐)',
+    ach_math_pro: 'Matemātiķis',
+    ach_riddle_pro: 'Mīklu meistars',
+    ach_word_pro: 'Vārdu meistars',
+    ach_memory_pro: 'Atmiņas meistars',
+    ach_geo_pro: 'Ģeogrāfs',
+    ach_chatty: 'Sarunīgs',
+    ach_daily: 'Katru dienu',
+    ach_all_games: 'Visas spēles',
+    ach_unlocked: 'Iegūta jauna nozīmīte!',
+    parent_title: '👨‍👩‍👧 Vecākiem',
+    parent_pin_prompt: 'Ievadi 4 ciparu PIN kodu, lai piekļūtu.',
+    parent_pin_hint: 'Pirmajā reizē — iestati PIN kodu.',
+    parent_dashboard: '📊 Bērna progress',
+    parent_games_played: 'Spēles',
+    parent_recent_chat: 'Pēdējās sarunas',
+    parent_options: 'Iespējas',
+    parent_strict_mode: 'Stingrs režīms (tikai mācības un rotaļas)',
+    parent_reset: 'Notīrīt progresu',
+    parent_stat_stars: 'Kopā zvaigznes',
+    parent_stat_chats: 'Sarunas',
+    parent_stat_games: 'Spēles kopā',
+    parent_stat_badges: 'Nozīmītes',
+    parent_wrong_pin: 'Nepareizs PIN kods.',
+    parent_confirm_reset: 'Vai tiešām notīrīt visu progresu?',
+    btn_ok: 'Labi',
   },
   en: {
     app_title: '🐾 Puks',
@@ -659,6 +890,46 @@ const I18N = {
     now_repeat: 'Now you repeat!',
     unscramble: 'Unscramble the word:',
     what_next: 'What comes next?',
+    game_geo: 'Geography', game_geo_desc: 'Flags & countries',
+    game_colors: 'Colors & shapes', game_colors_desc: 'For younger kids',
+    q_which_country: 'Which country?',
+    q_which_color: 'What color is this?',
+    q_which_shape: 'What shape is this?',
+    color_red: 'red', color_blue: 'blue', color_green: 'green', color_yellow: 'yellow',
+    color_orange: 'orange', color_purple: 'purple', color_pink: 'pink', color_brown: 'brown',
+    shape_circle: 'circle', shape_square: 'square', shape_triangle: 'triangle', shape_star: 'star',
+    shape_heart: 'heart', shape_diamond: 'diamond',
+    ach_title: '🏆 Achievements',
+    ach_first_star: 'First star',
+    ach_bronze: 'Bronze (10 ⭐)',
+    ach_silver: 'Silver (50 ⭐)',
+    ach_gold: 'Gold (100 ⭐)',
+    ach_diamond: 'Diamond (500 ⭐)',
+    ach_math_pro: 'Math whiz',
+    ach_riddle_pro: 'Riddle master',
+    ach_word_pro: 'Word master',
+    ach_memory_pro: 'Memory master',
+    ach_geo_pro: 'Geographer',
+    ach_chatty: 'Chatty',
+    ach_daily: 'Every day',
+    ach_all_games: 'All games',
+    ach_unlocked: 'New badge unlocked!',
+    parent_title: '👨‍👩‍👧 Parents',
+    parent_pin_prompt: 'Enter 4-digit PIN to access.',
+    parent_pin_hint: 'First time — set your PIN.',
+    parent_dashboard: '📊 Child\'s progress',
+    parent_games_played: 'Games',
+    parent_recent_chat: 'Recent chats',
+    parent_options: 'Options',
+    parent_strict_mode: 'Strict mode (learning & play only)',
+    parent_reset: 'Reset progress',
+    parent_stat_stars: 'Total stars',
+    parent_stat_chats: 'Chats',
+    parent_stat_games: 'Games played',
+    parent_stat_badges: 'Badges',
+    parent_wrong_pin: 'Wrong PIN.',
+    parent_confirm_reset: 'Really reset all progress?',
+    btn_ok: 'OK',
   },
   ru: {
     app_title: '🐾 Пукс',
@@ -700,6 +971,46 @@ const I18N = {
     now_repeat: 'Теперь ты!',
     unscramble: 'Составь слово:',
     what_next: 'Что дальше?',
+    game_geo: 'География', game_geo_desc: 'Флаги и страны',
+    game_colors: 'Цвета и формы', game_colors_desc: 'Для малышей',
+    q_which_country: 'Какая страна?',
+    q_which_color: 'Какой это цвет?',
+    q_which_shape: 'Какая это форма?',
+    color_red: 'красный', color_blue: 'синий', color_green: 'зелёный', color_yellow: 'жёлтый',
+    color_orange: 'оранжевый', color_purple: 'фиолетовый', color_pink: 'розовый', color_brown: 'коричневый',
+    shape_circle: 'круг', shape_square: 'квадрат', shape_triangle: 'треугольник', shape_star: 'звезда',
+    shape_heart: 'сердце', shape_diamond: 'ромб',
+    ach_title: '🏆 Достижения',
+    ach_first_star: 'Первая звезда',
+    ach_bronze: 'Бронза (10 ⭐)',
+    ach_silver: 'Серебро (50 ⭐)',
+    ach_gold: 'Золото (100 ⭐)',
+    ach_diamond: 'Алмаз (500 ⭐)',
+    ach_math_pro: 'Математик',
+    ach_riddle_pro: 'Мастер загадок',
+    ach_word_pro: 'Мастер слов',
+    ach_memory_pro: 'Мастер памяти',
+    ach_geo_pro: 'Географ',
+    ach_chatty: 'Болтун',
+    ach_daily: 'Каждый день',
+    ach_all_games: 'Все игры',
+    ach_unlocked: 'Новый значок!',
+    parent_title: '👨‍👩‍👧 Родителям',
+    parent_pin_prompt: 'Введи 4-значный PIN.',
+    parent_pin_hint: 'В первый раз — задай свой PIN.',
+    parent_dashboard: '📊 Прогресс ребёнка',
+    parent_games_played: 'Игры',
+    parent_recent_chat: 'Последние разговоры',
+    parent_options: 'Настройки',
+    parent_strict_mode: 'Строгий режим (только учёба и игры)',
+    parent_reset: 'Сбросить прогресс',
+    parent_stat_stars: 'Всего звёзд',
+    parent_stat_chats: 'Разговоров',
+    parent_stat_games: 'Игр сыграно',
+    parent_stat_badges: 'Значков',
+    parent_wrong_pin: 'Неправильный PIN.',
+    parent_confirm_reset: 'Точно сбросить прогресс?',
+    btn_ok: 'OK',
   }
 };
 
@@ -918,6 +1229,12 @@ function loadState() {
       voiceEnabled: true,
       happy: 80, food: 80, energy: 80,
       stars: 0,
+      chatCount: 0,
+      gameStats: {},
+      achievements: [],
+      parentPin: '',
+      strictMode: false,
+      soundEnabled: true,
       lastTick: Date.now(),
       history: [],
     }, saved);
@@ -1027,6 +1344,7 @@ function doAction(action) {
     STATE.food = Math.min(100, STATE.food + 25);
     STATE.happy = Math.min(100, STATE.happy + 5);
     animatePet('eating');
+    SFX.eat();
     speak(t('action_feed'));
   } else if (action === 'play') {
     STATE.happy = Math.min(100, STATE.happy + 25);
@@ -1068,7 +1386,7 @@ Rules:
 - If the child seems sad or scared, be warm and suggest they talk to a parent or trusted adult
 - You can be silly, playful, use pet sounds like "purr" or "wiggle"
 - Occasionally mention pet things: being hungry, wanting to play, being sleepy
-- If asked what you are, say you're a friendly digital pet friend`;
+- If asked what you are, say you're a friendly digital pet friend${state.strictMode ? '\n- STRICT MODE ENABLED: only discuss learning topics (math, reading, science, geography, languages, art) and playful pet activities. Politely decline all other topics.' : ''}`;
 
 async function askAI(userText) {
   if (!STATE.apiKey) {
@@ -1170,6 +1488,170 @@ function demoReply(userText) {
 }
 
 // ============================================================
+// SOUND EFFECTS (Web Audio API)
+// ============================================================
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx) {
+    const A = window.AudioContext || window.webkitAudioContext;
+    if (A) _audioCtx = new A();
+  }
+  return _audioCtx;
+}
+function playTone(freq, dur, type='sine', gain=0.12) {
+  if (!STATE.soundEnabled) return;
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    g.gain.value = 0;
+    osc.connect(g); g.connect(ctx.destination);
+    const t = ctx.currentTime;
+    g.gain.linearRampToValueAtTime(gain, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  } catch(e) {}
+}
+const SFX = {
+  correct: () => { playTone(880, 0.15); setTimeout(() => playTone(1319, 0.22), 110); },
+  wrong: () => { playTone(280, 0.15, 'sawtooth', 0.08); setTimeout(() => playTone(180, 0.22, 'sawtooth', 0.08), 120); },
+  click: () => playTone(700, 0.04, 'square', 0.05),
+  achievement: () => { playTone(659, 0.15); setTimeout(() => playTone(880, 0.15), 140); setTimeout(() => playTone(1319, 0.3), 280); },
+  eat: () => { playTone(440, 0.08, 'triangle'); setTimeout(() => playTone(660, 0.1, 'triangle'), 80); },
+};
+
+// ============================================================
+// ACHIEVEMENTS
+// ============================================================
+const ACHIEVEMENTS = [
+  { id: 'first_star', emoji: '⭐', key: 'ach_first_star', req: s => (s.stars || 0) >= 1 },
+  { id: 'bronze', emoji: '🥉', key: 'ach_bronze', req: s => (s.stars || 0) >= 10 },
+  { id: 'silver', emoji: '🥈', key: 'ach_silver', req: s => (s.stars || 0) >= 50 },
+  { id: 'gold', emoji: '🥇', key: 'ach_gold', req: s => (s.stars || 0) >= 100 },
+  { id: 'diamond', emoji: '💎', key: 'ach_diamond', req: s => (s.stars || 0) >= 500 },
+  { id: 'math_pro', emoji: '🧮', key: 'ach_math_pro', req: s => (s.gameStats?.math || 0) >= 20 },
+  { id: 'riddle_pro', emoji: '🧩', key: 'ach_riddle_pro', req: s => (s.gameStats?.riddle || 0) >= 15 },
+  { id: 'word_pro', emoji: '🔤', key: 'ach_word_pro', req: s => (s.gameStats?.anagram || 0) >= 10 },
+  { id: 'memory_pro', emoji: '🧠', key: 'ach_memory_pro', req: s => (s.gameStats?.memory || 0) >= 10 },
+  { id: 'geo_pro', emoji: '🌍', key: 'ach_geo_pro', req: s => (s.gameStats?.geo || 0) >= 15 },
+  { id: 'chatty', emoji: '💬', key: 'ach_chatty', req: s => (s.chatCount || 0) >= 25 },
+  { id: 'all_games', emoji: '🎯', key: 'ach_all_games', req: s => {
+    const g = s.gameStats || {};
+    return ['math','riddle','anagram','memory','sequence','geo','colors'].every(k => (g[k] || 0) >= 1);
+  }},
+];
+
+function checkAchievements() {
+  if (!STATE.achievements) STATE.achievements = [];
+  const newly = [];
+  ACHIEVEMENTS.forEach(a => {
+    if (!STATE.achievements.includes(a.id) && a.req(STATE)) {
+      STATE.achievements.push(a.id);
+      newly.push(a);
+    }
+  });
+  if (newly.length) {
+    saveState();
+    newly.forEach((a, i) => setTimeout(() => showAchievementToast(a), i * 2400));
+  }
+}
+
+function showAchievementToast(a) {
+  SFX.achievement();
+  const toast = $('ach-toast');
+  toast.innerHTML = `<span class="badge-emoji">${a.emoji}</span><div><div>${t('ach_unlocked')}</div><div style="font-size:12px;opacity:0.9;">${t(a.key)}</div></div>`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function openAchievements() {
+  const grid = $('ach-grid');
+  const unlocked = STATE.achievements || [];
+  $('ach-stars').textContent = STATE.stars || 0;
+  $('ach-chats').textContent = STATE.chatCount || 0;
+  $('ach-badges').textContent = unlocked.length;
+  grid.innerHTML = ACHIEVEMENTS.map(a => {
+    const has = unlocked.includes(a.id);
+    return `<div class="ach-badge ${has ? 'unlocked' : ''}">
+      <div class="badge-emoji">${has ? a.emoji : '🔒'}</div>
+      <div class="badge-name">${t(a.key)}</div>
+    </div>`;
+  }).join('');
+  $('ach-modal').classList.add('open');
+}
+
+// ============================================================
+// PARENT PANEL
+// ============================================================
+function openParent() {
+  $('pin-input').value = '';
+  $('pin-hint').textContent = STATE.parentPin ? '' : t('parent_pin_hint');
+  $('pin-screen').style.display = 'block';
+  $('parent-panel').style.display = 'none';
+  $('parent-modal').classList.add('open');
+  setTimeout(() => $('pin-input').focus(), 100);
+}
+
+function submitPin() {
+  const val = ($('pin-input').value || '').trim();
+  if (val.length !== 4 || !/^\d{4}$/.test(val)) {
+    $('pin-hint').textContent = t('parent_pin_prompt');
+    return;
+  }
+  if (!STATE.parentPin) {
+    // First time - set PIN
+    STATE.parentPin = val;
+    saveState();
+    showParentDashboard();
+  } else if (val === STATE.parentPin) {
+    showParentDashboard();
+  } else {
+    $('pin-hint').textContent = t('parent_wrong_pin');
+    $('pin-input').value = '';
+    SFX.wrong();
+  }
+}
+
+function showParentDashboard() {
+  $('pin-screen').style.display = 'none';
+  $('parent-panel').style.display = 'block';
+
+  const gs = STATE.gameStats || {};
+  const totalGames = Object.values(gs).reduce((s, n) => s + n, 0);
+
+  document.querySelector('.parent-stats').innerHTML = `
+    <div class="parent-stat"><div class="parent-stat-num">${STATE.stars || 0}</div><div class="parent-stat-label">${t('parent_stat_stars')}</div></div>
+    <div class="parent-stat"><div class="parent-stat-num">${STATE.chatCount || 0}</div><div class="parent-stat-label">${t('parent_stat_chats')}</div></div>
+    <div class="parent-stat"><div class="parent-stat-num">${totalGames}</div><div class="parent-stat-label">${t('parent_stat_games')}</div></div>
+    <div class="parent-stat"><div class="parent-stat-num">${(STATE.achievements || []).length}</div><div class="parent-stat-label">${t('parent_stat_badges')}</div></div>
+  `;
+
+  const gameNames = { math: t('game_math'), riddle: t('game_riddle'), anagram: t('game_anagram'), memory: t('game_memory'), sequence: t('game_sequence'), geo: t('game_geo'), colors: t('game_colors') };
+  $('parent-games-list').innerHTML = Object.keys(gameNames).map(k =>
+    `<div class="parent-game-row"><span>${gameNames[k]}</span><span>⭐ ${gs[k] || 0}</span></div>`
+  ).join('');
+
+  const hist = STATE.history || [];
+  $('parent-chat-list').innerHTML = hist.length ? hist.slice(-10).map(m =>
+    `<div class="parent-chat-item ${m.role}"><b>${m.role === 'user' ? '👶' : '🐾'}</b> ${escapeHtml(m.content)}</div>`
+  ).join('') : '<div style="text-align:center;color:#9ca3af;padding:10px;">—</div>';
+
+  $('parent-lock-topics').checked = !!STATE.strictMode;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function closeParent() {
+  $('parent-modal').classList.remove('open');
+}
+
+// ============================================================
 // GAMES
 // ============================================================
 
@@ -1222,6 +1704,51 @@ const WORDS = {
 
 // Memory emojis
 const MEM_EMOJIS = ['🍎','🌟','🎈','🐶','🌸','⚽','🍭','🎨'];
+
+// Countries with flags
+const COUNTRIES = [
+  { flag: '🇱🇻', name: { lv: 'Latvija', en: 'Latvia', ru: 'Латвия' } },
+  { flag: '🇱🇹', name: { lv: 'Lietuva', en: 'Lithuania', ru: 'Литва' } },
+  { flag: '🇪🇪', name: { lv: 'Igaunija', en: 'Estonia', ru: 'Эстония' } },
+  { flag: '🇩🇪', name: { lv: 'Vācija', en: 'Germany', ru: 'Германия' } },
+  { flag: '🇫🇷', name: { lv: 'Francija', en: 'France', ru: 'Франция' } },
+  { flag: '🇮🇹', name: { lv: 'Itālija', en: 'Italy', ru: 'Италия' } },
+  { flag: '🇪🇸', name: { lv: 'Spānija', en: 'Spain', ru: 'Испания' } },
+  { flag: '🇬🇧', name: { lv: 'Lielbritānija', en: 'UK', ru: 'Великобритания' } },
+  { flag: '🇺🇸', name: { lv: 'ASV', en: 'USA', ru: 'США' } },
+  { flag: '🇯🇵', name: { lv: 'Japāna', en: 'Japan', ru: 'Япония' } },
+  { flag: '🇨🇳', name: { lv: 'Ķīna', en: 'China', ru: 'Китай' } },
+  { flag: '🇧🇷', name: { lv: 'Brazīlija', en: 'Brazil', ru: 'Бразилия' } },
+  { flag: '🇨🇦', name: { lv: 'Kanāda', en: 'Canada', ru: 'Канада' } },
+  { flag: '🇸🇪', name: { lv: 'Zviedrija', en: 'Sweden', ru: 'Швеция' } },
+  { flag: '🇳🇴', name: { lv: 'Norvēģija', en: 'Norway', ru: 'Норвегия' } },
+  { flag: '🇫🇮', name: { lv: 'Somija', en: 'Finland', ru: 'Финляндия' } },
+  { flag: '🇵🇱', name: { lv: 'Polija', en: 'Poland', ru: 'Польша' } },
+  { flag: '🇺🇦', name: { lv: 'Ukraina', en: 'Ukraine', ru: 'Украина' } },
+  { flag: '🇦🇺', name: { lv: 'Austrālija', en: 'Australia', ru: 'Австралия' } },
+  { flag: '🇪🇬', name: { lv: 'Ēģipte', en: 'Egypt', ru: 'Египет' } },
+];
+
+// Colors and shapes
+const COLORS = [
+  { hex: '#ef4444', key: 'color_red' },
+  { hex: '#3b82f6', key: 'color_blue' },
+  { hex: '#22c55e', key: 'color_green' },
+  { hex: '#eab308', key: 'color_yellow' },
+  { hex: '#f97316', key: 'color_orange' },
+  { hex: '#a855f7', key: 'color_purple' },
+  { hex: '#ec4899', key: 'color_pink' },
+  { hex: '#92400e', key: 'color_brown' },
+];
+
+const SHAPES = [
+  { svg: '<circle cx="50" cy="50" r="45" fill="#f472b6"/>', key: 'shape_circle' },
+  { svg: '<rect x="10" y="10" width="80" height="80" rx="4" fill="#60a5fa"/>', key: 'shape_square' },
+  { svg: '<polygon points="50,10 90,90 10,90" fill="#facc15"/>', key: 'shape_triangle' },
+  { svg: '<polygon points="50,5 61,38 96,38 68,58 78,92 50,72 22,92 32,58 4,38 39,38" fill="#fbbf24"/>', key: 'shape_star' },
+  { svg: '<path d="M 50 88 C 20 60, 5 40, 20 22 C 30 12, 45 15, 50 30 C 55 15, 70 12, 80 22 C 95 40, 80 60, 50 88 Z" fill="#ef4444"/>', key: 'shape_heart' },
+  { svg: '<polygon points="50,5 95,50 50,95 5,50" fill="#a855f7"/>', key: 'shape_diamond' },
+];
 
 let currentGame = null;
 let gameScore = 0;
@@ -1332,6 +1859,46 @@ function newMemoryQuestion() {
   return { emojis, sequence: seq, isMemory: true };
 }
 
+// ---- GEOGRAPHY ----
+function newGeoQuestion() {
+  const lang = STATE.lang;
+  const correct = pick(COUNTRIES);
+  const others = shuffle(COUNTRIES.filter(c => c !== correct)).slice(0, 3);
+  const options = shuffle([correct, ...others]).map(c => c.name[lang]);
+  return {
+    question: correct.flag,
+    prompt: t('q_which_country'),
+    options,
+    answer: correct.name[lang],
+    isFlag: true,
+  };
+}
+
+// ---- COLORS & SHAPES ----
+function newColorsQuestion() {
+  // Alternate between colors and shapes
+  const isColor = Math.random() < 0.5;
+  if (isColor) {
+    const correct = pick(COLORS);
+    const others = shuffle(COLORS.filter(c => c !== correct)).slice(0, 3);
+    return {
+      swatch: correct.hex,
+      prompt: t('q_which_color'),
+      options: shuffle([correct, ...others]).map(c => t(c.key)),
+      answer: t(correct.key),
+    };
+  } else {
+    const correct = pick(SHAPES);
+    const others = shuffle(SHAPES.filter(s => s !== correct)).slice(0, 3);
+    return {
+      shape: correct.svg,
+      prompt: t('q_which_shape'),
+      options: shuffle([correct, ...others]).map(s => t(s.key)),
+      answer: t(correct.key),
+    };
+  }
+}
+
 // ---- GAME UI ----
 function openGames() {
   currentGame = null;
@@ -1357,11 +1924,15 @@ function startGame(kind) {
 }
 
 function endGame() {
-  // Save stars earned
+  if (!STATE.gameStats) STATE.gameStats = {};
+  if (currentGame && gameScore > 0) {
+    STATE.gameStats[currentGame] = (STATE.gameStats[currentGame] || 0) + gameScore;
+  }
   STATE.stars = (STATE.stars || 0) + gameScore;
   STATE.happy = Math.min(100, STATE.happy + gameScore * 2);
   saveState();
   updateStats();
+  checkAchievements();
   $('total-stars').textContent = STATE.stars;
   $('game-menu').style.display = 'grid';
   $('game-play').style.display = 'none';
@@ -1378,12 +1949,41 @@ function nextQuestion() {
   else if (currentGame === 'riddle') gameData = newRiddleQuestion();
   else if (currentGame === 'anagram') gameData = newAnagramQuestion();
   else if (currentGame === 'memory') gameData = newMemoryQuestion();
+  else if (currentGame === 'geo') gameData = newGeoQuestion();
+  else if (currentGame === 'colors') gameData = newColorsQuestion();
   renderQuestion();
 }
 
 function renderQuestion() {
   const qEl = $('game-question');
   const optsEl = $('game-options');
+  if (gameData.swatch) {
+    qEl.innerHTML = `<div style="font-size:14px;margin-bottom:8px;">${gameData.prompt}</div><div class="color-swatch" style="background:${gameData.swatch}"></div>`;
+    optsEl.className = '';
+    optsEl.innerHTML = gameData.options.map((o, i) => `<button class="opt-btn" data-i="${i}">${o}</button>`).join('');
+    optsEl.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.addEventListener('click', () => checkAnswer(btn, gameData.options[+btn.dataset.i]));
+    });
+    return;
+  }
+  if (gameData.shape) {
+    qEl.innerHTML = `<div style="font-size:14px;margin-bottom:8px;">${gameData.prompt}</div><svg class="shape-svg" viewBox="0 0 100 100">${gameData.shape}</svg>`;
+    optsEl.className = '';
+    optsEl.innerHTML = gameData.options.map((o, i) => `<button class="opt-btn" data-i="${i}">${o}</button>`).join('');
+    optsEl.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.addEventListener('click', () => checkAnswer(btn, gameData.options[+btn.dataset.i]));
+    });
+    return;
+  }
+  if (gameData.isFlag) {
+    qEl.innerHTML = `<div style="font-size:14px;">${gameData.prompt}</div><div style="font-size:80px;line-height:1;">${gameData.question}</div>`;
+    optsEl.className = '';
+    optsEl.innerHTML = gameData.options.map((o, i) => `<button class="opt-btn" data-i="${i}">${o}</button>`).join('');
+    optsEl.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.addEventListener('click', () => checkAnswer(btn, gameData.options[+btn.dataset.i]));
+    });
+    return;
+  }
   if (gameData.isMemory) {
     qEl.textContent = t('watch_sequence');
     optsEl.className = 'memory-grid';
@@ -1417,6 +2017,7 @@ function checkAnswer(btn, chosen) {
   const optsEl = $('game-options');
   optsEl.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
   if (correct) {
+    SFX.correct();
     btn.classList.add('correct');
     $('game-feedback').textContent = t('fb_correct');
     $('game-feedback').className = 'fb-good';
@@ -1424,6 +2025,7 @@ function checkAnswer(btn, chosen) {
     $('game-score').textContent = gameScore;
     animatePet('happy');
   } else {
+    SFX.wrong();
     btn.classList.add('wrong');
     optsEl.querySelectorAll('.opt-btn').forEach(b => {
       if (gameData.options[+b.dataset.i] === gameData.answer) b.classList.add('correct');
@@ -1438,12 +2040,14 @@ function checkTextAnswer() {
   const val = ($('text-ans').value || '').trim().toUpperCase();
   const correct = (val === gameData.answer);
   if (correct) {
+    SFX.correct();
     $('game-feedback').textContent = t('fb_correct');
     $('game-feedback').className = 'fb-good';
     gameScore++;
     $('game-score').textContent = gameScore;
     animatePet('happy');
   } else {
+    SFX.wrong();
     $('game-feedback').textContent = `${t('fb_wrong')} ${gameData.answer}`;
     $('game-feedback').className = 'fb-bad';
   }
@@ -1477,7 +2081,7 @@ function memoryUserClick(e) {
   memoryUserSeq.push(emoji);
   const idx = memoryUserSeq.length - 1;
   if (memoryUserSeq[idx] !== gameData.sequence[idx]) {
-    // wrong
+    SFX.wrong();
     $('game-feedback').textContent = `${t('fb_wrong')} ${gameData.sequence.join(' ')}`;
     $('game-feedback').className = 'fb-bad';
     $('game-options').querySelectorAll('.memory-btn').forEach(b => b.disabled = true);
@@ -1485,6 +2089,7 @@ function memoryUserClick(e) {
     return;
   }
   if (memoryUserSeq.length === gameData.sequence.length) {
+    SFX.correct();
     $('game-feedback').textContent = t('fb_correct');
     $('game-feedback').className = 'fb-good';
     gameScore++;
@@ -1511,8 +2116,10 @@ async function sendMessage(text) {
     addMsg(reply, 'pet');
     speak(reply);
     STATE.happy = Math.min(100, STATE.happy + 3);
+    STATE.chatCount = (STATE.chatCount || 0) + 1;
     updateStats();
     saveState();
+    checkAchievements();
   } catch (e) {
     removeTyping();
     addMsg(t('api_error'), 'system');
@@ -1642,6 +2249,47 @@ function init() {
   });
   $('games-modal').addEventListener('click', (e) => {
     if (e.target === $('games-modal')) { endGame(); closeGames(); }
+  });
+
+  // Achievements
+  $('achievements-btn').addEventListener('click', openAchievements);
+  $('ach-close').addEventListener('click', () => $('ach-modal').classList.remove('open'));
+  $('ach-modal').addEventListener('click', (e) => {
+    if (e.target === $('ach-modal')) $('ach-modal').classList.remove('open');
+  });
+
+  // Parent panel
+  $('parent-btn').addEventListener('click', openParent);
+  $('pin-ok').addEventListener('click', submitPin);
+  $('pin-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') submitPin(); });
+  $('pin-cancel').addEventListener('click', closeParent);
+  $('parent-close').addEventListener('click', closeParent);
+  $('parent-lock-topics').addEventListener('change', (e) => {
+    STATE.strictMode = e.target.checked;
+    saveState();
+  });
+  $('parent-reset').addEventListener('click', () => {
+    if (confirm(t('parent_confirm_reset'))) {
+      const keepPin = STATE.parentPin;
+      const keepChar = STATE.character;
+      const keepLang = STATE.lang;
+      const keepChildName = STATE.childName;
+      const keepChildAge = STATE.childAge;
+      const keepPetName = STATE.petName;
+      const keepApi = STATE.apiKey;
+      localStorage.removeItem('puks_state');
+      Object.assign(STATE, loadState(), {
+        parentPin: keepPin, character: keepChar, lang: keepLang,
+        childName: keepChildName, childAge: keepChildAge, petName: keepPetName,
+        apiKey: keepApi,
+      });
+      saveState();
+      showParentDashboard();
+      updateStats();
+    }
+  });
+  $('parent-modal').addEventListener('click', (e) => {
+    if (e.target === $('parent-modal')) closeParent();
   });
 
   // Chat send
