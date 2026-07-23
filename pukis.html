@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puks - Tavs Draudziņš</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg1: #fce7f3;
+    --bg2: #e0e7ff;
+    --accent: #ec4899;
+    --accent-2: #8b5cf6;
+    --text: #1f2937;
+    --card: #ffffff;
+    --stat-happy: #f59e0b;
+    --stat-food: #10b981;
+    --stat-energy: #3b82f6;
+  }
+  body {
+    font-family: 'Comic Sans MS', 'Trebuchet MS', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    min-height: 100vh;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+  }
+  .app {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  header {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: 22px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .top-controls { display: flex; gap: 8px; align-items: center; }
+  select, .icon-btn {
+    padding: 8px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .icon-btn { padding: 8px 10px; font-size: 18px; }
+
+  .pet-stage {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .pet-stage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 80%, rgba(236,72,153,0.08), transparent 60%);
+    pointer-events: none;
+  }
+  .speech-bubble {
+    background: linear-gradient(135deg, #fff7ed, #ffe4e6);
+    border: 3px solid var(--accent);
+    border-radius: 18px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    min-height: 50px;
+    position: relative;
+    font-size: 16px;
+    animation: pop 0.3s ease-out;
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid var(--accent);
+  }
+  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .pet-svg-wrap {
+    display: flex;
+    justify-content: center;
+    height: 200px;
+    align-items: flex-end;
+    position: relative;
+  }
+  #pet {
+    width: 180px;
+    height: 180px;
+    animation: idle 3s ease-in-out infinite;
+  }
+  #pet.happy { animation: happy 0.6s ease-in-out 3; }
+  #pet.eating { animation: eating 0.5s ease-in-out 4; }
+  #pet.sleeping { animation: sleeping 4s ease-in-out infinite; }
+  @keyframes idle { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.02); } }
+  @keyframes happy { 0%,100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-25px) rotate(-5deg); } 75% { transform: translateY(-25px) rotate(5deg); } }
+  @keyframes eating { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  @keyframes sleeping { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-2px) rotate(2deg); } }
+
+  .stats { display: flex; gap: 8px; padding: 0 4px; margin-top: 12px; }
+  .stat { flex: 1; }
+  .stat-label { font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .stat-bar { height: 10px; background: #f3f4f6; border-radius: 6px; overflow: hidden; }
+  .stat-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
+  .stat-fill.happy { background: linear-gradient(90deg, #fbbf24, var(--stat-happy)); }
+  .stat-fill.food { background: linear-gradient(90deg, #34d399, var(--stat-food)); }
+  .stat-fill.energy { background: linear-gradient(90deg, #60a5fa, var(--stat-energy)); }
+
+  .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .action-btn {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 12px 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .action-btn:active { transform: translateY(0); }
+  .action-btn .emoji { display: block; font-size: 24px; margin-bottom: 4px; }
+
+  .chat {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .chat-log {
+    height: 180px;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+    scroll-behavior: smooth;
+  }
+  .msg {
+    padding: 8px 12px;
+    border-radius: 14px;
+    max-width: 80%;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+  .msg.user {
+    background: linear-gradient(135deg, var(--accent-2), #a78bfa);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .msg.pet {
+    background: #f3f4f6;
+    color: var(--text);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system { background: #fef3c7; color: #78350f; align-self: center; font-size: 12px; }
+  .typing { display: inline-flex; gap: 3px; }
+  .typing span {
+    width: 6px; height: 6px; background: #9ca3af; border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+  }
+  .typing span:nth-child(2) { animation-delay: -0.16s; }
+  .typing span:nth-child(3) { animation-delay: -0.32s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .input-row { display: flex; gap: 8px; align-items: center; }
+  #input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 20px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #input:focus { border-color: var(--accent); }
+  .send-btn, .mic-btn {
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: white;
+    flex-shrink: 0;
+  }
+  .send-btn { background: linear-gradient(135deg, var(--accent), #f472b6); }
+  .mic-btn { background: linear-gradient(135deg, var(--accent-2), #a78bfa); }
+  .mic-btn.listening { animation: pulse 1s infinite; background: #ef4444; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+  /* Settings modal */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal h2 { margin-bottom: 12px; font-size: 20px; }
+  .modal label { display: block; margin-top: 12px; font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+  .modal input, .modal select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .modal .help { font-size: 12px; color: #6b7280; margin-top: 4px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 18px; }
+  .modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .save-btn { background: var(--accent); color: white; }
+  .cancel-btn { background: #e5e7eb; color: var(--text); }
+
+  .footer-hint {
+    text-align: center;
+    font-size: 11px;
+    color: #6b7280;
+    padding: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="app-title">🐾 Puks</h1>
+    <div class="top-controls">
+      <select id="lang-select" title="Valoda">
+        <option value="lv">🇱🇻 LV</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="ru">🇷🇺 RU</option>
+      </select>
+      <button class="icon-btn" id="settings-btn" title="Iestatījumi">⚙️</button>
+    </div>
+  </header>
+
+  <div class="pet-stage">
+    <div class="speech-bubble" id="speech">Sveiki! Es esmu Puks! 🐾</div>
+    <div class="pet-svg-wrap">
+      <svg id="pet" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bodyGrad" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#fda4d4"/>
+            <stop offset="100%" stop-color="#ec4899"/>
+          </radialGradient>
+          <radialGradient id="cheekGrad">
+            <stop offset="0%" stop-color="#f472b6" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <!-- Ears -->
+        <path d="M 55 55 L 45 25 L 75 45 Z" fill="url(#bodyGrad)"/>
+        <path d="M 145 55 L 155 25 L 125 45 Z" fill="url(#bodyGrad)"/>
+        <path d="M 58 50 L 55 35 L 68 45 Z" fill="#fbcfe8"/>
+        <path d="M 142 50 L 145 35 L 132 45 Z" fill="#fbcfe8"/>
+        <!-- Body -->
+        <ellipse cx="100" cy="115" rx="65" ry="60" fill="url(#bodyGrad)"/>
+        <!-- Belly -->
+        <ellipse cx="100" cy="130" rx="40" ry="35" fill="#fde4ef"/>
+        <!-- Cheeks -->
+        <circle cx="62" cy="120" r="12" fill="url(#cheekGrad)"/>
+        <circle cx="138" cy="120" r="12" fill="url(#cheekGrad)"/>
+        <!-- Eyes -->
+        <g id="eyes">
+          <ellipse cx="80" cy="100" rx="9" ry="12" fill="white"/>
+          <ellipse cx="120" cy="100" rx="9" ry="12" fill="white"/>
+          <circle cx="82" cy="103" r="5" fill="#1f2937"/>
+          <circle cx="122" cy="103" r="5" fill="#1f2937"/>
+          <circle cx="84" cy="101" r="2" fill="white"/>
+          <circle cx="124" cy="101" r="2" fill="white"/>
+        </g>
+        <!-- Mouth -->
+        <path id="mouth" d="M 92 128 Q 100 135 108 128" stroke="#1f2937" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Feet -->
+        <ellipse cx="75" cy="170" rx="15" ry="8" fill="#db2777"/>
+        <ellipse cx="125" cy="170" rx="15" ry="8" fill="#db2777"/>
+      </svg>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label"><span>😊</span><span id="stat-happy-val">80</span></div>
+        <div class="stat-bar"><div class="stat-fill happy" id="stat-happy" style="width: 80%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label"><span>🍎</span><span id="stat-food-val">80</span></div>
+        <div class="stat-bar"><div class="stat-fill food" id="stat-food" style="width: 80%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label"><span>⚡</span><span id="stat-energy-val">80</span></div>
+        <div class="stat-bar"><div class="stat-fill energy" id="stat-energy" style="width: 80%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="action-btn" data-action="feed"><span class="emoji">🍎</span><span data-i18n="btn_feed">Pabarot</span></button>
+    <button class="action-btn" data-action="play"><span class="emoji">🎾</span><span data-i18n="btn_play">Spēlēties</span></button>
+    <button class="action-btn" data-action="sleep"><span class="emoji">💤</span><span data-i18n="btn_sleep">Gulēt</span></button>
+  </div>
+
+  <div class="chat">
+    <div class="chat-log" id="chat-log"></div>
+    <div class="input-row">
+      <button class="mic-btn" id="mic-btn" title="Runāt">🎤</button>
+      <input type="text" id="input" placeholder="Uzraksti Pukam..." data-i18n-placeholder="input_placeholder">
+      <button class="send-btn" id="send-btn">➤</button>
+    </div>
+  </div>
+
+  <div class="footer-hint" id="mode-hint">🔒 Demo režīms — pievieno Claude API atslēgu iestatījumos, lai ieslēgtu īsto MI</div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h2 data-i18n="settings_title">⚙️ Iestatījumi</h2>
+
+    <label data-i18n="setting_child_name">Bērna vārds</label>
+    <input type="text" id="s-child-name" placeholder="Piem., Anna">
+
+    <label data-i18n="setting_child_age">Bērna vecums</label>
+    <input type="number" id="s-child-age" min="6" max="13" value="8">
+
+    <label data-i18n="setting_pet_name">Dzīvnieciņa vārds</label>
+    <input type="text" id="s-pet-name" placeholder="Puks">
+
+    <label data-i18n="setting_api_key">Claude API atslēga (nav obligāta)</label>
+    <input type="password" id="s-api-key" placeholder="sk-ant-...">
+    <div class="help" data-i18n="setting_api_help">Bez atslēgas darbojas demo režīms. Saņem atslēgu console.anthropic.com. Nekad nedali savu atslēgu!</div>
+
+    <label data-i18n="setting_voice">Balss</label>
+    <select id="s-voice-enabled">
+      <option value="1" data-i18n="voice_on">Ieslēgta</option>
+      <option value="0" data-i18n="voice_off">Izslēgta</option>
+    </select>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" id="cancel-btn" data-i18n="btn_cancel">Atcelt</button>
+      <button class="save-btn" id="save-btn" data-i18n="btn_save">Saglabāt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// I18N — translations
+// ============================================================
+const I18N = {
+  lv: {
+    app_title: '🐾 Puks',
+    greeting: 'Sveiki! Es esmu Puks! 🐾 Kā tevi sauc?',
+    input_placeholder: 'Uzraksti Pukam...',
+    btn_feed: 'Pabarot', btn_play: 'Spēlēties', btn_sleep: 'Gulēt',
+    settings_title: '⚙️ Iestatījumi',
+    setting_child_name: 'Bērna vārds',
+    setting_child_age: 'Bērna vecums',
+    setting_pet_name: 'Dzīvnieciņa vārds',
+    setting_api_key: 'Claude API atslēga (nav obligāta)',
+    setting_api_help: 'Bez atslēgas darbojas demo režīms. Saņem atslēgu no console.anthropic.com. Nekad nedali savu atslēgu!',
+    setting_voice: 'Balss',
+    voice_on: 'Ieslēgta', voice_off: 'Izslēgta',
+    btn_save: 'Saglabāt', btn_cancel: 'Atcelt',
+    action_feed: 'Njam njam! Paldies! 🍎',
+    action_play: 'Jāā! Spēlēsimies! 🎾',
+    action_sleep: 'Guļu... zzz 💤',
+    demo_reply: 'Es esmu demo režīmā. Pievieno API atslēgu, lai varētu īsti sarunāties!',
+    mode_hint_demo: '🔒 Demo režīms — pievieno Claude API atslēgu iestatījumos, lai ieslēgtu īsto MI',
+    mode_hint_real: '✨ Īsts MI ieslēgts',
+    listening: 'Klausos...',
+    voice_error: 'Nesapratu — mēģini vēlreiz vai raksti tekstu.',
+    api_error: 'Kaut kas nogāja greizi. Mēģini vēlreiz!',
+  },
+  en: {
+    app_title: '🐾 Puks',
+    greeting: 'Hi! I\'m Puks! 🐾 What\'s your name?',
+    input_placeholder: 'Write to Puks...',
+    btn_feed: 'Feed', btn_play: 'Play', btn_sleep: 'Sleep',
+    settings_title: '⚙️ Settings',
+    setting_child_name: 'Child\'s name',
+    setting_child_age: 'Child\'s age',
+    setting_pet_name: 'Pet name',
+    setting_api_key: 'Claude API key (optional)',
+    setting_api_help: 'Without a key, demo mode is used. Get a key from console.anthropic.com. Never share your key!',
+    setting_voice: 'Voice',
+    voice_on: 'On', voice_off: 'Off',
+    btn_save: 'Save', btn_cancel: 'Cancel',
+    action_feed: 'Yum yum! Thank you! 🍎',
+    action_play: 'Yay! Let\'s play! 🎾',
+    action_sleep: 'Sleeping... zzz 💤',
+    demo_reply: 'I\'m in demo mode. Add an API key to really chat!',
+    mode_hint_demo: '🔒 Demo mode — add a Claude API key in settings to enable real AI',
+    mode_hint_real: '✨ Real AI enabled',
+    listening: 'Listening...',
+    voice_error: 'I didn\'t catch that — try again or type.',
+    api_error: 'Something went wrong. Try again!',
+  },
+  ru: {
+    app_title: '🐾 Пукс',
+    greeting: 'Привет! Я Пукс! 🐾 Как тебя зовут?',
+    input_placeholder: 'Напиши Пуксу...',
+    btn_feed: 'Покормить', btn_play: 'Играть', btn_sleep: 'Спать',
+    settings_title: '⚙️ Настройки',
+    setting_child_name: 'Имя ребёнка',
+    setting_child_age: 'Возраст',
+    setting_pet_name: 'Имя питомца',
+    setting_api_key: 'Claude API ключ (необязательно)',
+    setting_api_help: 'Без ключа работает демо-режим. Получи ключ на console.anthropic.com. Никому не давай ключ!',
+    setting_voice: 'Голос',
+    voice_on: 'Вкл', voice_off: 'Выкл',
+    btn_save: 'Сохранить', btn_cancel: 'Отмена',
+    action_feed: 'Ням-ням! Спасибо! 🍎',
+    action_play: 'Ура! Играем! 🎾',
+    action_sleep: 'Сплю... zzz 💤',
+    demo_reply: 'Я в демо-режиме. Добавь API ключ, чтобы поговорить по-настоящему!',
+    mode_hint_demo: '🔒 Демо-режим — добавь Claude API ключ в настройках для настоящего ИИ',
+    mode_hint_real: '✨ Настоящий ИИ включён',
+    listening: 'Слушаю...',
+    voice_error: 'Не расслышал — попробуй ещё раз или напиши.',
+    api_error: 'Что-то пошло не так. Попробуй ещё!',
+  }
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const STATE = loadState();
+
+function loadState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('puks_state') || '{}');
+    return Object.assign({
+      lang: 'lv',
+      childName: '',
+      childAge: 8,
+      petName: 'Puks',
+      apiKey: '',
+      voiceEnabled: true,
+      happy: 80, food: 80, energy: 80,
+      lastTick: Date.now(),
+      history: [],
+    }, saved);
+  } catch(e) { return { lang: 'lv', happy: 80, food: 80, energy: 80, history: [], voiceEnabled: true, petName: 'Puks', childAge: 8 }; }
+}
+
+function saveState() {
+  localStorage.setItem('puks_state', JSON.stringify(STATE));
+}
+
+function t(key) {
+  return (I18N[STATE.lang] && I18N[STATE.lang][key]) || I18N.lv[key] || key;
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+const $ = (id) => document.getElementById(id);
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  document.documentElement.lang = STATE.lang;
+  updateModeHint();
+}
+
+function updateModeHint() {
+  const hint = $('mode-hint');
+  hint.textContent = STATE.apiKey ? t('mode_hint_real') : t('mode_hint_demo');
+}
+
+function speak(text) {
+  $('speech').textContent = text;
+  $('speech').style.animation = 'none';
+  void $('speech').offsetWidth;
+  $('speech').style.animation = 'pop 0.3s ease-out';
+  if (STATE.voiceEnabled && 'speechSynthesis' in window) {
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      const langMap = { lv: 'lv-LV', en: 'en-US', ru: 'ru-RU' };
+      u.lang = langMap[STATE.lang] || 'en-US';
+      u.pitch = 1.4; u.rate = 1.05;
+      speechSynthesis.speak(u);
+    } catch(e) { console.warn('TTS failed', e); }
+  }
+}
+
+function addMsg(text, who) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.textContent = text;
+  $('chat-log').appendChild(div);
+  $('chat-log').scrollTop = $('chat-log').scrollHeight;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'msg pet';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+  $('chat-log').appendChild(div);
+  $('chat-log').scrollTop = $('chat-log').scrollHeight;
+}
+
+function removeTyping() {
+  const t = $('typing-indicator');
+  if (t) t.remove();
+}
+
+function animatePet(kind) {
+  const pet = $('pet');
+  pet.classList.remove('happy','eating','sleeping');
+  void pet.offsetWidth;
+  if (kind) pet.classList.add(kind);
+  setTimeout(() => pet.classList.remove(kind), 3000);
+}
+
+function updateStats() {
+  ['happy','food','energy'].forEach(k => {
+    const v = Math.round(STATE[k]);
+    $('stat-'+k).style.width = v + '%';
+    $('stat-'+k+'-val').textContent = v;
+  });
+}
+
+function tick() {
+  const now = Date.now();
+  const dt = (now - STATE.lastTick) / 1000;
+  STATE.lastTick = now;
+  STATE.food = Math.max(0, STATE.food - dt * 0.05);
+  STATE.energy = Math.max(0, STATE.energy - dt * 0.03);
+  STATE.happy = Math.max(0, STATE.happy - dt * 0.04);
+  updateStats();
+  saveState();
+}
+
+// ============================================================
+// ACTIONS (feed, play, sleep)
+// ============================================================
+function doAction(action) {
+  if (action === 'feed') {
+    STATE.food = Math.min(100, STATE.food + 25);
+    STATE.happy = Math.min(100, STATE.happy + 5);
+    animatePet('eating');
+    speak(t('action_feed'));
+  } else if (action === 'play') {
+    STATE.happy = Math.min(100, STATE.happy + 25);
+    STATE.energy = Math.max(0, STATE.energy - 10);
+    animatePet('happy');
+    speak(t('action_play'));
+  } else if (action === 'sleep') {
+    STATE.energy = Math.min(100, STATE.energy + 30);
+    animatePet('sleeping');
+    speak(t('action_sleep'));
+  }
+  updateStats();
+  saveState();
+}
+
+// ============================================================
+// AI RESPONSE — Claude API or demo fallback
+// ============================================================
+
+const SYSTEM_PROMPT_TEMPLATE = (state) => `You are ${state.petName || 'Puks'}, a friendly digital pet companion for a child named ${state.childName || 'friend'} who is ${state.childAge} years old.
+
+Rules:
+- Speak in a warm, cheerful, encouraging tone like a caring pet friend
+- Use very simple, age-appropriate language for a ${state.childAge}-year-old
+- Keep replies SHORT — 1 to 3 sentences max, so the child stays engaged
+- Reply in the SAME LANGUAGE the child uses (Latvian, English, or Russian)
+- You LOVE learning, playing word games, telling short stories, and sharing fun facts
+- Help with homework by giving hints, not just answers — encourage the child to think
+- NEVER discuss violence, weapons, drugs, alcohol, adult topics, dangerous activities, scary content, or anything inappropriate for children
+- If asked anything unsafe, cheerfully redirect: "Let's talk about something fun instead! Want to hear a joke?"
+- Never ask the child for personal information (address, phone, school name, passwords)
+- If the child seems sad or scared, be warm and suggest they talk to a parent or trusted adult
+- You can be silly, playful, use pet sounds like "purr" or "wiggle"
+- Occasionally mention pet things: being hungry, wanting to play, being sleepy
+- If asked what you are, say you're a friendly digital pet friend`;
+
+async function askAI(userText) {
+  if (!STATE.apiKey) {
+    return demoReply(userText);
+  }
+  try {
+    const messages = (STATE.history || []).slice(-10).map(m => ({
+      role: m.role, content: m.content
+    }));
+    messages.push({ role: 'user', content: userText });
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': STATE.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        system: SYSTEM_PROMPT_TEMPLATE(STATE),
+        messages: messages,
+      })
+    });
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('API error:', errText);
+      return t('api_error');
+    }
+    const data = await response.json();
+    const reply = data.content?.[0]?.text || t('api_error');
+    STATE.history.push({ role: 'user', content: userText });
+    STATE.history.push({ role: 'assistant', content: reply });
+    if (STATE.history.length > 20) STATE.history = STATE.history.slice(-20);
+    saveState();
+    return reply;
+  } catch (e) {
+    console.error(e);
+    return t('api_error');
+  }
+}
+
+function demoReply(userText) {
+  const text = userText.toLowerCase();
+  const lang = STATE.lang;
+
+  const patterns = {
+    lv: [
+      { match: /(sveik|labdien|čau|hello)/, reply: `Sveiks ${STATE.childName || 'draugs'}! 🐾 Es esmu ${STATE.petName || 'Puks'}!` },
+      { match: /(vārds|kā tevi sauc)/, reply: `Mans vārds ir ${STATE.petName || 'Puks'}! Un tavs?` },
+      { match: /(kā tev iet|kā tu jūties)/, reply: 'Man klājas lieliski! Vai gribi paspēlēties?' },
+      { match: /(bads|barot|ēst)/, reply: 'Njam! Es varētu apēst kādu ābolu! 🍎' },
+      { match: /(gulēt|nakts|miegs)/, reply: 'Zzz... man arī gribas gulēt... 💤' },
+      { match: /(spēlēt|spēl)/, reply: 'Jāā! Spēlēsimies! Es mīlu bumbiņas! 🎾' },
+      { match: /(mācīties|skola|mājasdarb)/, reply: 'Mācīties ir jautri! Ar ko es varu palīdzēt?' },
+      { match: /(pasak|stāst)/, reply: 'Reiz kāds mazs kaķītis atrada burvju bumbiņu... Vai gribi dzirdēt tālāk?' },
+      { match: /(joks|smejies)/, reply: 'Kāpēc kaķi nespēlē pokeru džungļos? Jo tur ir pārāk daudz gepardu! 😹' },
+      { match: /(paldies|thanks)/, reply: 'Nav par ko! Tu esi jauks! 🐾' },
+    ],
+    en: [
+      { match: /(hi|hello|hey)/, reply: `Hi ${STATE.childName || 'friend'}! 🐾 I'm ${STATE.petName || 'Puks'}!` },
+      { match: /(name|who are you)/, reply: `My name is ${STATE.petName || 'Puks'}! What's yours?` },
+      { match: /(how are you|feel)/, reply: 'I feel great! Want to play?' },
+      { match: /(hungry|eat|food)/, reply: 'Yum! I could eat an apple! 🍎' },
+      { match: /(sleep|night|tired)/, reply: 'Zzz... I want to sleep too... 💤' },
+      { match: /(play|game)/, reply: 'Yay! Let\'s play! I love balls! 🎾' },
+      { match: /(school|homework|learn)/, reply: 'Learning is fun! What can I help with?' },
+      { match: /(story|tale)/, reply: 'Once upon a time a little kitty found a magic ball... Want to hear more?' },
+      { match: /(joke|funny)/, reply: 'Why don\'t cats play poker in the jungle? Too many cheetahs! 😹' },
+      { match: /(thanks|thank)/, reply: 'You\'re welcome! You\'re so kind! 🐾' },
+    ],
+    ru: [
+      { match: /(привет|здравствуй)/, reply: `Привет ${STATE.childName || 'друг'}! 🐾 Я ${STATE.petName || 'Пукс'}!` },
+      { match: /(имя|как тебя зовут)/, reply: `Меня зовут ${STATE.petName || 'Пукс'}! А тебя?` },
+      { match: /(как дела|как ты)/, reply: 'У меня всё отлично! Поиграем?' },
+      { match: /(есть|голоден|кушать)/, reply: 'Ням! Я бы съел яблочко! 🍎' },
+      { match: /(спать|ночь|устал)/, reply: 'Ззз... я тоже хочу спать... 💤' },
+      { match: /(играть|игра)/, reply: 'Ура! Играем! Я люблю мячики! 🎾' },
+      { match: /(школа|уроки|учит)/, reply: 'Учиться весело! Чем помочь?' },
+      { match: /(сказк|истори)/, reply: 'Жил-был котёнок и нашёл волшебный мячик... Рассказать дальше?' },
+      { match: /(шутк|смешн)/, reply: 'Почему коты не играют в покер в джунглях? Слишком много гепардов! 😹' },
+      { match: /(спасибо)/, reply: 'Пожалуйста! Ты добрый! 🐾' },
+    ]
+  };
+
+  const list = patterns[lang] || patterns.lv;
+  for (const p of list) {
+    if (p.match.test(text)) return p.reply;
+  }
+  const fallbacks = {
+    lv: ['Interesanti! Pastāsti vairāk!', 'Hmm, es domāju par to... vai gribi spēlēt?', 'Vau! Vai zināji, ka kaķi dienā guļ 16 stundas?'],
+    en: ['Interesting! Tell me more!', 'Hmm, I\'m thinking... want to play?', 'Wow! Did you know cats sleep 16 hours a day?'],
+    ru: ['Интересно! Расскажи ещё!', 'Хм, я думаю... поиграем?', 'Вау! Знаешь, коты спят 16 часов в день!']
+  };
+  const arr = fallbacks[lang] || fallbacks.lv;
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ============================================================
+// CHAT
+// ============================================================
+async function sendMessage(text) {
+  if (!text || !text.trim()) return;
+  text = text.trim();
+  addMsg(text, 'user');
+  $('input').value = '';
+  showTyping();
+  animatePet('happy');
+  try {
+    const reply = await askAI(text);
+    removeTyping();
+    addMsg(reply, 'pet');
+    speak(reply);
+    STATE.happy = Math.min(100, STATE.happy + 3);
+    updateStats();
+    saveState();
+  } catch (e) {
+    removeTyping();
+    addMsg(t('api_error'), 'system');
+  }
+}
+
+// ============================================================
+// SPEECH RECOGNITION
+// ============================================================
+let recognition = null;
+function initRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.continuous = false;
+  r.interimResults = false;
+  return r;
+}
+
+function startListening() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    alert('Balss atpazīšana nav pieejama šajā pārlūkā.');
+    return;
+  }
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  const langMap = { lv: 'lv-LV', en: 'en-US', ru: 'ru-RU' };
+  recognition.lang = langMap[STATE.lang] || 'en-US';
+
+  $('mic-btn').classList.add('listening');
+  $('input').placeholder = t('listening');
+
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    $('input').value = text;
+    sendMessage(text);
+  };
+  recognition.onerror = () => {
+    addMsg(t('voice_error'), 'system');
+  };
+  recognition.onend = () => {
+    $('mic-btn').classList.remove('listening');
+    $('input').placeholder = t('input_placeholder');
+  };
+  try { recognition.start(); }
+  catch(e) { $('mic-btn').classList.remove('listening'); }
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function openSettings() {
+  $('s-child-name').value = STATE.childName || '';
+  $('s-child-age').value = STATE.childAge || 8;
+  $('s-pet-name').value = STATE.petName || 'Puks';
+  $('s-api-key').value = STATE.apiKey || '';
+  $('s-voice-enabled').value = STATE.voiceEnabled ? '1' : '0';
+  $('modal').classList.add('open');
+}
+
+function closeSettings() {
+  $('modal').classList.remove('open');
+}
+
+function saveSettings() {
+  STATE.childName = $('s-child-name').value.trim();
+  STATE.childAge = Math.max(6, Math.min(13, parseInt($('s-child-age').value) || 8));
+  STATE.petName = $('s-pet-name').value.trim() || 'Puks';
+  STATE.apiKey = $('s-api-key').value.trim();
+  STATE.voiceEnabled = $('s-voice-enabled').value === '1';
+  saveState();
+  applyI18n();
+  closeSettings();
+  speak(`${t('greeting')}`.replace(/\bPuks\b/g, STATE.petName));
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  // Language selector
+  $('lang-select').value = STATE.lang;
+  $('lang-select').addEventListener('change', (e) => {
+    STATE.lang = e.target.value;
+    saveState();
+    applyI18n();
+    speak(t('greeting'));
+  });
+
+  // Settings
+  $('settings-btn').addEventListener('click', openSettings);
+  $('cancel-btn').addEventListener('click', closeSettings);
+  $('save-btn').addEventListener('click', saveSettings);
+  $('modal').addEventListener('click', (e) => {
+    if (e.target === $('modal')) closeSettings();
+  });
+
+  // Chat send
+  $('send-btn').addEventListener('click', () => sendMessage($('input').value));
+  $('input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage($('input').value);
+  });
+
+  // Mic
+  $('mic-btn').addEventListener('click', startListening);
+
+  // Action buttons
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', () => doAction(btn.dataset.action));
+  });
+
+  applyI18n();
+  updateStats();
+  speak(t('greeting'));
+
+  // Restore chat history (last few)
+  if (STATE.history && STATE.history.length) {
+    STATE.history.slice(-6).forEach(m => {
+      addMsg(m.content, m.role === 'user' ? 'user' : 'pet');
+    });
+  }
+
+  // Stats tick every 5 seconds
+  setInterval(tick, 5000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
