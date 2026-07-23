@@ -314,6 +314,105 @@
   }
   .char-preview svg { width: 100%; height: 100%; }
   .char-name { font-size: 11px; font-weight: bold; margin-top: 2px; }
+
+  /* Games */
+  .game-modal { max-width: 460px; }
+  .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .game-stars { font-size: 16px; font-weight: bold; color: #f59e0b; }
+  #game-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .game-tile {
+    background: linear-gradient(135deg, #fef3c7, #fce7f3);
+    border: 3px solid transparent;
+    border-radius: 16px;
+    padding: 14px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .game-tile:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+  .game-emoji { font-size: 36px; }
+  .game-name { font-weight: bold; font-size: 14px; margin-top: 4px; }
+  .game-desc { font-size: 11px; color: #6b7280; }
+
+  .game-play-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .back-btn { background: #e5e7eb; border: none; padding: 6px 12px; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 13px; }
+  .game-score { font-weight: bold; color: var(--accent-2); }
+  #game-question {
+    background: linear-gradient(135deg, #ddd6fe, #fbcfe8);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #game-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
+  .opt-btn {
+    background: white;
+    border: 3px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .opt-btn:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+  .opt-btn.correct { background: #86efac; border-color: #22c55e; }
+  .opt-btn.wrong { background: #fca5a5; border-color: #ef4444; }
+  #game-feedback {
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    min-height: 24px;
+    padding: 6px;
+  }
+  .fb-good { color: #16a34a; }
+  .fb-bad { color: #dc2626; }
+
+  .memory-btn {
+    aspect-ratio: 1;
+    font-size: 32px;
+    border: 3px solid #e5e7eb;
+    background: white;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .memory-btn:hover { transform: scale(1.05); }
+  .memory-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent-2)); transform: scale(1.15); box-shadow: 0 0 20px rgba(236,72,153,0.6); }
+
+  #game-options.memory-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  #game-options.text-input { display: block; }
+  .text-answer-row { display: flex; gap: 8px; }
+  .text-answer-input {
+    flex: 1;
+    padding: 12px;
+    border: 3px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .text-answer-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+  }
 </style>
 </head>
 <body>
@@ -326,6 +425,7 @@
         <option value="en">🇬🇧 EN</option>
         <option value="ru">🇷🇺 RU</option>
       </select>
+      <button class="icon-btn" id="games-btn" title="Spēles">🎮</button>
       <button class="icon-btn" id="settings-btn" title="Iestatījumi">⚙️</button>
     </div>
   </header>
@@ -421,6 +521,58 @@
   </div>
 </div>
 
+<!-- Games Modal -->
+<div class="modal-backdrop" id="games-modal">
+  <div class="modal game-modal">
+    <div class="game-header">
+      <h2 data-i18n="games_title">🎮 Spēles</h2>
+      <div class="game-stars">⭐ <span id="total-stars">0</span></div>
+    </div>
+
+    <div id="game-menu">
+      <div class="game-tile" data-game="math">
+        <div class="game-emoji">🧮</div>
+        <div class="game-name" data-i18n="game_math">Matemātika</div>
+        <div class="game-desc" data-i18n="game_math_desc">Skaitīsim!</div>
+      </div>
+      <div class="game-tile" data-game="riddle">
+        <div class="game-emoji">🧩</div>
+        <div class="game-name" data-i18n="game_riddle">Mīklas</div>
+        <div class="game-desc" data-i18n="game_riddle_desc">Uzmini!</div>
+      </div>
+      <div class="game-tile" data-game="anagram">
+        <div class="game-emoji">🔤</div>
+        <div class="game-name" data-i18n="game_anagram">Vārdu spēle</div>
+        <div class="game-desc" data-i18n="game_anagram_desc">Sakārto burtus</div>
+      </div>
+      <div class="game-tile" data-game="memory">
+        <div class="game-emoji">🧠</div>
+        <div class="game-name" data-i18n="game_memory">Atmiņa</div>
+        <div class="game-desc" data-i18n="game_memory_desc">Atkārto secību</div>
+      </div>
+      <div class="game-tile" data-game="sequence">
+        <div class="game-emoji">🔢</div>
+        <div class="game-name" data-i18n="game_sequence">Skaitļu virkne</div>
+        <div class="game-desc" data-i18n="game_sequence_desc">Kāds nāk nākamais?</div>
+      </div>
+    </div>
+
+    <div id="game-play" style="display:none;">
+      <div class="game-play-header">
+        <button class="back-btn" id="game-back">← <span data-i18n="btn_back">Atpakaļ</span></button>
+        <div class="game-score"><span data-i18n="score">Punkti</span>: <span id="game-score">0</span></div>
+      </div>
+      <div id="game-question"></div>
+      <div id="game-options"></div>
+      <div id="game-feedback"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" id="games-close" data-i18n="btn_close">Aizvērt</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // I18N — translations
@@ -451,6 +603,21 @@ const I18N = {
     listening: 'Klausos...',
     voice_error: 'Nesapratu — mēģini vēlreiz vai raksti tekstu.',
     api_error: 'Kaut kas nogāja greizi. Mēģini vēlreiz!',
+    games_title: '🎮 Spēles',
+    game_math: 'Matemātika', game_math_desc: 'Skaitīsim!',
+    game_riddle: 'Mīklas', game_riddle_desc: 'Uzmini!',
+    game_anagram: 'Vārdu spēle', game_anagram_desc: 'Sakārto burtus',
+    game_memory: 'Atmiņa', game_memory_desc: 'Atkārto secību',
+    game_sequence: 'Skaitļu virkne', game_sequence_desc: 'Kāds nāk nākamais?',
+    btn_back: 'Atpakaļ', btn_close: 'Aizvērt', btn_check: 'Pārbaudīt',
+    score: 'Punkti',
+    fb_correct: 'Pareizi! Malacis! 🌟',
+    fb_wrong: 'Nepareizi. Pareizā atbilde:',
+    fb_next: 'Nākamais uzdevums...',
+    watch_sequence: 'Skaties secību...',
+    now_repeat: 'Tagad tu atkārto!',
+    unscramble: 'Salikt burtus vārdā:',
+    what_next: 'Kas nāk nākamais?',
   },
   en: {
     app_title: '🐾 Puks',
@@ -477,6 +644,21 @@ const I18N = {
     listening: 'Listening...',
     voice_error: 'I didn\'t catch that — try again or type.',
     api_error: 'Something went wrong. Try again!',
+    games_title: '🎮 Games',
+    game_math: 'Math', game_math_desc: 'Let\'s count!',
+    game_riddle: 'Riddles', game_riddle_desc: 'Guess it!',
+    game_anagram: 'Word game', game_anagram_desc: 'Unscramble letters',
+    game_memory: 'Memory', game_memory_desc: 'Repeat sequence',
+    game_sequence: 'Number sequence', game_sequence_desc: 'What comes next?',
+    btn_back: 'Back', btn_close: 'Close', btn_check: 'Check',
+    score: 'Score',
+    fb_correct: 'Correct! Well done! 🌟',
+    fb_wrong: 'Not quite. The answer:',
+    fb_next: 'Next question...',
+    watch_sequence: 'Watch the sequence...',
+    now_repeat: 'Now you repeat!',
+    unscramble: 'Unscramble the word:',
+    what_next: 'What comes next?',
   },
   ru: {
     app_title: '🐾 Пукс',
@@ -503,6 +685,21 @@ const I18N = {
     listening: 'Слушаю...',
     voice_error: 'Не расслышал — попробуй ещё раз или напиши.',
     api_error: 'Что-то пошло не так. Попробуй ещё!',
+    games_title: '🎮 Игры',
+    game_math: 'Математика', game_math_desc: 'Считаем!',
+    game_riddle: 'Загадки', game_riddle_desc: 'Отгадай!',
+    game_anagram: 'Слова', game_anagram_desc: 'Составь слово',
+    game_memory: 'Память', game_memory_desc: 'Повтори',
+    game_sequence: 'Числа', game_sequence_desc: 'Что дальше?',
+    btn_back: 'Назад', btn_close: 'Закрыть', btn_check: 'Проверить',
+    score: 'Очки',
+    fb_correct: 'Правильно! Молодец! 🌟',
+    fb_wrong: 'Не совсем. Правильный ответ:',
+    fb_next: 'Следующее задание...',
+    watch_sequence: 'Смотри последовательность...',
+    now_repeat: 'Теперь ты!',
+    unscramble: 'Составь слово:',
+    what_next: 'Что дальше?',
   }
 };
 
@@ -720,6 +917,7 @@ function loadState() {
       apiKey: '',
       voiceEnabled: true,
       happy: 80, food: 80, energy: 80,
+      stars: 0,
       lastTick: Date.now(),
       history: [],
     }, saved);
@@ -972,6 +1170,332 @@ function demoReply(userText) {
 }
 
 // ============================================================
+// GAMES
+// ============================================================
+
+// Riddle bank per language
+const RIDDLES = {
+  lv: [
+    { q: 'Kas ir baltā druvā, lec kā zaķīši un koda ābolus?', options: ['Zobi', 'Pele', 'Sniegs', 'Māja'], answer: 0 },
+    { q: 'Nav ne roku, ne kāju, bet visu apbrīno. Kas tas?', options: ['Vējš', 'Māksla', 'Saule', 'Ūdens'], answer: 1 },
+    { q: 'Kļūst mitrāks, kad slauka. Kas tas?', options: ['Ziepes', 'Dvielis', 'Ūdens', 'Spogulis'], answer: 1 },
+    { q: 'Jauns esot garš, vecs esot īss. Kas tas?', options: ['Svece', 'Koks', 'Zieds', 'Bērns'], answer: 0 },
+    { q: 'Ir taustiņi, bet nav durvis. Kas tas?', options: ['Datora klaviatūra', 'Slēdzene', 'Sētsvidus', 'Māja'], answer: 0 },
+    { q: 'Ir galva un aste, bet nav ķermeņa. Kas tas?', options: ['Zivs', 'Monēta', 'Suns', 'Vējš'], answer: 1 },
+    { q: 'Jo vairāk paņem, jo vairāk paliek. Kas tas?', options: ['Ēdiens', 'Pēdas', 'Nauda', 'Laiks'], answer: 1 },
+    { q: 'Ir sejas, bet nekad neguļ. Kas tas?', options: ['Bilde', 'Pulkstenis', 'Vējš', 'Māja'], answer: 1 },
+    { q: 'Vienmēr priekšā tev, bet nekad nevar redzēt. Kas tas?', options: ['Ēna', 'Nākotne', 'Vējš', 'Sapnis'], answer: 1 },
+    { q: 'Vasarā auksts, ziemā silts. Kur es esmu?', options: ['Ledusskapī', 'Krāsnī', 'Zem gultas', 'Mājā'], answer: 3 },
+  ],
+  en: [
+    { q: 'What has hands but cannot clap?', options: ['A tree', 'A clock', 'A book', 'A star'], answer: 1 },
+    { q: 'What gets wetter the more it dries?', options: ['Soap', 'A towel', 'Water', 'Mirror'], answer: 1 },
+    { q: 'I\'m tall when young, short when old. What am I?', options: ['A candle', 'A tree', 'A flower', 'A person'], answer: 0 },
+    { q: 'What has keys but no locks?', options: ['A piano', 'A door', 'A car', 'A house'], answer: 0 },
+    { q: 'What has a head and a tail but no body?', options: ['A fish', 'A coin', 'A snake', 'A dog'], answer: 1 },
+    { q: 'The more you take, the more you leave. What am I?', options: ['Food', 'Footsteps', 'Money', 'Time'], answer: 1 },
+    { q: 'What has a face but never sleeps?', options: ['A picture', 'A clock', 'The wind', 'A house'], answer: 1 },
+    { q: 'Always in front of you but never seen. What is it?', options: ['A shadow', 'The future', 'The wind', 'A dream'], answer: 1 },
+    { q: 'What has to be broken before you can use it?', options: ['A phone', 'An egg', 'A window', 'A rule'], answer: 1 },
+    { q: 'What can travel the world but stays in a corner?', options: ['A stamp', 'A cat', 'Wind', 'A ship'], answer: 0 },
+  ],
+  ru: [
+    { q: 'Что имеет стрелки, но не хлопает?', options: ['Дерево', 'Часы', 'Книга', 'Звезда'], answer: 1 },
+    { q: 'Чем больше сушит — тем мокрее сама. Что это?', options: ['Мыло', 'Полотенце', 'Вода', 'Зеркало'], answer: 1 },
+    { q: 'В молодости высокая, в старости низкая. Что это?', options: ['Свеча', 'Дерево', 'Цветок', 'Человек'], answer: 0 },
+    { q: 'Есть клавиши, но нет замков. Что это?', options: ['Пианино', 'Дверь', 'Машина', 'Дом'], answer: 0 },
+    { q: 'Есть голова и хвост, но нет тела. Что это?', options: ['Рыба', 'Монета', 'Змея', 'Собака'], answer: 1 },
+    { q: 'Чем больше берёшь, тем больше остаётся. Что это?', options: ['Еда', 'Следы', 'Деньги', 'Время'], answer: 1 },
+    { q: 'Есть лицо, но никогда не спит. Что это?', options: ['Картина', 'Часы', 'Ветер', 'Дом'], answer: 1 },
+    { q: 'Всегда перед тобой, но никогда не видно. Что это?', options: ['Тень', 'Будущее', 'Ветер', 'Сон'], answer: 1 },
+    { q: 'Нужно разбить, чтобы использовать. Что это?', options: ['Телефон', 'Яйцо', 'Окно', 'Правило'], answer: 1 },
+    { q: 'Путешествует по миру, но в углу. Что это?', options: ['Марка', 'Кот', 'Ветер', 'Корабль'], answer: 0 },
+  ]
+};
+
+// Words for anagram (short, kid-friendly)
+const WORDS = {
+  lv: ['MĀJA', 'SKOLA', 'PUĶE', 'GRĀMATA', 'SUNS', 'KAĶIS', 'ZIRGS', 'SAULE', 'MĀKONIS', 'ĀBOLS', 'BUMBA', 'MEŽS', 'UPE', 'DĀRZS', 'DRAUGS'],
+  en: ['HOUSE', 'SCHOOL', 'FLOWER', 'BOOK', 'DOG', 'CAT', 'HORSE', 'SUN', 'CLOUD', 'APPLE', 'BALL', 'FOREST', 'RIVER', 'GARDEN', 'FRIEND'],
+  ru: ['ДОМ', 'ШКОЛА', 'ЦВЕТОК', 'КНИГА', 'СОБАКА', 'КОТ', 'ЛОШАДЬ', 'СОЛНЦЕ', 'ОБЛАКО', 'ЯБЛОКО', 'МЯЧ', 'ЛЕС', 'РЕКА', 'САД', 'ДРУГ']
+};
+
+// Memory emojis
+const MEM_EMOJIS = ['🍎','🌟','🎈','🐶','🌸','⚽','🍭','🎨'];
+
+let currentGame = null;
+let gameScore = 0;
+let gameData = null;
+
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ---- MATH ----
+function newMathQuestion() {
+  const age = STATE.childAge || 8;
+  let a, b, op, ans;
+  if (age <= 7) {
+    a = randInt(1, 10); b = randInt(1, 10);
+    op = pick(['+', '-']);
+    if (op === '-' && b > a) [a, b] = [b, a];
+    ans = op === '+' ? a + b : a - b;
+  } else if (age <= 9) {
+    const useMul = Math.random() < 0.3;
+    if (useMul) { a = randInt(2, 5); b = randInt(2, 5); op = '×'; ans = a * b; }
+    else {
+      a = randInt(5, 20); b = randInt(1, 20); op = pick(['+', '-']);
+      if (op === '-' && b > a) [a, b] = [b, a];
+      ans = op === '+' ? a + b : a - b;
+    }
+  } else if (age <= 11) {
+    const r = Math.random();
+    if (r < 0.4) { a = randInt(2, 12); b = randInt(2, 12); op = '×'; ans = a * b; }
+    else if (r < 0.7) { ans = randInt(2, 12); b = randInt(2, 12); a = ans * b; op = '÷'; ans = a / b; }
+    else { a = randInt(10, 50); b = randInt(10, 50); op = pick(['+', '-']); if (op === '-' && b > a) [a, b] = [b, a]; ans = op === '+' ? a + b : a - b; }
+  } else {
+    const r = Math.random();
+    if (r < 0.3) { a = randInt(5, 20); b = randInt(5, 20); op = '×'; ans = a * b; }
+    else if (r < 0.6) { ans = randInt(5, 15); b = randInt(2, 12); a = ans * b; op = '÷'; ans = a / b; }
+    else { a = randInt(20, 100); b = randInt(20, 100); op = pick(['+', '-']); if (op === '-' && b > a) [a, b] = [b, a]; ans = op === '+' ? a + b : a - b; }
+  }
+  const q = `${a} ${op} ${b} = ?`;
+  const options = new Set([ans]);
+  while (options.size < 4) {
+    options.add(ans + randInt(-5, 5) || ans + 1);
+  }
+  return { question: q, options: shuffle([...options]), answer: ans };
+}
+
+// ---- NUMBER SEQUENCE ----
+function newSequenceQuestion() {
+  const type = pick(['arith', 'geom', 'square', 'fib', 'skip']);
+  let seq, ans;
+  if (type === 'arith') {
+    const start = randInt(1, 10), step = randInt(2, 6);
+    seq = [start, start+step, start+2*step, start+3*step, start+4*step];
+    ans = start + 5*step;
+  } else if (type === 'geom') {
+    const start = randInt(1, 3);
+    seq = [start, start*2, start*4, start*8];
+    ans = start*16;
+  } else if (type === 'square') {
+    seq = [1, 4, 9, 16, 25];
+    ans = 36;
+  } else if (type === 'fib') {
+    seq = [1, 1, 2, 3, 5, 8];
+    ans = 13;
+  } else {
+    const start = randInt(2, 5);
+    seq = [start, start*2, start*3, start*4];
+    ans = start*5;
+  }
+  const options = new Set([ans]);
+  while (options.size < 4) {
+    let n = ans + randInt(-6, 6);
+    if (n > 0 && n !== ans) options.add(n);
+  }
+  return { question: seq.join(', ') + ', ?', options: shuffle([...options]), answer: ans };
+}
+
+// ---- RIDDLE ----
+function newRiddleQuestion() {
+  const bank = RIDDLES[STATE.lang] || RIDDLES.lv;
+  const r = pick(bank);
+  return { question: r.q, options: r.options, answer: r.options[r.answer], mcAnswer: r.answer };
+}
+
+// ---- ANAGRAM ----
+function newAnagramQuestion() {
+  const bank = WORDS[STATE.lang] || WORDS.lv;
+  const word = pick(bank);
+  let scrambled = word;
+  while (scrambled === word) {
+    scrambled = shuffle(word.split('')).join('');
+  }
+  return { question: scrambled, answer: word, isText: true };
+}
+
+// ---- MEMORY ----
+function newMemoryQuestion() {
+  const len = Math.min(3 + Math.floor(gameScore / 3), 7);
+  const emojis = shuffle(MEM_EMOJIS).slice(0, 4);
+  const seq = [];
+  for (let i = 0; i < len; i++) seq.push(pick(emojis));
+  return { emojis, sequence: seq, isMemory: true };
+}
+
+// ---- GAME UI ----
+function openGames() {
+  currentGame = null;
+  gameScore = 0;
+  $('total-stars').textContent = STATE.stars || 0;
+  $('game-menu').style.display = 'grid';
+  $('game-play').style.display = 'none';
+  $('games-modal').classList.add('open');
+}
+
+function closeGames() {
+  $('games-modal').classList.remove('open');
+  currentGame = null;
+}
+
+function startGame(kind) {
+  currentGame = kind;
+  gameScore = 0;
+  $('game-menu').style.display = 'none';
+  $('game-play').style.display = 'block';
+  $('game-score').textContent = 0;
+  nextQuestion();
+}
+
+function endGame() {
+  // Save stars earned
+  STATE.stars = (STATE.stars || 0) + gameScore;
+  STATE.happy = Math.min(100, STATE.happy + gameScore * 2);
+  saveState();
+  updateStats();
+  $('total-stars').textContent = STATE.stars;
+  $('game-menu').style.display = 'grid';
+  $('game-play').style.display = 'none';
+  currentGame = null;
+}
+
+function nextQuestion() {
+  $('game-feedback').textContent = '';
+  $('game-feedback').className = '';
+  const opts = $('game-options');
+  opts.className = '';
+  if (currentGame === 'math') gameData = newMathQuestion();
+  else if (currentGame === 'sequence') gameData = newSequenceQuestion();
+  else if (currentGame === 'riddle') gameData = newRiddleQuestion();
+  else if (currentGame === 'anagram') gameData = newAnagramQuestion();
+  else if (currentGame === 'memory') gameData = newMemoryQuestion();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const qEl = $('game-question');
+  const optsEl = $('game-options');
+  if (gameData.isMemory) {
+    qEl.textContent = t('watch_sequence');
+    optsEl.className = 'memory-grid';
+    optsEl.innerHTML = gameData.emojis.map(e => `<button class="memory-btn" data-emoji="${e}">${e}</button>`).join('');
+    // Play the sequence, then let user click
+    playMemorySequence();
+  } else if (gameData.isText) {
+    qEl.innerHTML = `<div style="font-size:14px;">${t('unscramble')}</div><div style="font-size:32px;letter-spacing:8px;margin-top:8px;">${gameData.question}</div>`;
+    optsEl.className = 'text-input';
+    optsEl.innerHTML = `<div class="text-answer-row">
+      <input class="text-answer-input" id="text-ans" maxlength="20" autocomplete="off">
+      <button class="text-answer-btn" id="text-check">${t('btn_check')}</button>
+    </div>`;
+    setTimeout(() => $('text-ans').focus(), 100);
+    $('text-check').addEventListener('click', checkTextAnswer);
+    $('text-ans').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkTextAnswer(); });
+  } else {
+    qEl.textContent = gameData.question;
+    optsEl.className = '';
+    optsEl.innerHTML = gameData.options.map((o, i) => `<button class="opt-btn" data-i="${i}">${o}</button>`).join('');
+    optsEl.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.addEventListener('click', () => checkAnswer(btn, gameData.options[+btn.dataset.i]));
+    });
+  }
+}
+
+function checkAnswer(btn, chosen) {
+  let correct;
+  if (currentGame === 'riddle') correct = (chosen === gameData.answer);
+  else correct = (chosen === gameData.answer);
+  const optsEl = $('game-options');
+  optsEl.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (correct) {
+    btn.classList.add('correct');
+    $('game-feedback').textContent = t('fb_correct');
+    $('game-feedback').className = 'fb-good';
+    gameScore++;
+    $('game-score').textContent = gameScore;
+    animatePet('happy');
+  } else {
+    btn.classList.add('wrong');
+    optsEl.querySelectorAll('.opt-btn').forEach(b => {
+      if (gameData.options[+b.dataset.i] === gameData.answer) b.classList.add('correct');
+    });
+    $('game-feedback').textContent = `${t('fb_wrong')} ${gameData.answer}`;
+    $('game-feedback').className = 'fb-bad';
+  }
+  setTimeout(nextQuestion, 1600);
+}
+
+function checkTextAnswer() {
+  const val = ($('text-ans').value || '').trim().toUpperCase();
+  const correct = (val === gameData.answer);
+  if (correct) {
+    $('game-feedback').textContent = t('fb_correct');
+    $('game-feedback').className = 'fb-good';
+    gameScore++;
+    $('game-score').textContent = gameScore;
+    animatePet('happy');
+  } else {
+    $('game-feedback').textContent = `${t('fb_wrong')} ${gameData.answer}`;
+    $('game-feedback').className = 'fb-bad';
+  }
+  setTimeout(nextQuestion, 1800);
+}
+
+let memoryUserSeq = [];
+async function playMemorySequence() {
+  const opts = $('game-options');
+  opts.querySelectorAll('.memory-btn').forEach(b => b.disabled = true);
+  await new Promise(r => setTimeout(r, 500));
+  for (const emoji of gameData.sequence) {
+    const btn = opts.querySelector(`.memory-btn[data-emoji="${emoji}"]`);
+    btn.classList.add('active');
+    await new Promise(r => setTimeout(r, 600));
+    btn.classList.remove('active');
+    await new Promise(r => setTimeout(r, 200));
+  }
+  $('game-question').textContent = t('now_repeat');
+  opts.querySelectorAll('.memory-btn').forEach(b => {
+    b.disabled = false;
+    b.addEventListener('click', memoryUserClick);
+  });
+  memoryUserSeq = [];
+}
+
+function memoryUserClick(e) {
+  const emoji = e.currentTarget.dataset.emoji;
+  e.currentTarget.classList.add('active');
+  setTimeout(() => e.currentTarget.classList.remove('active'), 250);
+  memoryUserSeq.push(emoji);
+  const idx = memoryUserSeq.length - 1;
+  if (memoryUserSeq[idx] !== gameData.sequence[idx]) {
+    // wrong
+    $('game-feedback').textContent = `${t('fb_wrong')} ${gameData.sequence.join(' ')}`;
+    $('game-feedback').className = 'fb-bad';
+    $('game-options').querySelectorAll('.memory-btn').forEach(b => b.disabled = true);
+    setTimeout(nextQuestion, 2000);
+    return;
+  }
+  if (memoryUserSeq.length === gameData.sequence.length) {
+    $('game-feedback').textContent = t('fb_correct');
+    $('game-feedback').className = 'fb-good';
+    gameScore++;
+    $('game-score').textContent = gameScore;
+    animatePet('happy');
+    $('game-options').querySelectorAll('.memory-btn').forEach(b => b.disabled = true);
+    setTimeout(nextQuestion, 1400);
+  }
+}
+
+// ============================================================
 // CHAT
 // ============================================================
 async function sendMessage(text) {
@@ -1108,6 +1632,17 @@ function init() {
     });
   });
   renderAllPreviews();
+
+  // Games
+  $('games-btn').addEventListener('click', openGames);
+  $('games-close').addEventListener('click', () => { endGame(); closeGames(); });
+  $('game-back').addEventListener('click', endGame);
+  document.querySelectorAll('.game-tile').forEach(el => {
+    el.addEventListener('click', () => startGame(el.dataset.game));
+  });
+  $('games-modal').addEventListener('click', (e) => {
+    if (e.target === $('games-modal')) { endGame(); closeGames(); }
+  });
 
   // Chat send
   $('send-btn').addEventListener('click', () => sendMessage($('input').value));
