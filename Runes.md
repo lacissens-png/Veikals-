@@ -350,211 +350,112 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 ---
 
-# 3. Klases-Specifiskās Rūnas (12)
+# 3. Klases-Specifiskās Rūnas (6)
 
-## 3.1. Bruņinieks
+*2 per klase × 3 klases.*
 
-### #19. **Sardzes Zīme**
+## 3.1. Pirmais Kungs
 
-**Tips:** Klases-specifiska (Bruņinieks)
+### #19. **Dominance Zīme**
+
+**Tips:** Klases-specifiska (Pirmais Kungs)
 **Rarity:** Reta
 
-**Bāzes (Lv 1):** Grēksūdze uzkrāj +10% ātrāk.
-**Max (Lv 21):** Grēksūdze uzkrāj +30% ātrāk + Grēksūdzes Zvans +25% heal.
+**Bāzes (Lv 1):** Dominance uzkrāj +10% ātrāk.
+**Max (Lv 21):** Dominance uzkrāj +35% ātrāk + Dominance Aura ilgums +5s.
 
-**Slieksnis:** Ja rādiusā ir Barveža mezgls, Sūkšņi ap tevi +15% dmg.
+**Slieksnis:** Ja rādiusā ir Barveža mezgls, tavu minjonu bonuss no auras vēl +15%.
 
-**Drop:** Bīskaps Ansels (Bruņinieka klases boss) — pirmreizējs kill.
+**Drop:** Sardzes Kapteinis Bornlejs (Pirmā Kunga klases boss) — pirmreizējs kill.
 
-**Ieteicamie buildi:** Bruņinieks visi 3 buildi.
+**Ieteicamie buildi:** Pirmais Kungs visi 3 buildi.
 
 ---
 
-### #20. **Krusta Kronis**
+### #20. **Kunga Kronis**
 
-**Tips:** Klases-specifiska (Bruņinieks)
+**Tips:** Klases-specifiska (Pirmais Kungs)
 **Rarity:** Leg (leģendāra)
 
-**Bāzes (Lv 1):** Zvana prasmes (Krusta Zvans, Grēksūdzes Zvans, Melnais Zvans) +10% dmg un +5% AoE radius.
-**Max (Lv 21):** Zvana prasmes +40% dmg un +25% AoE radius + cooldown -15%.
+**Bāzes (Lv 1):** Master's Call cooldown -10%, aura efekts +5%.
+**Max (Lv 21):** Master's Call cooldown -30%, aura efekts +25%, Kunga Zvana cooldown -20%.
 
-**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Krustnesis", Zvana prasmes atkārtojas 1× (2× vietā 1×).
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Meistars pāri Visiem Kronis", aura pastāvīga (bezgalīga uptime).
 
-**Drop:** Murgu Dungeon "Kritušā Ordeņa Kripta" (Debesu Virsotnes reģions) T40+.
+**Drop:** Murgu Dungeon "Meistara Kripta" (Melnais Tornis reģions) T40+.
 
-**Ieteicamie buildi:** Bruņinieks Falangas Tank, Bruņinieks Heal-Tank.
+**Ieteicamie buildi:** Meistars pāri Visiem, Kunga Impērija.
 
 ---
 
-## 3.2. Berserker
+## 3.2. Otrs Kungs
 
-### #21. **Trakuma Zīme**
+### #21. **Impērijas Zīme**
 
-**Tips:** Klases-specifiska (Berserker)
+**Tips:** Klases-specifiska (Otrs Kungs)
 **Rarity:** Reta
 
-**Bāzes (Lv 1):** Rage uzkrāj +15% ātrāk.
-**Max (Lv 21):** Rage uzkrāj +40% ātrāk + Rage nekad neizzūd cīņā.
+**Bāzes (Lv 1):** Impēriskā Dusma uzkrāj +15% ātrāk.
+**Max (Lv 21):** Impēriskā Dusma uzkrāj +40% ātrāk + Impēriskā Dusma nekad neizzūd cīņā.
 
-**Slieksnis:** Ja rādiusā ir Nolādēts mezgls, tavas prasmes zem 30% HP dubultā dmg.
+**Slieksnis:** Ja rādiusā ir Nolādēts mezgls, tavas prasmes pret "gaišajiem" ordeņiem +25% dmg.
 
-**Drop:** Karagalvenis Talos (Berserker klases boss) — pirmreizējs kill.
+**Drop:** Emperors Solariuss (Otrā Kunga klases boss) — pirmreizējs kill.
 
-**Ieteicamie buildi:** Berserker visi 3 buildi.
+**Ieteicamie buildi:** Otrs Kungs visi 3 buildi.
 
 ---
 
-### #22. **Arēnas Solis**
+### #22. **Nordbergas Solis**
 
-**Tips:** Klases-specifiska (Berserker)
+**Tips:** Klases-specifiska (Otrs Kungs)
 **Rarity:** Leg (leģendāra)
 
-**Bāzes (Lv 1):** Dual-wield AS +10%.
-**Max (Lv 21):** Dual-wield AS +30% + katrs 3. sitiens ir garantēts crit.
+**Bāzes (Lv 1):** Sūkšņi + Zilspāri sinerģijas bonuss +10%.
+**Max (Lv 21):** Sūkšņi + Zilspāri sinerģijas bonuss +30% + kad melee un spell hit 0.5s laikā, tava nākošā prasme bezmaksas.
 
-**Slieksnis:** Ja rādiusā ir 5+ Vek mezgli, Vēja Vējš teleporte cooldown -50%.
+**Slieksnis:** Ja rādiusā ir 5+ Prāta mezgli, Melnās Zibenis chain +3 lēcieni papildu.
 
-**Drop:** Murgu "Trīs Tūkstoš Deviņi" (Asins Arēna reģions) T40+.
+**Drop:** Murgu "Nordbergas Cietoksnis" (Nordberga reģions) T40+.
 
-**Ieteicamie buildi:** Berserker Dual-Wield DPS.
+**Ieteicamie buildi:** Hybrid Balance (kritiskā), Permanent Empress.
 
 ---
 
-## 3.3. Alkas Kungs
+## 3.3. Vecais Burvis
 
-### #23. **Alkas Vaids**
+### #23. **Realitātes Zīme**
 
-**Tips:** Klases-specifiska (Alkas Kungs)
+**Tips:** Klases-specifiska (Vecais Burvis)
 **Rarity:** Reta
 
-**Bāzes (Lv 1):** Zelta drop +15%.
-**Max (Lv 21):** Zelta drop +50% + zelta uzkrāšana par nāvēm +20 per kill.
+**Bāzes (Lv 1):** Reality Rift ilgums +2s + Ark. Enerģija patēriņš -10%.
+**Max (Lv 21):** Reality Rift ilgums +8s + Ark. Enerģija patēriņš -35%.
 
-**Slieksnis:** Ja rādiusā ir 5+ Ļaunums mezgli, tavas prasmes patērē 25% mazāk zelta.
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls, Reality Rift laikā tavas prasmes triple dmg (nevis 2×).
 
-**Drop:** Vecais Goldo (Alkas Kunga klases boss) — pirmreizējs kill.
+**Drop:** Vecākais Māceklis Selriss (Vecā Burvja klases boss) — pirmreizējs kill.
 
-**Ieteicamie buildi:** Alkas Kungs visi 3 buildi.
+**Ieteicamie buildi:** Realitātes Karaļvalsts (kritiskā), Torņa Ass.
 
 ---
 
-### #24. **Zelta Māls**
+### #24. **Torņa Vaids**
 
-**Tips:** Klases-specifiska (Alkas Kungs)
+**Tips:** Klases-specifiska (Vecais Burvis)
 **Rarity:** Leg (leģendāra)
 
-**Bāzes (Lv 1):** Konstrukti (Ķērājs Golems, Rāceles Ķērājs) +15% dmg.
-**Max (Lv 21):** Konstrukti +50% dmg + +50% HP + eksplozija nāves gadījumā +100% weap.
+**Bāzes (Lv 1):** Zilspāri spell power +25% papildu (kopā ×3.5 baseline).
+**Max (Lv 21):** Zilspāri spell power +75% papildu (kopā ×4.5) + Zilspāri max +2.
 
-**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Vecā Goldo Mantinieks", 3 konstrukti max vietā 1.
+**Slieksnis:** Ja rādiusā ir 5+ Prāta mezgli, Zilspāri var attālināti ceļ skeletus no jebkuriem līķiem.
 
-**Drop:** Murgu "Zelta Cietoksnis" (Zelta Raktuves) T50+.
+**Drop:** Murgu "Torņa Šūpuļa" (Vecais Tornis reģions) T40+.
 
-**Ieteicamie buildi:** Alkas Kungs Golemu Kalts.
-
----
-
-## 3.4. Mežonis Kungs
-
-### #25. **Zvēras Zīme**
-
-**Tips:** Klases-specifiska (Mežonis Kungs)
-**Rarity:** Reta
-
-**Bāzes (Lv 1):** Vilka Āda ilgums +2s.
-**Max (Lv 21):** Vilka Āda ilgums +8s + Vilka Ādā melee dmg +25%.
-
-**Slieksnis:** Ja rādiusā ir 5+ Ļaunums mezgli, Vilka Ādā ienaidnieku dropo līķi paliek 2× ilgāk (nekromantijas sinerģija).
-
-**Drop:** Ninhera (Mežoņa Kunga klases boss) — pirmreizējs kill.
-
-**Ieteicamie buildi:** Mežonis Beast Melee, Mežonis Zone Control.
+**Ieteicamie buildi:** Zilspāri Storm, Realitātes Karaļvalsts.
 
 ---
 
-### #26. **Puves Vaids**
-
-**Tips:** Klases-specifiska (Mežonis Kungs)
-**Rarity:** Leg (leģendāra)
-
-**Bāzes (Lv 1):** DoT spread pieauguma dmg +20%.
-**Max (Lv 21):** DoT spread pieauguma dmg +80% + kad DoT nogalinā, spread uz +2 papildu ienaidniekiem.
-
-**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Puve Nekad Nemirst Kronis", spread iet uz visiem ienaidniekiem 20m rādiusā.
-
-**Drop:** Murgu "Elfu Karalienes Vārti" (Puvušais Mežs) T40+.
-
-**Ieteicamie buildi:** Mežonis DoT Spam.
-
----
-
-## 3.5. Bezēnu Zaglis
-
-### #27. **Naktsāda Zīme**
-
-**Tips:** Klases-specifiska (Bezēnu Zaglis)
-**Rarity:** Reta
-
-**Bāzes (Lv 1):** Naktsāda Ēna izmaksa -15%.
-**Max (Lv 21):** Naktsāda Ēna izmaksa -50% + Naktsāda ilgums +3s.
-
-**Slieksnis:** Ja rādiusā ir 5+ Vek mezgli, Naktsāda dubultā charges reizē (2× vietā 1×).
-
-**Drop:** Vezirs (Zagļa klases boss) — pirmreizējs kill.
-
-**Ieteicamie buildi:** Bezēnu Zaglis Permanent Invis (kritiskā), pārējie 2 buildi arī noderīgi.
-
----
-
-### #28. **Aizmugures Kronis**
-
-**Tips:** Klases-specifiska (Bezēnu Zaglis)
-**Rarity:** Leg (leģendāra)
-
-**Bāzes (Lv 1):** Backstab dmg +20%.
-**Max (Lv 21):** Backstab dmg +70% + backstab garantēts crit.
-
-**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Ēnas Skūpsts", visi tavi hiti no invisibility ir backstab (arī no priekšas).
-
-**Drop:** Murgu "Bezēnu Karaļvalsts" (Tuksneša Bāzars) T40+.
-
-**Ieteicamie buildi:** Zaglis visi 3 buildi.
-
----
-
-## 3.6. Vientuļais Sniegurgs
-
-### #29. **Torņa Zīme**
-
-**Tips:** Klases-specifiska (Vientuļais Sniegurgs)
-**Rarity:** Reta
-
-**Bāzes (Lv 1):** Torņa Redzējums patēriņš -15%.
-**Max (Lv 21):** Torņa Redzējums patēriņš -50% + ilgums +5s.
-
-**Slieksnis:** Ja rādiusā ir Leģendārais mezgls, Torņa Redzējums prasme dmg +50%.
-
-**Drop:** Ievas Turaņa (Sniegurga klases boss) — pirmreizējs kill.
-
-**Ieteicamie buildi:** Sniegurgs Torņa Redzējums (kritiskā), Freeze Nuke.
-
----
-
-### #30. **Skeleta Vaids**
-
-**Tips:** Klases-specifiska (Vientuļais Sniegurgs)
-**Rarity:** Leg (leģendāra)
-
-**Bāzes (Lv 1):** Skeletu max +1.
-**Max (Lv 21):** Skeletu max +5 + skeleti +40% HP.
-
-**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Sasala Kronis Kronis", skeleti sasaldē mērķi ar katru sitienu.
-
-**Drop:** Murgu "Skeletu Torņa" (Ledus Kroņi) T40+.
-
-**Ieteicamie buildi:** Sniegurgs Skeletu Karaļvalsts.
-
----
 
 # 4. Rūnu ieteikumi pa buildiem
 

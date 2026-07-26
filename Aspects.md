@@ -1,6 +1,6 @@
 # Aspektu Katalogs
 
-*80 Aspektu pilna specifikācija — mehānika, drop avoti, ideālie buildi, broken potenciāls.*
+*56 Aspektu pilna specifikācija (32 universāli + 24 klases-specifiski) — mehānika, drop avoti, ideālie buildi, broken potenciāls.*
 
 Pamata Aspektu mehānika — skat. `GameDesignDocument.md` §8.5.
 
@@ -254,317 +254,165 @@ Amulets un Gredzeni ir **universāli** — jebkurš tips.
 
 ---
 
-# 3. Klases-Specifiskie Aspekti (48)
+# 3. Klases-Specifiskie Aspekti (24)
 
-## 3.1. Bruņinieks (8)
+*8 per klase × 3 klases = 24 kopā.*
 
-### #33. **Krusta Karogs**
-*Bruņinieks · Ieroči · Multiplicative · ★★★★☆*
-> Krusta Zvans radius **+[30-60%]**, dmg **×[+15-25%]**.
-- Kodekss: Kritušā Ordeņa Kripta (Debesu Virsotne, Murgu T40+)
-- Builds: visi Bruņinieks buildi
+## 3.1. Pirmais Kungs (8)
 
-### #34. **Falangas Ābece**
-*Bruņinieks · Rumpis · Transformation · ★★★★★*
-> Sūkšņu pastāvība 2× (mirst uz pusi retāk).
+### #33. **Meistara Karogs**
+*Pirmais Kungs · Ieroči · Multiplicative · ★★★★☆*
+> Master's Call reset cooldown, ja **kill** notiek **3s** laikā pēc izmantošanas.
+- Kodekss: Kritušā Ordeņa Kripta (Melnais Tornis)
+- Builds: Meistars pāri Visiem (kritiski)
+
+### #34. **Kunga Sirds**
+*Pirmais Kungs · Amulets · Additive · ★★★★☆*
+> Dominance uzkrāj **+[20-40%]** no minjonu kills.
+- Kodekss: Kunga Sirds Kripta (Melnais Tornis)
+- Builds: visi 3 buildi
+
+### #35. **Ceturto Kroni**
+*Pirmais Kungs · Amulets · Multiplicative · ★★★★★*
+> Kad grupā ir vismaz 5 minjoni no visiem 4 tipiem, tu iegūsti **×[+20-35%]** dmg pastāvīgi.
 - Reliktu-only
-- Builds: Falangas Tank (kritiski)
+- Builds: Meistars pāri Visiem, Kunga Impērija (kritiski)
 
-### #35. **Zvana Atbalss**
-*Bruņinieks · Ieroči · Proc · ★★★★☆*
-> Vairoga Sitiens hit **3** mērķus, katrs ģenerē **[3-6]** Grēksūdzi.
-- Kodekss: Zvana Sirds Kripta (Debesu Virsotne)
-- Builds: Heal-Tank (resurs generation)
-
-### #36. **Kritušā Ordeņa Karogs**
-*Bruņinieks · Amulets · Multiplicative · ★★★★★*
-> Kad tu block ar vairogu, minjoni tuvāk 8m **×[+20-35%]** dmg **3s**.
-- Kodekss: Ordeņa Karogs Kripta (Debesu Virsotne)
-- Builds: Falangas Tank (kritiski)
-
-### #37. **Grēksūdzes Piespriedu**
-*Bruņinieks · Rokas · Additive · ★★★☆☆*
-> Kad tu blockē, **+[3-6]** Grēksūdze papildu.
-- Kodekss: Bīskapa Roku Kripta (Debesu Virsotne)
-- Builds: Heal-Tank
-
-### #38. **Nemirstīgā Zvana**
-*Bruņinieks · Amulets · Proc · ★★★★★*
-> Kad HP zem **25%**, Grēksūdzes Zvans auto-trigers 1× per cīņa (bezmaksas).
-- Reliktu-only
-- Builds: Heal-Tank (kritiski)
-
-### #39. **Katedrāles Vēls**
-*Bruņinieks · Rumpis · Multiplicative · ★★★☆☆*
-> Barrier dod **[15-25%]** papildu HP heal, kad izzūd.
-- Kodekss: Katedrāles Kripta (Debesu Virsotne)
-- Builds: Heal-Tank
-
-### #40. **Zvana Sprādzien**
-*Bruņinieks · Ieroči · Transformation · ★★★★☆*
-> Zvana Metiens eksplodē pret **3** tuvākajiem mērķiem (AoE mainīgums).
-- Kodekss: Uguns Zvana Kripta (Debesu Virsotne)
-- Builds: Zvana Uguns Hibrīds
-
----
-
-## 3.2. Berserker (8)
-
-### #41. **Vēja Ceļš**
-*Berserker · Ieroči · Proc · ★★★★☆*
-> Vēja Vējš dod **+[35-50%]** AS **4s** pēc izmantošanas.
-- Kodekss: Vēju Māja (Asins Arēna)
-- Builds: Dual-Wield DPS
-
-### #42. **Divu Krāsu Asmeņi**
-*Berserker · Ieroči · Multiplicative · ★★★★★*
-> Otrs sitiens combo (Divu Zobenu Deja) dubultā dmg (ne 60%, bet 120% weap).
-- Reliktu-only
-- Builds: Dual-Wield DPS (kritiski)
-
-### #43. **Asins Ātruma**
-*Berserker · Amulets · Multiplicative · ★★★★☆*
-> Ja tev virs **80** Rage, AS **×[+15-25%]**.
-- Kodekss: Asins Kripta (Asins Arēna)
+### #36. **Aura Māc**
+*Pirmais Kungs · Rumpis · Additive · ★★★☆☆*
+> Dominance Aura ilgums **+[3-6s]** (kopā 18-21s).
+- Kodekss: Aura Kripta (Melnais Tornis)
 - Builds: visi
 
-### #44. **Neapstādināmais**
-*Berserker · Ķivere · Transformation · ★★★★☆*
-> Asins Trakuma defensive penalty samazināts uz **-[15-20%]** (bija -50%).
-- Kodekss: Trakuma Sirds Kripta (Asins Arēna)
-- Builds: Dual-Wield DPS, Rage-Sustain
+### #37. **Kunga Vairogs**
+*Pirmais Kungs · Vairogs/Rumpis · Proc · ★★★★☆*
+> Kad minjons mirst tuvāk 5m, tu iegūsti barjeru = **[3-6%]** max HP.
+- Kodekss: Vairoga Kripta (Melnais Tornis)
+- Builds: Sardzes Zvērests (kritiski)
 
-### #45. **Karoga Sirds**
-*Berserker · Amulets · Additive · ★★★☆☆*
-> Kliedziena Signāls dod **+[15-25%]** DR grupai **6s**.
-- Kodekss: Karoga Kripta (Asins Arēna)
-- Builds: Armijas Kliedzējs, grupas kontenta
+### #38. **Dominance Karogs**
+*Pirmais Kungs · Ieroči · Additive · ★★★☆☆*
+> Domination Wave radius **+[30-50%]**.
+- Kodekss: Domination Kripta (Melnais Tornis)
+- Builds: Kunga Impērija
 
-### #46. **Trakuma Katlaputiņa**
-*Berserker · Ieroči · Multiplicative · ★★★★★*
-> Kad Rage max, **+[20-40%]** overpower dmg. Iesaistīts broken build combos.
+### #39. **Universālais Kalts**
+*Pirmais Kungs · Amulets · Multiplicative · ★★★★★*
+> Visu 4 tipu aurā bonuss vēl **×[+10-20%]** pastāvīgi.
 - Reliktu-only
-- Builds: Rage-Sustain (broken combo)
+- Builds: Meistars pāri Visiem, Kunga Impērija
 
-### #47. **Kliedziena Vējš**
-*Berserker · Amulets · Additive · ★★★★☆*
-> Kara Kliedziens cooldown **-[35-50%]**.
-- Kodekss: Kliedziena Kripta (Asins Arēna)
-- Builds: Armijas Kliedzējs
-
-### #48. **Karaļa Zvans**
-*Berserker · Amulets · Additive · ★★★☆☆*
-> Visi minjoni ap tevi **+[10-20%]** max life.
-- Kodekss: Karaļa Māja (Asins Arēna)
-- Builds: Armijas Kliedzējs
-
----
-
-## 3.3. Alkas Kungs (8)
-
-### #49. **Bagātā Sirds**
-*Alkas Kungs · Ieroči · Transformation · ★★★★★*
-> Zelta Lietus monētas ranged dubultā (30m vietā 15m); jo vairāk zelts zemē, jo lielāks tavs dmg.
-- Reliktu-only
-- Builds: Projectile Spam (kritiski)
-
-### #50. **Alkas Aura**
-*Alkas Kungs · Amulets · Multiplicative · ★★★★☆*
-> Alkas Zvana buff dubultā ilgums (**30s** vietā 15s).
-- Kodekss: Zvana Kripta (Zelta Raktuves)
+### #40. **Kunga Zvana Māc**
+*Pirmais Kungs · Ieroči · Additive · ★★★★☆*
+> Kunga Zvana ilgums **+[3-6s]** un cooldown **-[15-30%]**.
+- Kodekss: Zvana Kripta (Melnais Tornis)
 - Builds: visi
 
-### #51. **Monētu Sirds**
-*Alkas Kungs · Josta · Utility · ★★★☆☆*
-> Zelts pastāv uz zemes **2× ilgāk** pirms izzūd.
-- Kodekss: Monētu Kripta (Zelta Raktuves)
-- Builds: Projectile Spam (sinerģē ar Bagātā Sirds)
+---
 
-### #52. **Sausās Sirds**
-*Alkas Kungs · Ķivere · Multiplicative · ★★★★★*
-> Sausā Sirds patēriņš vēl **-[20-40%]** (kopā ar keystone = 20 zelta/sec).
+## 3.2. Otrs Kungs (8)
+
+### #41. **Nordbergas Karogs**
+*Otrs Kungs · Rumpis · Multiplicative · ★★★★☆*
+> Sūkšņi + Zilspāri afinitāte vēl **×[+15-25%]**.
+- Kodekss: Nordbergas Kripta (Nordberga Impērija)
+- Builds: Hybrid Balance (kritiski)
+
+### #42. **Impērijas Vaids**
+*Otrs Kungs · Amulets · Multiplicative · ★★★★☆*
+> Impēriskā Dusma uzkrāj **×3** pret "gaisajiem" ordeņiem (paladīni, mūki).
+- Kodekss: Impērijas Kripta (Nordberga)
+- Builds: visi (feed ult uptime)
+
+### #43. **Divu Rokas Kronis**
+*Otrs Kungs · Ieroči · Multiplicative · ★★★★★*
+> Kad melee un spell hit **0.5s** laikā, **×[+60-100%]** dmg **3s**.
 - Reliktu-only
-- Builds: Ekonomika (kritiski)
+- Builds: Hybrid Balance (kritiski)
 
-### #53. **Zelta Sirdsdedzis**
-*Alkas Kungs · Amulets · Proc · ★★★★☆*
-> Pie **0 zelta**, Sausā Sirds automātiski aktīvs **5s** bezmaksas.
-- Kodekss: Bezcelis Kripta (Zelta Raktuves)
-- Builds: Ekonomika (emergency oh-shit button)
+### #44. **Melnās Zibens Kronis**
+*Otrs Kungs · Ieroči · Additive · ★★★★★*
+> Melnās Zibenis chain lec **+[3-5]** mērķiem papildu.
+- Kodekss: Zibens Kripta (Nordberga)
+- Builds: Chain Lightning (kritiski)
 
-### #54. **Alkas Zvana Kronis**
-*Alkas Kungs · Amulets · Additive · ★★★☆☆*
-> Alkas Zvans arī uzkrāj Zelta **[300-500]/sec** **15s**.
-- Kodekss: Alkas Kripta (Zelta Raktuves)
-- Builds: Ekonomika (feeds Sausā Sirds)
+### #45. **Impērisks Vairogs**
+*Otrs Kungs · Rumpis · Multiplicative · ★★★★☆*
+> Impērija Vaidēs formā DR **+[20-35%]**.
+- Kodekss: Impērija Vairoga Kripta (Nordberga)
+- Builds: Permanent Empress (kritiski)
 
-### #55. **Divi Golemi**
-*Alkas Kungs · Ieroči · Transformation · ★★★★★*
-> Rāceles Ķērājs sauc **2** vienlaikus (nevis 1).
-- Kodekss: Konstrukta Kripta (Zelta Raktuves, Murgu T50+)
-- Builds: Golemu Kalts (kritiski)
+### #46. **Peldošā Sirds**
+*Otrs Kungs · Zābaki · Transformation · ★★★★☆*
+> Peldošā formā tu esi imunī pret melee attacks.
+- Kodekss: Peldošā Kripta (Nordberga)
+- Builds: Permanent Empress
 
-### #56. **Metāla Kāzas**
-*Alkas Kungs · Amulets · Transformation · ★★★★☆*
-> Golemi apstāj tevi kā vairogus (agro magnēts) — DR **+[20-35%]** ja Golems tuvāk 3m.
-- Kodekss: Kāzu Kripta (Zelta Raktuves)
-- Builds: Golemu Kalts
+### #47. **Impēriskā Sirds**
+*Otrs Kungs · Amulets · Multiplicative · ★★★★★*
+> Peldošā formā spells triple dmg (nevis 2×).
+- Reliktu-only
+- Builds: Permanent Empress (broken potenciāls ekstrēms)
+
+### #48. **Zibens Kalts**
+*Otrs Kungs · Ieroči · Multiplicative · ★★★★☆*
+> Chain lightning lēciens **+[30-50%]** dmg per hop (nevis -20%).
+- Kodekss: Zibens Kalts Kripta (Nordberga)
+- Builds: Chain Lightning
 
 ---
 
-## 3.4. Mežonis Kungs (8)
+## 3.3. Vecais Burvis (8)
 
-### #57. **Puves Migla Aspekts**
-*Mežonis · Ieroči · Additive · ★★★★☆*
-> Puvusī Migla radius **+[20-35%]**.
-- Kodekss: Puves Migla Kripta (Puvušais Mežs, Murgu T30+)
-- Builds: DoT Spam, Zone Control
-
-### #58. **Puves Karogs**
-*Mežonis · Amulets · Transformation · ★★★★★*
-> DoT stack cap **5 → 8**.
-- Kodekss: Karogs Kripta (Puvušais Mežs)
-- Builds: DoT Spam (kritiski)
-
-### #59. **Ērceles Ceļš**
-*Mežonis · Ieroči · Additive · ★★★☆☆*
-> Ērceles Sitiens uzliek **2** poison stackus vietā 1.
-- Kodekss: Ērceles Kripta (Puvušais Mežs)
-- Builds: DoT Spam
-
-### #60. **Zvēra Ceļš**
-*Mežonis · Zābaki · Multiplicative · ★★★★☆*
-> Vilka Ādā MS **+[70-100%]** (10m vietā 8m per second).
-- Kodekss: Zvēra Kripta (Puvušais Mežs)
-- Builds: Beast Melee
-
-### #61. **Lāca Sīvība**
-*Mežonis · Ieroči · Multiplicative · ★★★★★*
-> Vilka Ādā melee dmg vēl **×[+15-25%]**.
-- Kodekss: Lāca Sirds Kripta (Ledus Kroņi)
-- Builds: Beast Melee (kritiski)
-
-### #62. **Neapstādināmais Zvērs**
-*Mežonis · Ķivere · Transformation · ★★★★☆*
-> Vilka Ādā imunī pret roots/stuns.
-- Kodekss: Zvēra Kronis Kripta (Puvušais Mežs)
-- Builds: Beast Melee (QoL, kritiskās situācijās)
-
-### #63. **Sakņu Karogs**
-*Mežonis · Amulets · Additive · ★★★★☆*
-> Sakņu Kroņa radius vēl **+[2-3]m** (13-14m ar keystone).
-- Kodekss: Sakņu Kripta (Puvušais Mežs)
-- Builds: Zone Control (kritiski)
-
-### #64. **Aizmirsta Zeme**
-*Mežonis · Gredzens · Multiplicative · ★★★★☆*
-> Ienaidnieki Sakņu Kroņā **-[15-25%]** MS papildu.
-- Kodekss: Aizmirsta Kripta (Puvušais Mežs)
-- Builds: Zone Control
-
----
-
-## 3.5. Bezēnu Zaglis (8)
-
-### #65. **Divu Soļu Karogs**
-*Zaglis · Amulets · Transformation · ★★★★★*
-> Ēnu Solis charges **+1** (2 → 3 ar keystone).
+### #49. **Realitātes Karogs**
+*Vecais Burvis · Ķivere · Multiplicative · ★★★★★*
+> Reality Rift patēriņš **-[20-40%]** (kopā ar keystone: efektīvs 1/sec).
 - Reliktu-only
-- Builds: Teleport-Backstab (kritiski)
+- Builds: Realitātes Karaļvalsts (kritiski)
 
-### #66. **Klona Ceļš**
-*Zaglis · Ieroči · Multiplicative · ★★★★★*
-> Klons backstab dubultā dmg (100% weap vietā 50%).
+### #50. **Torņa Sirds**
+*Vecais Burvis · Amulets · Multiplicative · ★★★★★*
+> Zilspāri spell power **×[+0.5-1.0]** papildu (kopā ×3.5-4).
 - Reliktu-only
-- Builds: Teleport-Backstab (kritiski)
+- Builds: Zilspāri Storm (kritiski)
 
-### #67. **Ēnu Solis Ass**
-*Zaglis · Zābaki · Proc · ★★★★☆*
-> Ēnu Solis reset cooldown, ja mērķis mirst **3s** laikā.
-- Kodekss: Vēju Solis Kripta (Tuksneša Bāzars)
-- Builds: Teleport-Backstab (chain reakcijas)
-
-### #68. **Melnās Slēpes Aspekts**
-*Zaglis · Ķivere · Multiplicative · ★★★★★*
-> Naktsāda Ēna izmaksa **-[35-50%]** (efektīvs 15-20 Ēna).
-- Reliktu-only
-- Builds: Permanent Invis (kritiski)
-
-### #69. **Neredzamā Krunkas**
-*Zaglis · Ieroči · Proc · ★★★★☆*
-> Visi hiti neredzamā stāvoklī stackē Vulnerable **1s** uz mērķi.
-- Kodekss: Neredzamā Kripta (Tuksneša Bāzars)
-- Builds: Permanent Invis (Vulnerable spam)
-
-### #70. **Ēnas Sirds Karogs**
-*Zaglis · Amulets · Additive · ★★★★☆*
-> Ēna regen **+[15-30%]** pastāvīgi.
-- Kodekss: Ēna Sirds Kripta (Tuksneša Bāzars)
-- Builds: Permanent Invis, Teleport-Backstab
-
-### #71. **Zaļču Karogs**
-*Zaglis · Amulets · Multiplicative · ★★★★☆*
-> Zaļči **×[+20-40%]** dmg neredzamā stāvoklī.
-- Kodekss: Zaļču Karogs Kripta (Tuksneša Bāzars)
-- Builds: Zaļču Armija
-
-### #72. **Ēnas Sinerģija**
-*Zaglis · Gredzens · Proc · ★★★☆☆*
-> Zaļču crits dod Ēna **2× ātrāk** (papildu 2 pt per crit).
-- Kodekss: Sinerģija Kripta (Tuksneša Bāzars)
-- Builds: Zaļču Armija
-
----
-
-## 3.6. Vientuļais Sniegurgs (8)
-
-### #73. **Sasalis Karogs**
-*Sniegurgs · Ieroči · Additive · ★★★★☆*
-> Sasalis Kaps ilgums **+[1-2]s** (kopā 5-7s).
-- Kodekss: Sasalis Kripta (Ledus Kroņi, Murgu T30+)
-- Builds: Freeze Nuke (kritiski)
-
-### #74. **Ledus Šauta Ceļš**
-*Sniegurgs · Ieroči · Multiplicative · ★★★★★*
-> Ledus Šauts piercing **+[30-50%]** dmg katrā mērķī pēc pirmā (exponenciāls stack).
-- Reliktu-only
-- Builds: Freeze Nuke (kritiski)
-
-### #75. **Kroņa Sirds**
-*Sniegurgs · Amulets · Multiplicative · ★★★★☆*
-> Frost dmg **×[+15-25%]** pret ienaidniekiem ar zemu HP (<40%).
-- Kodekss: Kroņa Sirds Kripta (Ledus Kroņi)
-- Builds: Freeze Nuke, Torņa Redzējums
-
-### #76. **Skeleta Karogs**
-*Sniegurgs · Amulets · Transformation · ★★★★★*
-> Skeletu skaits **+2** (kopā ar keystone = 12 skeleti).
-- Reliktu-only
-- Builds: Skeletu Karaļvalsts (kritiski)
-
-### #77. **Sasala Karogs (Sk)**
-*Sniegurgs · Sekundārais · Proc · ★★★★☆*
-> Skeletu Frost hits pastāvīgi sasaldē mērķi (**1s** per hit).
-- Kodekss: Skeletu Sasala Kripta (Ledus Kroņi)
-- Builds: Skeletu Karaļvalsts
-
-### #78. **Torņa Karogs**
-*Sniegurgs · Ķivere · Multiplicative · ★★★★★*
-> Torņa Redzējums patēriņš vēl **-[15-25%]** (efektīvs 1/sec).
-- Reliktu-only
-- Builds: Torņa Redzējums (kritiski)
-
-### #79. **Vientuļā Sirds**
-*Sniegurgs · Amulets · Multiplicative · ★★★★☆*
+### #51. **Vientuļā Sirds**
+*Vecais Burvis · Amulets · Multiplicative · ★★★★☆*
 > Kad esi **15m+** no visiem sabiedrotajiem, **×[+20-35%]** dmg.
-- Kodekss: Vientuļā Kripta (Ledus Kroņi)
-- Builds: Torņa Redzējums
+- Kodekss: Vientuļā Kripta (Vecais Tornis)
+- Builds: Realitātes Karaļvalsts
 
-### #80. **Ledus Kroņa Kronis**
-*Sniegurgs · Rumpis · Additive · ★★★★☆*
-> Visas ledus prasmes **+[10-20%]** dmg.
-- Kodekss: Ledus Kroņa Kripta (Ledus Kroņi)
-- Builds: Freeze Nuke, Torņa Redzējums
+### #52. **Ledus Šauta Ceļš**
+*Vecais Burvis · Ieroči · Multiplicative · ★★★★★*
+> Arkānā Lauska piercing, katrā mērķī pēc pirmā **×[+30-50%]** dmg (eksponenciāls stack).
+- Reliktu-only
+- Builds: Realitātes Karaļvalsts, Zilspāri Storm
+
+### #53. **Divu Cast Kronis**
+*Vecais Burvis · Amulets · Proc · ★★★★★*
+> Katrs spell cast dubultā **[15-30%]** chance (bez keystone) VAI patēriņš -25% (ar keystone).
+- Reliktu-only
+- Builds: Torņa Ass (kritiski)
+
+### #54. **Time Wave Māc**
+*Vecais Burvis · Ieroči · Additive · ★★★★☆*
+> Time Wave slow **+[30-50%]** (kopā 60-80% slow).
+- Kodekss: Time Wave Kripta (Vecais Tornis)
+- Builds: Realitātes Karaļvalsts
+
+### #55. **Arkānā Sinerģija**
+*Vecais Burvis · Rumpis · Multiplicative · ★★★★☆*
+> Zilspāri triple hits vietā viena per attack (3 zibens hits per cast).
+- Kodekss: Sinerģija Kripta (Vecais Tornis)
+- Builds: Zilspāri Storm
+
+### #56. **Reality Kronis**
+*Vecais Burvis · Zābaki · Additive · ★★★★☆*
+> Realitātes Plaisa charges **+1** (kopā 3 ar Trono Māksla leg).
+- Kodekss: Reality Kripta (Vecais Tornis)
+- Builds: Torņa Ass
+
+---
 
 ---
 
@@ -574,17 +422,14 @@ Katrs Kodekss ir pieejams **specifiskā dungeonā** — pabeidzot to pirmoreiz, 
 
 ## 4.1. Pēc reģiona
 
-| Reģions            | Kodekss Aspekti Count | Ievērojami                          |
-|--------------------|-----------------------|-------------------------------------|
-| Debesu Virsotne    | 12                    | Bruņinieks + universālie ofensīvi   |
-| Asins Arēna        | 9                     | Berserker + AS/rage                 |
-| Zelta Raktuves     | 11                    | Alkas Kungs + defensīvie            |
-| Puvušais Mežs      | 10                    | Mežonis + DoT/spread                |
-| Tuksneša Bāzars    | 9                     | Zaglis + shadow/dodge               |
-| Ledus Kroņi        | 8                     | Sniegurgs + frost/resistance        |
-| Melnais Kalns      | 2                     | Endgame utility (Nāves, Kalts)      |
+| Reģions          | Kodekss Aspekti Count | Ievērojami                            |
+|------------------|-----------------------|---------------------------------------|
+| Melnais Tornis   | 12                    | Pirmais Kungs + universālie ofensīvi |
+| Nordberga        | 10                    | Otrs Kungs + hybrid + shadow          |
+| Vecais Tornis    | 12                    | Vecais Burvis + spell + frost         |
+| Melnais Kalns    | 11                    | Endgame utility + defense + minjonu   |
 
-Kopā: **61 Aspekti Kodeksā**. **19 Aspekti tikai Reliktu-only** (skat. §5).
+Kopā: **45 Aspekti Kodeksā**. **11 Aspekti tikai Reliktu-only** (skat. §5). Kopā ar **56 Aspektiem** — 32 universāli + 24 klases-specifiski.
 
 ## 4.2. Farm ceļvedis pa buildiem
 
@@ -599,28 +444,21 @@ Katras build build guide ir sarakstā **3-5 galvenie Aspekti** — vairāki no t
 
 # 5. Reliktu-only Aspekti (nav Kodeksā)
 
-19 Aspekti nekad neatslēdzas Kodeksā — tikai dropo kā Reliktu items. Šie ir **retākie, spēles-maiņas** Aspekti:
+11 Aspekti nekad neatslēdzas Kodeksā — tikai dropo kā Reliktu items. Šie ir **retākie, spēles-maiņas** Aspekti:
 
-| # | Aspekts                    | Klase          |
-|---|----------------------------|----------------|
-| 8 | Bezdibeņa Solis            | Universāls     |
-| 21| Zvana Karogs (nāves izvairīšanās) | Universāls |
-| 32| Melnā Sirds (M)            | Universāls (minjonu) |
-| 34| Falangas Ābece             | Bruņinieks     |
-| 38| Nemirstīgā Zvana           | Bruņinieks     |
-| 42| Divu Krāsu Asmeņi          | Berserker      |
-| 46| Trakuma Katlaputiņa        | Berserker      |
-| 49| Bagātā Sirds               | Alkas Kungs    |
-| 52| Sausās Sirds               | Alkas Kungs    |
-| 55| Divi Golemi                | Alkas Kungs (Kodeksā T50+, arī Reliktu) |
-| 58| Puves Karogs               | Mežonis        |
-| 61| Lāca Sīvība                | Mežonis        |
-| 65| Divu Soļu Karogs           | Zaglis         |
-| 66| Klona Ceļš                 | Zaglis         |
-| 68| Melnās Slēpes Aspekts      | Zaglis         |
-| 74| Ledus Šauta Ceļš           | Sniegurgs      |
-| 76| Skeleta Karogs             | Sniegurgs      |
-| 78| Torņa Karogs               | Sniegurgs      |
+| # | Aspekts                    | Klase            |
+|---|----------------------------|------------------|
+| 8 | Bezdibeņa Solis            | Universāls       |
+| 21| Zvana Karogs (nāves izvairīšanās) | Universāls|
+| 32| Melnā Sirds (M)            | Universāls (M)   |
+| 35| Ceturto Kroni              | Pirmais Kungs    |
+| 39| Universālais Kalts         | Pirmais Kungs    |
+| 43| Divu Rokas Kronis          | Otrs Kungs       |
+| 47| Impēriskā Sirds            | Otrs Kungs       |
+| 49| Realitātes Karogs          | Vecais Burvis    |
+| 50| Torņa Sirds                | Vecais Burvis    |
+| 52| Ledus Šauta Ceļš           | Vecais Burvis    |
+| 53| Divu Cast Kronis           | Vecais Burvis    |
 
 **Drop chance:** ~2-3% no augsta tiera Reliktu drops.
 **Farm laiks:** vidēji **20-40h per Reliktu-only Aspekts**.
@@ -633,18 +471,18 @@ Kuras Aspekta trio ir must-have katram buildam? Skat. build guide dokumentos §3
 
 **Top 10 Aspekti kopā par visiem buildiem (broken potenciāls):**
 
-| Vieta | Aspekts                | Klase       | Iesaistīts kombu |
-|-------|------------------------|-------------|--------------------|
-| 1     | Melnā Sirds (M)        | Universāls  | Broken build "Melnā Sirds stacking" |
-| 2     | Divi Ēnu Klonis Ass    | Zaglis (Paragon) | Bezēnu Zaglis Ēnu Kaskade |
-| 3     | Falangas Ābece         | Bruņinieks  | Falangas Tank sustain |
-| 4     | Nemirstīgā Zvana       | Bruņinieks  | Heal-Tank Grēksūdzes Bomba |
-| 5     | Trakuma Katlaputiņa    | Berserker   | Rage-Sustain overpower |
-| 6     | Bagātā Sirds           | Alkas Kungs | Projectile Spam |
-| 7     | Puves Karogs           | Mežonis     | DoT stack 8 → cascade |
-| 8     | Klona Ceļš             | Zaglis      | Teleport-Backstab kaskade |
-| 9     | Ledus Šauta Ceļš       | Sniegurgs   | Freeze Nuke piercing |
-| 10    | Bezdibeņa Solis        | Universāls  | Multiple broken buildi |
+| Vieta | Aspekts                | Klase            | Iesaistīts kombu                       |
+|-------|------------------------|------------------|----------------------------------------|
+| 1     | Melnā Sirds (M)        | Universāls       | Broken build "Melnā Sirds stacking"    |
+| 2     | Ceturto Kroni          | Pirmais Kungs    | Meistars pāri Visiem — pastāvīgs +30%  |
+| 3     | Impēriskā Sirds        | Otrs Kungs       | Permanent Empress triple dmg           |
+| 4     | Ledus Šauta Ceļš       | Vecais Burvis    | Realitātes Karaļvalsts eksponenciāls   |
+| 5     | Divu Cast Kronis       | Vecais Burvis    | Torņa Ass double cast sinerģija        |
+| 6     | Torņa Sirds            | Vecais Burvis    | Zilspāri Storm ×4 spell power          |
+| 7     | Divu Rokas Kronis      | Otrs Kungs       | Hybrid Balance combo +100%             |
+| 8     | Universālais Kalts     | Pirmais Kungs    | Meistars pāri Visiem stacking          |
+| 9     | Realitātes Karogs      | Vecais Burvis    | Reality Rift pastāvīgs                 |
+| 10    | Bezdibeņa Solis        | Universāls       | Multiple broken buildi                 |
 
 ---
 

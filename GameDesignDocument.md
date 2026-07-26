@@ -1,7 +1,7 @@
 # Design dokuments — *Kalna Kungs* (darba nosaukums)
 
 **Žanrs:** Isometrisks action RPG ar minjonu komandēšanu un klašu izvēli
-**Iedvesma:** *Overlord* (2007) × *Diablo IV*
+**Iedvesma:** *Overlord* serialā (I, II, Raising Hell, Dark Legend, Fellowship of Evil) × *Diablo IV*
 **Engine:** Unreal Engine 5
 **Skats:** Top-down / isometrisks, ar rotējamu kameru
 **Platforma:** PC (Windows), vēlāk konsoles
@@ -10,9 +10,9 @@
 
 ## 1. Koncepts vienā teikumā
 
-Tu izvēlies **vienu no sešiem Kunga Zvērestiem**, katrs iemieso vienu no Overlord leģendas varenākajām figūrām, un komandē četru veidu **Ēnu minjonus** cauri sešām vizuāli atšķirīgām karaļvalstīm, izlaupot loot un pārbūvējot sabrukušu pasauli.
+Tu izvēlies **vienu no trīs Kungiem** — visstiprākos varoņus visā Overlord serialā (divi bijušie kungi + arch-mage) — un komandē četru veidu **Ēnu minjonus** cauri trīs vizuāli atšķirīgām karaļvalstīm, izlaupot loot un pārbūvējot sabrukušu pasauli.
 
-**Overlord daļa:** minjoni ir tavs galvenais ierocis; klases balstītas uz sākotnējiem varoņiem.
+**Overlord daļa:** minjoni ir tavs galvenais ierocis; klases balstītas uz Overlord serialā ikoniskākajām figūrām.
 **Diablo 4 daļa:** blīvs loot, prasmju koki, dungeoni, world bosi, sezonas, endgame.
 **Gothic daļa:** viss ir tumšs, drēgns, sakrāls, ar melno humoru.
 
@@ -22,10 +22,10 @@ Tu izvēlies **vienu no sešiem Kunga Zvērestiem**, katrs iemieso vienu no Over
 
 ### Pasaules lore īsumā
 - Pasaule saucas **Vaireja**.
-- Pirms 300 gadiem **Pirmais Kungs** valdīja no **Melnā Kalna**. Viņa armija bija sadalīta septiņās vienībās, katru vadīja **Zvērests** — reinkarnētu varoņu līnijas, kas piesaistījās vienam grēkam.
-- Pirmais Kungs krita. Zvērestu līnijas izklīda un savā vietā radīja **sešas karaļvalstis**, katra pēc sava Zvērests dabas.
-- Pasaule sabruka. Baznīca sāka saukt Zvērestus par "seno ļaunumu". Karaļvalstis nolaidās, korumpējās, dažas krita "gaišo" ordeņu rokās.
-- Tu esi **jaunais Zvērests-mantinieks** — pamodies Melnajā Kalnā ar vienu no sešiem Zvērestu Zīmoglaukumiem plaukstā. Tavs Zvērests izvēlas, kāda veida Kungs tu esi, kāda ir tava dzimtā karaļvalsts, kādas prasmes māca asinis.
+- Pirms 300 gadiem **Pirmais Kungs** valdīja no **Melnā Tornī**, savukārt **Otrs Kungs** (viņa dēls) iekaroja Ziemeļu Impēriju. Trešais **Vecais Burvis** valdīja no floating arcane torņa un bija arguably visstiprākais no visiem.
+- Visi trīs krita cīņā par varu — Pirmais nomira dabiski, Otrs krita glorius empire karā, Burvis pazuda savas paša reality rift laikā.
+- Pasaule sabruka trīs sīkās, savstarpēji naidīgās karaļvalstīs, kurās tagad valda "gaišie" ordeņi, korumpēti bīskapi un fanātiskas mūku brālības.
+- Tu esi **jaunais mantinieks** — pamodies ar vienu no trim **Kunga Zīmoglaukumiem** plaukstā. Tavs zīmoglaukums izvēlas, kāda veida Kungs tu esi, kāda ir tava dzimtā karaļvalsts, un kāda no trim leģendārām mantojumu līnijām plūst pa tavu asinīm.
 
 ### Vizuālais stils (kopīgais)
 - **Palete kodolā:** ogļu melna, asins sarkana, alvas zilā, sveču zelts.
@@ -37,79 +37,46 @@ Tu izvēlies **vienu no sešiem Kunga Zvērestiem**, katrs iemieso vienu no Over
 
 ## 3. Klases un karaļvalstis
 
-Katra klase ir viens no sešiem **Zvērestiem** — reinkarnētu varoņu līnija ar savu grēku, prasmēm, minjonu afinitāti un dzimto karaļvalsti. Izvēle sākumā **ir pastāvīga** vienam char slotam (kā Diablo). Katra klase vizuāli atslēdz atšķirīgu **starta reģionu** un mazliet transformē **Melno Kalnu** (troņa telpas dekorācijas, minjonu kosmētika).
+Katra klase ir viens no trim **Kunga Zīmoglaukumiem** — reinkarnētu varoņu līnija ar savu mantojumu, prasmēm, minjonu afinitāti un dzimto karaļvalsti. Izvēle sākumā **ir pastāvīga** vienam char slotam (kā Diablo). Katra klase vizuāli atslēdz atšķirīgu **starta reģionu** un mazliet transformē **Melno Torni** (troņa telpas dekorācijas, minjonu kosmētika).
 
-### 3.1. Melnais Bruņinieks — *Kritušā Krusta Zvērests*
-> Iedvesma: Sir William the Black (Overlord I) — Debesu Virsotnes paladīns, kritušais no iekāres.
+### 3.1. Pirmais Kungs — *Pirmā Zīmoglaukuma Mantinieks*
+> Iedvesma: **The First Overlord** (Overlord I protagonists) — pamodinātais no minjoniem, sakāva visus 7 varoņus, valdīja no Melnā Torņa.
 
-- **Stils:** smaga tuvcīņa, zobens+vairogs, defence, kontrol-cīņa. Lēns, sitīgs, izturīgs.
-- **Signāles prasmes:** Krusta Zvans (AoE stun), Baznīcas Vairogs (block reflekts), Asinssvētība (heal, kad nogalina).
-- **Minjonu afinitāte:** **Sūkšņi** — kopā veido **falangu** (šoulder-to-shoulder ar +bruņu buff).
-- **Signāles resurss:** **Grēksūdze** — uzkrājas, kad saņem sitienus; izlādē par masveida heal grupai.
-- **Karaļvalsts: Debesu Virsotne (*Debesu Virsotne*)**
-  - **Vizuāli:** sarkani vitrāžu logi, augstas gotikas katedrāles, mūžīgi zvanu skaņa. Balti marmora ielas, kas iekrāsojušās asins krāsā. Ceriņu mākoņi.
-  - **Ienaidnieki:** apsēsti mūki, asins nunas, vampīri altāros, kritušie krustneši.
-  - **Boss (reģionā):** **Bīskaps Ansels** — sešroku vampīrs pie ērģelēm.
+- **Stils:** balansēts warrior ar spēcīgu minjonu komandu. Vidēja tuvcīņa + minjonu armija.
+- **Vienā teikumā:** *"Es esmu pirmais un man visi kalpo."*
+- **Signāles prasmes:** Kunga Sitiens (LMB melee ar minion buff), Master's Call (AoE minion command + buff), Domination Aura (paranormāla klātbūtne, minjoni +30% dmg), Kunga Zvans (100pt ult: visi minjoni pēkšņi max buffed, tu iegūsti barjeru).
+- **Minjonu afinitāte:** **Visi 4 tipi** — Pirmais Kungs komandē tos visus vienlīdz labi. Katrs tips ap viņu iegūst +15% dmg un +10% AS.
+- **Signāles resurss:** **Dominance** — uzkrājas ar minjonu kills (3 pt / kill) un tavu personīgo kills (5 pt / kill). Izzūd 1 pt/sec ārpus cīņas.
+- **Karaļvalsts: Melnais Tornis (*Melnais Tornis*)**
+  - **Vizuāli:** kolosāls gotiskais tornis melnākajā mežā. Iekšā — visu 4 minjonu bedres, kolīdes valodas, un troņa zāle ar Pirmā Kunga bijušajām relikvijām.
+  - **Ienaidnieki:** kritušie krustneši, sardzes, apsēsti mūki, iebrukumi no gaisajiem ordeņiem.
+  - **Boss:** **Sardzes Kapteinis Bornlejs** — pēdējais gaisais paladins, kurš vēl mēģina Melno Torni "attīrīt".
 
-### 3.2. Berserkers — *Arēnas Zvērests*
-> Iedvesma: Kahn the Warrior (Overlord I) — barbaru varonis, kritušais no dusmām.
+### 3.2. Otrs Kungs — *Otrā Zīmoglaukuma Mantinieks*
+> Iedvesma: **The Second Overlord** (Overlord II protagonists) — pirmā dēls, iekaroja Nordberga un Glorius Empire, hibrīds warrior-mage.
 
-- **Stils:** dubultā ieroci, ātrs, mobilitāte, rage-based. Cīņā, kad saņem bojājumus, kļūst stiprāks.
-- **Signāles prasmes:** Kara Kliedziens (AoE bail + rage buff), Asins Trakums (attack speed no zaudētās dzīvības), Divu Zobenu Deja.
-- **Minjonu afinitāte:** **Sārtaji** — uguns tavā tuvumā = viņi šauj ātrāk.
-- **Signāles resurss:** **Rage** — aug, kad saņem bojājumus; izlādē par 5-sekunžu berserker režīmu.
-- **Karaļvalsts: Asins Arēna (*Asins Arēna*)**
-  - **Vizuāli:** iesaulis tuksnesis, milzīga akmens amfiteātris, ķēdes žogos, sarkans smilšu putekļu vējš, dzelzs statuas kritušajiem gladiatoriem.
-  - **Ienaidnieki:** klanu karavīri, dresēti zvēri, gladiatoru dvēseles, arēnas kāzu ceremoniju paliekas.
-  - **Boss:** **Trīsroku Karagalvenis Talos** — bijušais Zvērests, kas nepieņem tavu mantojumu.
+- **Stils:** hibrīds tuvcīņa + tumšas maģijas prasmes. Domina lielas grupas, atslēdz karus.
+- **Vienā teikumā:** *"Mans tēvs bija pirmais. Es esmu labākais."*
+- **Signāles prasmes:** Impēriskais Sitiens (LMB, kombinē fizisko + shadow), Melnās Zibenis (Q, chain lightning ar shadow), Impērisks Zvans (E, buff apkārtējiem minjoniem +50% dmg 8s), Impērija Vaidēs (100pt ult: masveida shadow AoE + tu iegūsti maģisku formu 15s).
+- **Minjonu afinitāte:** **Sūkšņi + Zilspāri** (Overlord 2 stils — brutālais warrior + spellcaster). Sūkšņi ap viņu iegūst +25% dmg; Zilspāri iegūst +50% spell power.
+- **Signāles resurss:** **Impēriskā Dusma** — uzkrāj kad iznīcina "gaišā" ordeņa ienaidniekus (10 pt / kill) vai kad iekaro nozīmīgu vietu (piem., dungeon boss). Izzūd ārpus cīņas.
+- **Karaļvalsts: Nordberga Impērija (*Nordberga Impērija*)**
+  - **Vizuāli:** sniegots ziemeļu ciems, sabrukusi cietoksnis, imperators dekorācijas (aizrautīgas krāsas), stipri kontrasti starp balts sniega un melnas Otrā Kunga bruņu.
+  - **Ienaidnieki:** Glorius Empire paliekas (soldieri Romas stilā), Nordberga sacēlās vietējie, apsēsti bīskapi, elfu klejotāji.
+  - **Boss:** **Emperors Solariuss** — Overlord 2 kanonā antagonists, Glorius Empire vecais imperators, tagad kā līķis-imperators.
 
-### 3.3. Alkas Kungs — *Zelta Zvērests*
-> Iedvesma: Goldo Golderson (Overlord I) — pundurķēniņš, kritušais no alkatības.
+### 3.3. Vecais Burvis — *Torņa Zīmoglaukuma Mantinieks*
+> Iedvesma: **The Wizard** (Overlord I torņa boss) — visstiprākais no 7 varoņiem, arch-mage, kritušais no lepnības.
 
-- **Stils:** hibrīds ranged/melee, sauc **Zelta Golemus** (temporārus konstruktus par zeltu), zelts = resurss un ierocis.
-- **Signāles prasmes:** Zelta Lietus (met monētas kā projektiles), Ķērājs Golems (summonis 20s), Sausā Sirds (visi drops +30% zelta, bet -20% XP).
-- **Minjonu afinitāte:** **Visi** — minjoni ap tevi savāc lūtu automātiski un dubultā ātrumā.
-- **Signāles resurss:** **Zelts** — patērē kā manu īpašajām prasmēm; jo bagātāks, jo stiprāks.
-- **Karaļvalsts: Zelta Raktuves (*Zelta Raktuves*)**
-  - **Vizuāli:** milzīga pazemes zāle, magma tālumā, zelta dzīsles griestos, verdzeņu ķēdes, pundurķēniņu troņi grabaza dzīlēs, karsts.
-  - **Ienaidnieki:** verdzenieku pārraugi, zeltā vārīti līķi (goldens), kolektoru golemi, pazemes bīskapi.
-  - **Boss:** **Vecais Goldo** — pats tavs sen-vec-vec-tēvs Zvērests, tagad zelta apvalkā iesalis.
-
-### 3.4. Mežonis Kungs — *Puves Zvērests*
-> Iedvesma: Oberon Greenhaze (Overlord I) — Elfu Kungs, kritušais no slinguma un aizmirstības.
-
-- **Stils:** dabas maģija sabojāta, indes DoT (damage over time), īslaicīgi pārvēršas par zvēru, augsts area denial.
-- **Signāles prasmes:** Sakņu Slazds (roots erupt no zemes), Indes Migla (AoE DoT), Vilka Āda (10s transform).
-- **Minjonu afinitāte:** **Zaļči** — inde no tavām prasmēm pārceļas uz Zaļču dunčiem.
-- **Signāles resurss:** **Sula** — savāc no puvušas dzīvības (nogalinātās plantas/dzīvnieki); izmanto pārveidojumam un lielām prasmēm.
-- **Karaļvalsts: Puvušais Mežs (*Puvušais Mežs*)**
-  - **Vizuāli:** kaltu koku ēnas, milzīgas sēnes gaismos ceriņi/violeti, animētie sakņu tīkli, ledus migla, aizmirsti elfu tempļi apēsti zaļās puves.
-  - **Ienaidnieki:** kaltušas dryādes, puves lāči, elfu ghouli, ķērājoši augi, aizmirsti mednieki.
-  - **Boss:** **Elfu Karaliene Ninhera** — puse sieva, puse koks; ēna savā tumšajā birzī.
-
-### 3.5. Bezēnu Zaglis — *Nakts Zvērests*
-> Iedvesma: Jewel the Thief (Overlord I) — Zaglis, kritušais no skaudības.
-
-- **Stils:** stealth, backstab, ātri kritiskie sitieni, teleportācija, augsts single-target burst.
-- **Signāles prasmes:** Ēnu Solis (teleports aiz mērķa + 3s invis), Naktsāda (kloāka ar automātisku backstab pirmajā sitienā), Kaklaslazds (dubultkritisks garantēts).
-- **Minjonu afinitāte:** **Zaļči** — kļūst neredzami krūmos; backstab tavai grupai dubultbojājums.
-- **Signāles resurss:** **Ēna** — uzkrājas, kad slepen slēpies vai kad kritušie neredz, izmanto lielām prasmēm.
-- **Karaļvalsts: Tuksneša Bāzars (*Tuksneša Bāzars*)**
-  - **Vizuāli:** oāzes pilsēta smilšu jūras vidū, purpurs zīds karājas starp šauri ielām, milzīgas smilšakmens torņi, karstums, slēptas tirgu ejas, ēnu ceriņu debesis vakarā.
-  - **Ienaidnieki:** trīnu zagļi, čūsku burvji, kamielotu jātnieki, muzikanti-slepkavas, alķīmiķi.
-  - **Boss:** **Melnās Kūkas Vezirs** — mūžsens karaliskais slepkava, 12 dunči, 3 ēnu-dvīņu klonis.
-
-### 3.6. Vientuļais Sniegurgs — *Ledus Zvērests*
-> Iedvesma: The Wizard (Overlord I torņa varonis) — Burvis, kritušais no lepnības.
-
-- **Stils:** distances maģija, ledus + nekromantija, summonis skeletus no līķiem, area kontrole.
-- **Signāles prasmes:** Sasalis Kaps (freeze area + līķi kļūst par skeletiem), Ledus Lauskas (kanālēts nuke), Torņa Redzējums (redzi visu karti 10s + slow ienaidniekiem).
-- **Minjonu afinitāte:** **Zilspāri** — dubultā burvestību jauda, spēj celt vienreizējus skeletu sabiedrotos no jebkuriem līķiem.
-- **Signāles resurss:** **Sala** — auksts uzkrājas ar katru zaudēto dzīvību un ledus prasmi; izlādē par mega freeze.
-- **Karaļvalsts: Ledus Kroņi (*Ledus Kroņi*)**
-  - **Vizuāli:** peldoši ledus salu fragmenti augstu debesīs, sasals dievnams, mēle balta gaisma, skeletu sardze aiz sasala vārtiem, mūžīgs sniegs, zils tumšs pavadonis debesīs.
-  - **Ienaidnieki:** sasalusi ordeņa gvarde, ledus lauva, kritušie mācekļi, skeleta ērģelnieks, ledus vīnjkāzas.
-  - **Boss:** **Ievas Turaņa** — savs veidols laikā, kad viņa bija vēl dzīva burve; pusskeletons pusledus.
+- **Stils:** tīrs arch-mage. Distances maģija, reality manipulation, teleports, glass cannon.
+- **Vienā teikumā:** *"Realitāte ir mans nastīgs materiāls."*
+- **Signāles prasmes:** Arkānā Lauska (LMB projectile), Realitātes Plaisa (Q, teleports + AoE), Arkāns Zvans (E, dubultā tavas nākošās 3 prasmes), Reality Rift (100pt ult: 15s time slow apkārtējiem, tavas prasmes 2× dmg un 2× ātrāk).
+- **Minjonu afinitāte:** **Zilspāri** (spellcaster minjoni). Ap Vecajo Burvi Zilspāri iegūst **triple spell power** un **50% cast speed**. Var pat īslaicīgi mainīt reality (teleport uz tevi vai zibens hits).
+- **Signāles resurss:** **Arkānā Enerģija** — uzkrājas caur kritiskiem uzbrukumiem (5 pt / crit) un maģisko efektu izmantošanu. Nekad neizzūd kaujā.
+- **Karaļvalsts: Vecais Tornis (*Vecais Tornis*)**
+  - **Vizuāli:** peldošs arkānais tornis debesīs virs Melnā Kalna, apkārt kluss chaos — mainīgas gravitācijas telpas, mainīgi ceļi, ilūzijas.
+  - **Ienaidnieki:** Torņa arch-mages sekotāji, sasala golemi, reality distortions (elementāri, kas nespēj nomirt normālā ceļā), bijušie Burvja studenti.
+  - **Boss:** **Vecākais Māceklis Selriss** — Vecā Burvja pēdējais students, kurš mēģina turēt Torni pēc meistra pazušanas.
 
 ---
 
@@ -117,22 +84,22 @@ Katra klase ir viens no sešiem **Zvērestiem** — reinkarnētu varoņu līnija
 
 **Klases izvēle spēles sākumā maina:**
 
-1. **Starta reģions** — tu sāc savas klases karaļvalstī (nevis universālā tutoriālā).
-2. **Melnais Kalns hub** — troņa telpa ir dekorēta pēc tavas klases (Bruņinieka gadījumā — asins vitrāža; Alkas — zelta gulta; Bezēnu — melnas zīda drapērijas u.c.).
-3. **Minjonu kosmētika** — tava klase iedod minjoniem klases-tematiskus lūkus (Berserker Sūkšņiem ir sarkanas kara krāsas u.c.).
-4. **Klases quest līnija** — īpaša stāsta arka par tavas Zvērestu līnijas izcelšanos, kas notiek paralēli galvenajam sižetam.
-5. **Klases boss** — sava reģiona boss ir bijušais tavs Zvērests, kurš atsakās tevi atzīt.
-6. **Dialogu opcijas** — NPC reaģē citādi (Bāzara tirgotāji Bezēnu Zaglim iedod atlaides, Bruņiniekam — bīstas u.c.).
+1. **Starta reģions** — tu sāc savas klases karaļvalstī.
+2. **Melnais Tornis hub** — troņa telpa ir dekorēta pēc tavas klases (Pirmais Kungs — klasiskais tumšais tornis; Otrs Kungs — impēriskais dekorējums; Vecais Burvis — arkānais tornis).
+3. **Minjonu kosmētika** — tava klase iedod minjoniem klases-tematiskus lūkus.
+4. **Klases quest līnija** — īpaša stāsta arka par tavas mantojumu, kas notiek paralēli galvenajam sižetam.
+5. **Klases boss** — sava reģiona boss ir bijušais tavs zīmoglaukuma turētājs, kurš atsakās tevi atzīt.
+6. **Dialogu opcijas** — NPC reaģē citādi (imperiskais Otrs Kungs dabū saluts no ordeņa paliekas, Burvis dabū baiļu skatienus u.c.).
 
-Bet **visas 6 karaļvalstis apmeklē visi** — vienkārši savā secībā, ar savu perspektīvu. Diablo 4 stila open world; tikai starta reģions atšķiras.
+Bet **visas 3 karaļvalstis apmeklē visi** — vienkārši savā secībā, ar savu perspektīvu.
 
 ---
 
-## 5. Kopīgais septītais reģions
+## 5. Kopīgais ceturtais reģions
 
 - **Melnais Kalns** — hub un fināla reģions. Nav klases-specifisks, aug pēc katras klases pieskaņas.
 
-Kopā: **1 hub + 6 klašu karaļvalstis = 7 reģioni**.
+Kopā: **3 klašu karaļvalstis + 1 hub Melnais Kalns = 4 reģioni**.
 
 ---
 
@@ -142,14 +109,14 @@ Kopā: **1 hub + 6 klašu karaļvalstis = 7 reģioni**.
 
 | Tips        | Krāsa      | Loma                    | Klase, kas viņus stiprina lielākoties |
 |-------------|------------|-------------------------|----------------------------------------|
-| **Sūkšņi**  | Brūni      | Tuvcīņa, tanks          | Melnais Bruņinieks (falanga)           |
-| **Sārtaji** | Sarkani    | Distance, uguns         | Berserkers (uguns + rage)              |
-| **Zaļči**   | Zaļi       | Zaglība, inde           | Bezēnu Zaglis / Mežonis (backstab+DoT) |
-| **Zilspāri**| Zili       | Maģija, dziedināšana    | Vientuļais Sniegurgs (necro-maģija)    |
+| **Sūkšņi**  | Brūni      | Tuvcīņa, tanks          | Pirmais Kungs (all), Otrs Kungs        |
+| **Sārtaji** | Sarkani    | Distance, uguns         | Pirmais Kungs (all)                    |
+| **Zaļči**   | Zaļi       | Zaglība, inde           | Pirmais Kungs (all)                    |
+| **Zilspāri**| Zili       | Maģija, dziedināšana    | Otrs Kungs, Vecais Burvis (kritiskā)   |
 
-**Alkas Kungs** ir izņēmums — nav afinitātes ar vienu tipu, bet **visi tipi** ap viņu savāc lūtu ātrāk.
+**Pirmais Kungs** ir vienīgais, kas komandē visus 4 tipus vienlīdz labi. Otrs Kungs un Vecais Burvis fokusējas uz konkrētiem tipiem.
 
-Sākumā tev pieejami tikai **Sūkšņi**. Katrus citus atklāj, atgriežot minjonu bedri no izmirušas (viena bedre uz reģionu, tātad 4 no 6 reģioniem dod jaunu tipu; pārējie divi dod klases prasmju punktus).
+Sākumā tev pieejami tikai **Sūkšņi**. Katrus citus atklāj, atgriežot minjonu bedri no izmirušas (bedres ir Melnajā Tornī, atslēdzas ar reģiona bosu clearing).
 
 ### Komandēšanas mehānika
 - **RMB uz vietas** — *"Ejiet tur!"* — minjoni skrien uz punktu.
@@ -161,7 +128,7 @@ Sākumā tev pieejami tikai **Sūkšņi**. Katrus citus atklāj, atgriežot minj
 
 ### Minjonu limits
 - Sākumā: **10 minjoni** kopā.
-- Uzlabojot Melno Kalnu: līdz **30 minjoniem**.
+- Uzlabojot Melno Torni: līdz **30 minjoniem** (Pirmais Kungs) vai **25** (Otrs Kungs) vai **20** (Vecais Burvis — glass cannon fokuss).
 - Minjoni mirst. Audzē jaunus par savāktu **Dvēseļu enerģiju**.
 
 ---
@@ -181,296 +148,20 @@ Cīņas ritms: ne tu, ne minjoni viens pats netiek galā ar boss. Uzvara — par
 
 ## 8. Loot, ekipējums un amatniecība (Diablo 4 stils)
 
-### 8.1. Item Power un līmeņu skala
-
-Katram item ir **Item Power (iP)** — bāzes stipruma skaits, kas nosaka, cik lieli var būt affixi. iP nāk no ienaidnieka līmeņa, kurš item nomet.
-
-| Player līmenis | iP diapazons | Tier                                |
-|----------------|--------------|-------------------------------------|
-| 1–15           | 1–200        | Iesācēju                            |
-| 15–30          | 200–500      | Vidus                               |
-| 30–50          | 500–700      | **Rūdīts** (sacred pretinieks)      |
-| 50–70          | 700–850      | **Sens** (ancestral pretinieks)     |
-| 70–80          | 850–925      | **Endgame** (max scaling)           |
-| 80+ (Paragon)  | 925 fixed    | Viss dropo maxā, jautā pēc affixiem |
-
-**Reliktu** un **Uber Mistiskie** items vienmēr nāk maxā iP (925), lai tos varētu lietot no pirmās sekundes, kad izkrituši.
-
----
-
-### 8.2. Item retumi
-
-| Retums               | Krāsa            | Affixi                       | Piezīmes                                              |
-|----------------------|------------------|------------------------------|-------------------------------------------------------|
-| **Parasts**          | Pelēks           | 0                            | Salvage materiāls, nekas cits                         |
-| **Rūdīts** (Magic)   | Zils             | 1–2                          | Ērts agrīnā spēlē                                     |
-| **Sens** (Rare)      | Dzeltens         | 4                            | Galvenais craftinga materiāls                         |
-| **Reliktu** (Legendary) | Zelts         | 4 + **Aspekts**              | Vari izlobīt Aspektu un pārstādīt uz Senu             |
-| **Nolādēts** (Unique)| Asinssarkans     | Fiksēti stati + Unikālais spēks | Klases- vai lomas-specifisks; power ar cenu       |
-| **Uber Mistiskais**  | Balta gaisma     | 4 GA vienmēr + super-power   | Retākais gearā; ~1 uz playthrough                     |
-
-### 8.3. Great Affix (Lielā Zīme, GA)
-
-Katrs sena vai augstāka retuma affix var reti izrolēt kā **Lielā Zīme** — ~**+50% stats** pār normālu roll. Marķēts ar zvaigzni ★ pirms teksta.
-
-- Chance uz vienu affix: **~5%** pie standarta drops, augst ar bosu tieru.
-- **4 GA** vienā item = "perfekts item"; endgame chase.
-- **Uber Mistiskie** vienmēr rullē ar **4 GA**.
-
----
-
-### 8.4. Damage matemātika un stati
-
-Damage aprēķina ķēde (multiplikatīvi, kad iespējams — kā D4):
-
-```
-Final Damage
- = Bāzes prasmes bojājums
- × (1 + Weapon Damage%)
- × (1 + Attribute Bonus%)              (primārais atribūts)
- × (1 + Physical Dmg%) × PhysMult      (pirmais fizika slānis)
- × (1 + DoT%) × DoTMult                (par DoT prasmēm)
- × (1 + Crit Chance) × CritDmg × CritMult   (ja krits)
- × (1 + Vulnerable Dmg%) × VulnMult    (ja mērķis vulnerable)
- × Additive skill damage%
- × Overpower / Special modifiers
-```
-
-**Galvenie stati uz ekipējuma:**
-
-| Stats                          | Kur rullē                                        |
-|--------------------------------|--------------------------------------------------|
-| **Kritiskā Šanse**             | Vairogs, gredzeni, amulets, ierocis              |
-| **Kritiskais Bojājums**        | Rokas, amulets, gredzeni                         |
-| **Kritiskais Bojājums Reizinātājs** | Ierocis (GA), amulets (GA)                  |
-| **Fiziskais Bojājums %**       | Ierocis, rokas, sekundārais                      |
-| **Fiziskais Bojājums Reizinātājs** | Ierocis (GA), amulets                        |
-| **Bojājums Over Time %**       | Ierocis, gredzeni                                |
-| **DoT Reizinātājs**            | Amulets (GA), zvana ligzda gem                   |
-| **Vulnerable Bojājums %**      | Amulets, gredzeni                                |
-| **Vulnerable Reizinātājs**     | Amulets (GA), ierocis (GA)                       |
-| **Overpower Damage**           | Ierocis, amulets                                 |
-| **Attack Speed**               | Ierocis, rokas, gredzeni                         |
-| **Cooldown Reduction**         | Amulets, gredzeni, ķivere                        |
-| **Resource Generation**        | Ierocis, sekundārais                             |
-| **Minjonu Bojājums %**         | Ierocis, sekundārais, rokas                      |
-| **Minjonu Dzīvība %**          | Rumpis, ķivere                                   |
-
-**Aizsardzības stati:** Bruņas, Life %, Kopējais Resists, Elementārie Resists (Uguns/Ledus/Ēna/Svēts), Damage Reduction from close/distant/injured, Barrier Generation.
-
----
-
-### 8.5. Aspekti un Leģendārie Aspekti
-
-Katrs **Reliktu** item nes **Aspektu** — mehānisks efekts, kas maina spēli.
-
-- **Ofensīvie:** *"Krusta Zvans papildu 2 sekundēs stunē"*
-- **Defensīvie:** *"Kad tavs Barjēra beidzas, dziedini 10% max HP"*
-- **Utility:** *"Space cooldown -30%, bet i-frames uz pusi"*
-- **Minjonu:** *"Sūkšņi ar >50% dzīvības darbojas +30% ātrāk"*
-
-**Divi veidi, kā iegūt Aspektus:**
-
-1. **Extraction** — pie **Okultista** izlobā Aspektu no Reliktu item (item pazūd, iegūsti Aspektu ar 100% rullēto stipru variantu).
-2. **Kodekss (Codex of Power)** — pabeidzot dungeon, atslēdz šī dungeon Aspektu Kodeksā. **Pastāvīgs**, bet vienmēr **75% no max roll** (worse par extraction).
-
-**Aspekta uzstādīšana (Imprint):** pie Okultista uzlieci Aspektu uz Sena vai Reliktu item par materiāliem — item kļūst Reliktu ar tavu Aspektu.
-
-**Aspekta slotes uz item:** viens Aspekts uz item. Ja imprintē uz item, kuram jau ir, pārraksta.
-
----
-
-### 8.6. Setu komplekti (Sets, D3-stila)
-
-Katrai klasei — **3 Setu Komplekti**, 6 daļas katrs. **18 seti kopā.**
-
-- **2 daļas:** neliels bonuss (piem., +20% Sūkšņu bojājums).
-- **4 daļas:** vidējs bonuss + jauna mehānika (piem., Sūkšņi automātiski atgriežas pie tevis, ja atkāpies).
-- **6 daļas (pilnais)**: build-defining transformācija (piem., "Tavs Krusta Zvans arī pieprasa uguns damage; Sārtaji dubultā").
-
-Setu daļas dropo tikai no **specifiskiem bosiem** (viena boss = viena Setu daļa targeted farm).
-
-**Setu piemēri:**
-
-**Melnais Bruņinieks:**
-- *Kritušā Krusta Zvēresti* — falangas build (Sūkšņi + Bruņinieks kā vienība)
-- *Asins Katedrāles Kārkas* — heal-tank stils, Grēksūdze kā mana
-- *Zvana Uguns* — Sārtaji + Bruņinieks hibrīds
-
-**Berserkers:**
-- *Trīs Tūkstoš Deviņi* — dual-wield, augsts attack speed
-- *Kliedziena Karogs* — rage nekad nemazinās
-- *Sarkano Smilšu Kalambs* — visi minjoni iet rage
-
-... u.c. pārējām klasēm.
-
----
-
-### 8.7. Uber Mistiskie items (Uber Uniques)
-
-**Retākie itemi spēlē.** ~6 kopā spēles launchā, viens per klase (plus 2 klases-agnostiski).
-
-- **Drop chance:** ~0.05% no **Elite Bosiem** T80+, **World Bosiem**, un **Murgu Dungeoniem T80+**.
-- **Vienmēr 4 GA + max iP.**
-- Piemēri:
-  - **Melnais Kronis** (klases-agnostisks ķivere) — visas prasmes +2 līmeņi, Grēksūdze / Rage / Zelts / Sula / Ēna / Sala akumulē 2× ātrāk.
-  - **Sirds no Kalna** (klases-agnostisks amulets) — kad nomirsti, atmostas ar 50% HP vienreiz per boss cīņa.
-  - **Vecā Goldo Roka** (Alkas Kunga ierocis) — 30% no visa savāktā zelta konvertējas uz Damage Reduction.
-  - **Ninheras Ērkšķu Piespriedu** (Mežoņa Kunga bruņas) — ienaidnieki tuvāk 10m tiek pastāvīgi indeti.
-  - (u.c.)
-
-**Uber Mistiskie ir aspirācijas priekšmets** — spēlētājs var uz jau esošu build, bet nepieciešamības nav.
-
----
-
-### 8.8. World items (Ļoti reti pasaules mīli)
-
-Speciāla kategorija — **~15 pasaules mīli**, kas dropo **tikai no World Bosiem** un dažiem pasaules notikumiem.
-
-- Ne tik retie kā Uber Mistiskie, bet **klases-agnostiski**.
-- Bieži utility (movement speed, resurss regen, quality-of-life).
-- Piemēri: **Ceļotāja Zābaki** (+40% MS ārpus cīņas), **Sardzes Zvans** (auto-heal kritiskos brīžos), **Ēnu Spogulis** (rediza mainām karti).
-
----
-
-### 8.9. Slotes
-
-**Spēlētājs (12 slotes):**
-- Ķivere, Amulets
-- Rumpis, Sekundārais (vairogs/talismans/off-hand)
-- Ierocis (primārais)
-- Rokas, Josta
-- Kājas, Zābaki
-- 2× Gredzens
-- **Ēnu slots** — tikai Uber Mistiskie Gems (skat. 8.10)
-
-**Minjoni (3 slotes katrs):** ķivere, ierocis, aksesuārs.
-
----
-
-### 8.10. Gemi (Edelakmeņi) un upgrade
-
-**6 pamata gemu tipi:**
-
-| Gems         | Ierocis           | Bruņas             | Rotaslietas       |
-|--------------|-------------------|--------------------|--------------------|
-| **Rubīns**   | +Physical Dmg     | +Max Life          | +Overpower Dmg     |
-| **Safīrs**   | +Frost Dmg        | +Barrier Gen       | +Crit vs. crowd-controlled |
-| **Smaragds** | +Crit Dmg         | +Thorns            | +Poison Dmg        |
-| **Ametists** | +DoT Dmg          | +DoT Resistance    | +Vulnerable Dmg    |
-| **Topāzs**   | +Lightning Dmg    | +Lightning Res     | +Resource Gen      |
-| **Dimants**  | +Holy Dmg         | +All Res           | +Cooldown Reduction |
-
-**Gemu tieri: 1 → 5** (Grubs → Chipped → Flawed → Normal → Flawless → Royal → **Star**).
-
-**Upgrade:** **3 zemāki gemi + zelts** = 1 augstāks tiers pie **Juveliera**.
-
-- Tier 1 → 2: 3× tier 1 + 500 zelta
-- Tier 5 → 6 (Royal): 3× tier 5 + 25 000 zelta + 1× **Melnā Māldivara** (rets materiāls)
-- Tier 6 → 7 (Star): 3× tier 6 + **Zvaigznes Skabarga** (drop tikai no world bosiem)
-
-**Uber Mistiskie Gemi (Uber Gems):**
-- **6 unikāli gemi**, ietilpst tikai **Ēnu slotā** uz spēlētāja.
-- Katrs dod build-defining efektu, piem.:
-  - **Nolādētais Asinsakmens** — visi tavi hiti izspiež 5% HP no tevis, bet dubulto crit damage.
-  - **Melnā Zvaigzne** — reizi 30s tavs nākošais uzbrukums nogalinā jebkuru non-boss ienaidnieku.
-- Iegūst no **Uber Bosiem** endgame.
-
----
-
-### 8.11. Amatnieki (NPCs Melnajā Kalnā)
-
-Katrs amatnieks atrodas savā telpā Melnajā Kalnā. Aug ar Melnā Kalna līmeni.
-
-#### **Kalējs** — Repair, Upgrade, **Masterworking**
-- Salaboj ekipējumu.
-- **Masterworking** (endgame): 12 līmeņu upgrade uz Senam/Reliktu/Uber item, katrs līmenis dod +5% visiem affixiem. Katrs 4. līmenis (**4/8/12**) izvēlas nejaušu affix un dod +25% *tikai* tam ("crit"). Var mērķēt ar rerollu.
-- Materiāli: **Bruņu skavas** (no salvaged bruņām), **Karaļa Dzelzs** (no world bosiem), **Zvana Sudrabs** (T80+ Murgu Dungeoni).
-
-#### **Dziedniece** — Flakoni, buffi
-- Dziedināšanas flakonu upgrade (līmeņi 1–10, dod vairāk HP heal).
-- Uzlabo klases signāles resursu regen.
-- Pārdod atveseļošanas eliksīrus (temp buff).
-- Materiāli: **Sausējuma zāles**, **Sniega Rasa**, **Ērceles Piens** (no dažādām biomām).
-
-#### **Laboratorija (Alķīmiķis)** — **Tempering**
-- **Tempering:** uzlieci vienu papildu affix no **Tempering Manual** (rets grāmatu drops).
-- Katrs item var tikt temperēts **2 reizes** ("Tempering Durability"). Nomaināms.
-- Manuāli specializēti pa lomām: *Ofensīvais*, *Defensīvais*, *Minjonu*, *Utility*, *Resurss*.
-- Materiāli: **Alķīmiskais smilšakmens**, **Nolādētais dzīvsudrabs**, **Sarkanā fosfora migla**.
-
-#### **Okultisti** — Aspekti, Salvage, Reroll
-- **Extract Aspect** no Reliktu item (item pazūd).
-- **Imprint Aspect** uz Sen/Reliktu item.
-- **Reroll Affix** — nomaina vienu affix par materiāliem un pieaugošu zelta cenu.
-- **Salvage** Uniques par unikāliem materiāliem.
-- Materiāli: **Zvēresta Pelni**, **Melnā Rune**, **Dvēseļu Pilieni**.
-
-#### **Juvelieris** — Gemi, Slotes, Uber Gems
-- **Cutting** un **upgrade** gemus (skat. 8.10).
-- **Add socket** uz ierociem/bruņām/rotaslietām — noteikts skaits slotu vienam item.
-- Instalē **Uber Mistiskos Gemus** Ēnu slotā.
-- Materiāli: **Nešķīts kristāls**, **Karaļa Dzelzs**, **Melnā Māldivara**, **Zvaigznes Skabarga**.
-
----
-
-### 8.12. Wardrobe (Garderobe)
-
-Sistēma cosmetic + build save.
-
-**Cosmetic Transmog:**
-- Katrs item, ko atrod, tiek atslēgts **Garderobes bibliotēkā**.
-- Vari uzlikt jebkura atslēgta item izskatu uz aktīvās gearu (bez stat izmaiņām).
-- Krāsu maiņa (dyes) atsevišķi — nopirk pie tirgotājiem vai iegūst pasaulē.
-
-**Build Presets:**
-- Saglabā **līdz 6 pilniem buildu presetiem** vienam varonim.
-- Preset satur: ekipējums, gemi, prasmju koks, Paragon dēļu izvēle, klases prasmju alokācija.
-- Nomaina vienu presetu → automātiski pārcērt zvaigznes visos slotos, respec.
-- Preset switch — brīvs Melnajā Kalnā, maksā zeltu ārpus tā.
-
-**Minjonu Garderobe:**
-- Krāsu shēmas minjoniem (base atslēgti par klases progresiju, papildu — pasaules notikumos).
-- Aksesuārs (cepures, mugursomas u.c.) tikai kosmētisks.
-
----
-
-### 8.13. Loot avoti
-
-**Ikdienas dropi (mobi):**
-- Standarta pieauguma līknē; Rūdīti + Seni dropi bieži, Reliktu — ~2–3% šansei per elite.
-
-**Loot Stash pie katra Bosa:**
-- Pēc bosa nogalināšanas parādās **Kunga Lāde** (troņa priekšā vai kritušā vietā).
-- Vienmēr **garantēts 1 Sen + 1 Reliktu** item.
-- Chance uz **Setu daļu** (targeted pa bosam).
-- Elite bosiem — chance uz **Uber Mistisko**.
-
-**Elite Bosi (mini-bosi):**
-- Katrā dungeonā 2–3 Elite bosi + dungeon boss.
-- Katram Elite bosam sava mazā **Elite Lāde**.
-- Loot: augsts iP, chance uz **Aspektu Kodeksu unlock** un **Rūnu** dropu.
-
-**Pazemes Dungeoni:**
-- ~50 dungeoni kopā spēlē (visos reģionos).
-- Katrs dod unikālu **Kodeksa Aspektu** pirmo reizi pabeidzot.
-- **Murgu Versijas** endgame (T1–T100), affix modi, ērtāki Rūnu dropi.
-
-**World Bosi:**
-- Spawn pasaules kartes 4 fiksētās vietās, katrs ik pēc **6 stundām** (real time).
-- Grupas kontenta priekšskaitis (post-MVP co-op).
-- **Garantēts** Reliktu drop, chance uz **World Item** un **Uber Mistiskā** drop.
-- Materiāli: **Zvaigznes Skabarga**, **Karaļa Dzelzs**, **Melnā Māldivara**.
-
-**Uber Bosi (endgame):**
-- Atslēdzas ar rituāla kombinēšanu (piem., 5× Melnā Rune + Zvaigznes Skabarga).
-- Vienīgais avots **Uber Mistiskajiem Gemiem**.
-
----
-
-### 8.14. Klasei-specifiski Reliktu items
-
-Katrai klasei — **~8 klases-eksklīvi Reliktu items** ar aspektiem, kas domāti tikai tai (piem., Berserker "Divi Zobeni Vienā" — pēc katra hita 5% šansei automātisks nākamais uzbrukums).
+*Nemainīgs kopš iepriekšējām versijām — skat. detalizētu specifikāciju §8.1–8.14.*
+
+Kopsavilkumā:
+- **Item Power (iP)** 1-925, atbilst spēlētāja līmenim
+- **6 retumi:** Parasts / Rūdīts / Sens / Reliktu / Nolādēts / Uber Mistiskais
+- **Great Affix (Lielā Zīme ★)** — ~+50% stat, 4 GA = perfekts item
+- **Multiplicative damage pipeline:** Crit, Physical, DoT, Vulnerable + Reizinātāji
+- **Aspekti + Kodekss:** ~80 aspekti (24 klases-specifiski jaunajā 3-klašu setup, 8 per klase)
+- **Setu Komplekti:** 9 kopā (3 per klase, 2/4/6 daļas)
+- **Uber Mistiskie:** ~6 (nemainīts)
+- **Gemi:** 6 tipi, 7 tieri, Uber Mistiskie Gemi Ēnu slotā
+- **5 amatnieki:** Kalējs (Masterworking), Dziedniece, Laboratorija (Tempering), Okultisti (Aspects), Juvelieris (gems)
+- **Wardrobe** ar transmog un 6 build presets
+- **Loot avoti:** Kunga Lāde pie bosiem, Elite Bosi, Pazemes Dungeoni, World Bosi, Uber Bosi
 
 ---
 
@@ -480,104 +171,14 @@ Katrai klasei — **~8 klases-eksklīvi Reliktu items** ar aspektiem, kas domāt
 - **Prasmju koks** trīs zaros: **Kungs** (personiskais), **Barvedis** (minjoni), **Melnais Māksla** (nolādēts).
 - Katrai klasei **savs prasmju koks** ar 6–8 unikāliem "keystone" perkiem.
 
----
-
-### 9.1. Paragon sistēma (Diablo 4 stils)
-
-**Atslēdzas:** Kad sasniedz līmeni **50**. Pēc tam katra iegūta XP porcija turpina dot **līmeņus** līdz 80. Sasniedzot 80, visa turpmākā XP dod **Paragon punktus**. Max **350 Paragon punktus** vienam varonim.
-
-**Kur tos ieguldīt:** klases **Paragon Dēļos** (*Paragon Boards*) — vizuāli lielos 21×21 režģa dēļos ar ceļiem, kas savieno mezglus.
-
-#### Paragon Dēļi (Boards)
-
-Katrai klasei ir **1 sākuma dēlis** (klases emblēma centrā) un **~10 pieejamie papildu dēļi**, no kuriem izmanto **5**. Papildu dēlis pievienojas caur **Vārtu Mezglu** (Gate Node) uz sākuma dēļa malas — vari **rotēt** to par 0°/90°/180°/270°, mainot, kā tā mezgli sakrīt ar tavu ceļu.
-
-Kopīgi tematiskie dēļi (visām klasēm pieejami, bonusi mainās pēc klases):
-
-| Dēlis                 | Fokuss                                      |
-|-----------------------|---------------------------------------------|
-| **Zvērests**          | Sākuma dēlis, klases identitāte, balansēts  |
-| **Karagājienis**      | Ofensīvs — bojājums, kritiskais, tempo     |
-| **Tvirtīgums**        | Defensīvs — dzīvība, bruņas, resists       |
-| **Barvedis**          | Minjonu buffi — skaits, spēks, DoT         |
-| **Nolādēts**          | Riska/atlīdzības — spēcīgi, ar cenu        |
-| **Troņa Māksla**      | Utility — cooldown, resurss, kustība       |
-| **Melnais Kaisms**    | Klases-eksklīvs 6. dēlis, atslēdzas kampaņas fināla |
-
-Katram dēlim ir **~80 mezgli** kopā. Lai sasniegtu izejas **Vārtu Mezglu**, jāizceļo caur **60–70 mezgliem** (atkarībā no ceļa). Ar **350 punktiem** vidēji aizpildi **5 pilnus dēļus** (~70 punkti katrs).
-
-#### Mezglu tipi
-
-| Tips           | Krāsa       | Efekts                                                                                     |
-|----------------|-------------|--------------------------------------------------------------------------------------------|
-| **Parasts**    | Balts       | Neliels stats: **+5 primārā stats** vai **+2% minoritārs bonuss**                          |
-| **Maģisks**    | Zils        | Vidējs stats: **+10 primārā stats** vai **+3% bojājums pret ienaidnieku tipu**             |
-| **Rets**       | Dzeltens    | Liels bonuss + **statistiku slieksni**: piem., *"+15% Sūkšņu bojājums; ja tev ir 300+ Spēka, papildu +15%"* |
-| **Leģendārs**  | Zelts       | **Viens uz dēli**, klases-specifisks, spēles-maiņas efekts                                 |
-| **Vārtu**      | Sudrabs     | Uz dēļa malas — pievieno tur nākošo dēli                                                  |
-| **Rūnu ligzda**| Purpurs     | Vieta, kur ievieto **Rūnu** (skat. tālāk); dod area-of-effect bonusu ap sevi              |
-
-Katrā dēlī: **~50 parasti**, **~20 maģiski**, **~6 reti**, **1 leģendārs**, **1 rūnu ligzda**, **1–4 vārti** malās.
-
-#### Leģendārie mezgli (piemēri pa klasēm)
-
-- **Melnais Bruņinieks** — *"Krustnesis"*: kad iedarbini Krusta Zvanu, visi Sūkšņi tuvumā iegūst 5s neatgriezenības un dubulto uzbrukumu bojājumu.
-- **Berserkers** — *"Nekad Vairs Mierā"*: Rage nekad neizzūd cīņas laikā; kritums no dzīvības zem 30% iedarbina 3s berserker automātiski.
-- **Alkas Kungs** — *"Zelts Ir Asinis"*: 20% no savāktā zelta konvertējas uz temporāro dzīvību (uzkrājas līdz 2× max dzīvība).
-- **Mežonis Kungs** — *"Puve Nekad Nemirst"*: inde no tavām prasmēm spread uz 2 tuvākajiem ienaidniekiem, kad mērķis nomirst.
-- **Bezēnu Zaglis** — *"Divi Ēnu Klonis"*: Ēnu Solis atstāj ilūziju, kas veic vienu automātisku sitienu.
-- **Vientuļais Sniegurgs** — *"Sasala Kronis"*: sasaldētie ienaidnieki, saplīstot, dod +10 Sala un ceļ vājo skeletu.
-
-#### Rūnas (mūsu Glyphs)
-
-**Rūnas ir mazi gotiski simboli**, kurus ievieto Paragon Dēļa **Rūnu ligzdās**. Katra Rūna:
-- Ir **klases-agnostika** (var izmantot jebkurš) vai **klases-specifiska**.
-- Ir **līmenis 1–21** (max 21). Sāk 1, augst caur **Murgu Dungeoniem**.
-- Ir **rādiuss** (2×2 → 4×4 → 6×6 mezgli ap ligzdu), kas aug ar līmeni.
-- Dod bonusu pēc **mezglu tipa** rādiusā — piem., *"Katrs Maģiskais mezgls tavā rādiusā dod +2% Sūkšņu bojājumu"*.
-- Dod **papildu bonusu**, ja **stats sliekšnis** rādiusā ir sasniegts — piem., *"Ja tavā rādiusā ir 40+ Veiklības, bonuss × 2"*.
-
-**Rūnu piemēri:**
-
-| Rūna              | Efekts                                                                          |
-|-------------------|---------------------------------------------------------------------------------|
-| **Ģerbonis**      | Katrs Rets mezgls rādiusā dod +3% pret elementārajiem bojājumiem                |
-| **Asinssaite**    | Katrs Maģisks mezgls rādiusā dod +2% Barveža bojājumu                          |
-| **Slēgtais Vārds**| Ja rādiusā ir 100+ Prāta, prasmju cooldown -15%                               |
-| **Zvana Skaņa**   | Katrs Parasts mezgls rādiusā dod +1% kritiskā sitiena šansei                   |
-| **Nolādētais Sirdsdedzis** | Rūna arī iznīcina 1% max dzīvības 5s cīņas laikā, bet dubulto visus rādiuss bonusus |
-
-**Rūnu iegūšana:**
-- Pirmās 5 Rūnas — no galvenā stāsta bosiem (viena uz reģionu).
-- Pārējās (līdz ~30) — random dropi no **Murgu Dungeoniem** (skat. Endgame).
-
-**Rūnu līmeņa celšana:**
-- Katra pabeigta Murgu Dungeon iedod **XP** izvēlētajai Rūnai (ne visām).
-- Tier XP: **Murgu D. Tier 1** = maza XP, **Tier 100** = milzīga XP. Kāpumi eksponenciāli.
-- Level 15 → 21 prasa augsto tieru dungeonus (endgame grinds).
-
-#### Paragon ekonomija — kā tas jūtas
-
-- **Pirmie 50 punkti (līdz 130 kopā):** aizpildi sākuma dēli, sāc pirmo papildu dēli.
-- **150–200 punkti:** trešā dēļa ceļš, sāk parādīties spēles-maiņas leģendārie mezgli.
-- **250–300 punkti:** ceturtā/piektā dēļa optimizācija, Rūnu min-maxing.
-- **300–350 punkti:** perfekcijas grind — pēdējie Rūnu līmeņi, min-max ceļu maiņa (kombinācijas).
-
-**Cīņa nemainās pēc jaudas skaitliski (nav jautri), bet pēc kombinācijām un buildu identitātēm.** Diablo 4 stila **build diversity** — divi Berserkeri ar 300 Paragon punktiem izskatās un jūtas pilnīgi atšķirīgi.
-
-#### Respec (pārtīrīšana)
-
-- **Bezmaksas** pa mezglam pa mezglam (nomainīt vienu punktu = 100 zelta agrīnā spēlē, aug ar līmeni).
-- **Pilna Paragon respec** — vienu reizi nedēļā bezmaksas, tad par pieaugošu **Dvēseļu enerģijas** cenu.
-- Klases prasmju koka respec ir atsevišķs, dārgāks.
+Detaliēzēta Paragon sistēma — skat. `ParagonBoards.md` (**needs refactor to 3 classes**).
 
 ---
 
-## 10. Melnā Kalna cietoksnis (hub, aug)
+## 10. Melnā Torņa cietoksnis (hub, aug)
 
-Nemainīgs kopš iepriekšējās versijas:
 - **Tronis** (klases-tematiska dekorācija)
-- **Minjonu bedres**
+- **Minjonu bedres** (4, atslēdzas ar reģionu clearing)
 - **Bruņotava** / **Alķīmiķa tornis**
 - **Karte** (planē reidus)
 - **Trofeju halle**
@@ -607,13 +208,13 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 
 ## 13. MVP saraksts
 
-- **Viena klase:** Melnais Bruņinieks (kā vienkāršākais paradigms).
-- **Viens reģions:** Debesu Virsotne.
+- **Viena klase:** Pirmais Kungs (kā vienkāršākais paradigms un balansēts).
+- **Viens reģions:** Melnais Tornis (starta klases karaļvalsts).
 - **Sūkšņu** minjoni ar pilnu komandu sistēmu.
-- Pamata cīņa + 3 aktīvās prasmes + Grēksūdzes signāles resurss.
-- Divi ienaidnieku tipi + viens mini-boss (Bīskapa novices).
+- Pamata cīņa + 3 aktīvās prasmes + Dominance signāles resurss.
+- Divi ienaidnieku tipi + viens mini-boss (Sardzes Kapteinis Bornlejs).
 - Viens dungeon (5 telpas, boss beigās).
-- Melnais Kalns kā vienkāršs hub (tronis, minjonu bedre, kalējs).
+- Melnais Tornis kā vienkāršs hub (tronis, minjonu bedre, kalējs).
 - Loot ar trim retumiem.
 - Klases prasmju koks (samazināts, 15 punkti).
 - Level up līdz 15.
@@ -636,7 +237,7 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 
 ### Klašu arhitektūra kodā
 - `AKungsCharacterBase` (abstract UE C++ klase).
-- Katrai klasei: `AKungsMelnaisBrunininks`, `AKungsBerserkers`, `AKungsAlkasKungs`, `AKungsMezonisKungs`, `AKungsBezenuZaglis`, `AKungsVientulaisSniegurgs`.
+- Katrai klasei: `AKungsPirmaisKungs`, `AKungsOtrsKungs`, `AKungsVecaisBurvis`.
 - **`UClassOathComponent`** apstrādā signāles resursu, klases prasmes, minjonu afinitātes bonusus.
 
 ---
@@ -645,11 +246,11 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 
 ### Māksla
 - **Stilizēti low-poly** ar spēcīgu apgaismojumu.
-- Katrai karaļvalstij savs materiālu un krāsu profils (skat. sadaļu 3).
-- Klasēm — atšķirīgi silueti pat no isometriskā skata (Bruņinieks blīvs+kvadrāts; Zaglis šauras+ass; Sniegurgs slaids+garš mētelis u.c.).
+- Katrai karaļvalstij savs materiālu un krāsu profils.
+- Klasēm — atšķirīgi silueti pat no isometriskā skata.
 
 ### Audio
-- Klusa, minimāla mūzika ar reģionāliem instrumentiem (Debesu Virsotne — ērģeles; Arēna — bungas; Zelta Raktuves — pundurķēniņu kolieris; Puvušais Mežs — īsti koku vaidoni; Bāzars — čūskas svilpes+string; Ledus Kroņi — vientuļa vijole).
+- Klusa, minimāla mūzika ar reģionāliem instrumentiem (Melnais Tornis — ērģeles + ķēde; Nordberga — kori + akordeons; Vecais Tornis — arkānā vokāls + skanoša metallophone).
 - Minjoni murmina; Kunga balss izvēles brīžos.
 
 ---
@@ -657,11 +258,15 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 ## 16. Nākamie soļi
 
 1. **Šis dokuments** ✅
-2. **Klašu jaudas balansa melnraksts** — tabulas ar statisko sākuma bāzi.
-3. **Vienas klases (Bruņinieka) pilns prasmju koks** — kā etalons.
-4. **C++ arhitektūra:** `AKungsCharacterBase` + `AKungsMelnaisBrunininks` + `UClassOathComponent` skelets.
-5. **Sākuma aina** — spēlētājs + 3 minjoni + 1 ienaidnieks Debesu Virsotnes gotiskā vitrāžas telpā.
-6. **UI melnraksts** klases izvēles ekrānam.
+2. **Refactor pending doks:**
+   - `ParagonBoards.md` — pārrakstīt 3 klasēm (18 dēļi vietā 42)
+   - `Aspects.md` — pārrakstīt klases-specifisko sadaļu (24 vietā 48)
+   - `Runes.md` — atjaunināt klases-specifisko sadaļu (6 vietā 12)
+   - `DamageMath-AllBuilds.md` — pārrakstīt 9 buildiem vietā 18
+   - `Dungeons.md` — atjaunināt klases dungeonus (3 vietā 6)
+   - `Seasons.md` — atjaunināt klases atsauces
+   - `BrokenBuilds.md` — atjaunināt build atsauces
+3. **BuildGuide-*.md** — jauni 3 doki, veci 6 dzēsti ✅ (šai versijā)
 
 ---
 
