@@ -199,7 +199,7 @@ Katrai klasei ir **~8 klases-eksklīvi legendāri** ar tikai tai domātām salik
 
 ## 9. Progresija
 
-- **Līmeņi 1–100**, pēc tam **Paragon punkti**.
+- **Līmeņi 1–80** (max level 80), pēc tam atslēdzas **Paragon sistēma** ar max **350 Paragon punktiem**.
 - **Prasmju koks** trīs zaros: **Kungs** (personiskais), **Barvedis** (minjoni), **Melnais Māksla** (nolādēts).
 - Katrai klasei **savs prasmju koks** ar 6–8 unikāliem "keystone" perkiem.
 
