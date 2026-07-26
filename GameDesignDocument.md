@@ -1,183 +1,271 @@
-# Design dokuments — *Kalna Ēnas* (darba nosaukums)
+# Design dokuments — *Kalna Kungs* (darba nosaukums)
 
-**Žanrs:** Isometrisks action RPG
-**Stils:** Gothic fantasy
+**Žanrs:** Isometrisks action RPG ar minjonu komandēšanu
+**Iedvesma:** *Overlord* (2007) × *Diablo IV*
 **Engine:** Unreal Engine 5
-**Skats:** Top-down / isometric (kā Diablo, Path of Exile, Hades)
-**Platforma:** PC (Windows) — sākotnēji
+**Skats:** Top-down / isometrisks, ar rotējamu kameru
+**Platforma:** PC (Windows), vēlāk konsoles
 
 ---
 
-## 1. Koncepta kopsavilkums
+## 1. Koncepts vienā teikumā
 
-Spēlētājs iemiesojas *Sardzē* — pēdējais no zvērināta ordeņa, kas gadsimtiem sargāja pasauli no *Mūžīgā Miega* — sena lāsta, kas mirušos ceļ atpakaļ kā mēmus, sapelējušus verdzeniekus. Ordenis krita, pasaule slīd tumsā, un tu esi vienīgais, kurš vēl var doties uz **Kalnu** — sakrālo virsotni, kur lāsts sākās.
+Tu esi jaunais *Kalna Kungs* — tumšas gotiskas impērijas mantinieks, kurš pavēl četru veidu **Ēnu minjoniem** izlaupīt, iekarot un pārbūvēt sabrukušu pasauli, meklējot arvien retākus artefaktus arvien draudīgākās vietās.
 
-Spēle notiek septiņu procedurāli veidotu reģionu ceļojumā uz Kalnu. Katrs reģions ir mazs, blīvs, ar rokām veidots, bet secība un dažas telpas mainās katrā spēles reizē.
-
-**Vienā teikumā:** Diablo blīvums + Bloodborne noskaņa + Hades stāstījums, viena varoņa isometriska ceļojumā uz nolādēto virsotni.
+**Overlord daļa:** minjoni ir tavs galvenais ierocis. Tu retāk cīnies pats — tu komandē.
+**Diablo 4 daļa:** blīvs loot, prasmju koki, dungeoni, world bosi, sezonas, endgame progresija.
+**Gothic daļa:** viss ir tumšs, drēgns, sakrālizēts, ar melno humoru.
 
 ---
 
 ## 2. Pasaule un noskaņa
 
 ### Vizuālais stils
-- **Krāsu palete:** ogļu melna, asins sarkana, alvas zilā, sveču zelts. Ļoti maz piesātināto krāsu.
-- **Gaismas:** stipri kontrastējošas — sveces, laternas, mēness gaisma; lielas ēnas.
-- **Arhitektūra:** ziemeļu gotika — smaili velvējumi, kapu akmeņi, mūru fragmenti, sapuvušas baznīcas.
-- **Daba:** kailu koku silueti, migla, purvi, sniegs augstākos reģionos.
+- **Krāsu palete:** ogļu melna, asins sarkana, alvas zila, sveču zelts, purpurs kunga zīmoglaukumos.
+- **Gaisma:** stiprie kontrasti — sveces, ugunskuri, lauskas, mēness caur miglu.
+- **Arhitektūra:** ziemeļu gotika — smaili velvējumi, kripтas, klosteri, akmens tilti pār bezdibeni.
+- **Melnais humors:** minjoni murmina glupības, nes uz galvām ķirbjus un pannas, cīnās ar sagrautiem baznīcas svečturiem.
 
-### Pasaules lore īsumā
-- Pasaule saucas **Vaireja** (*Vairēja*).
-- Reiz to sargāja septiņi **Zvērestvīri** — ordeņa dibinātāji. Katrs iesvētīja vienu no septiņām sardzes vietām.
-- Pirms trīsdesmit gadiem viens no viņiem, **Melnais Priesteris Orins**, nokāpa Kalnā, lai atrastu lāsta sakni — un pats to izlaida.
-- Kopš tā laika mirušie neguļ. Ciemi krīt, ordenis izklīst.
-- Spēlētājs ir **pēdējais mācītais bērns** no ordeņa — audzināts vaidēt, cīnīties un mirt Kalnā.
+### Pasaules lore
+- Pasaule saucas **Vaireja**.
+- Pirms 300 gadiem **Pirmais Kungs** valdīja no **Melnā Kalna** — cietokšņa virsotnē. Viņa minjoni iekaroja septiņas karaļvalstis.
+- Pirmais Kungs krita. Kalna vārti aizvērās. Pasaule sabruka septiņās sīkās, savstarpēji naidīgās valstiņās, kurās *tagad* valda "gaišie" ordeņi, korumpēti bīskapi un fanātiskas mūku brālības.
+- Tu esi **jaunais mantinieks** — pamodies pēc trīssimt gadu miega, atradis Melno Kalnu tukšu, minjonu bedres izsalkušas, tronu drupās.
+- Tavs uzdevums: atjaunot impēriju. Vai iznīcināt to. Vai kaut ko trešo — tas ir tavs stāsts.
 
-### Septiņi reģioni (ceļojumā uz augšu)
-1. **Pelnu Purvs** — nolaista sardzes vieta, iesācēju zona.
-2. **Sausokļu Mežs** — kaltē koki, ķērtāji, pirmais boss.
-3. **Klosteris Kalnpēdē** — kritis klosteris, apsēsti mūki.
-4. **Kaulu Kāpnes** — mūžīgas kāpnes cauri klintīm.
-5. **Ledus Kroņi** — sniegā slēptas kapenes.
-6. **Melnās Baznīcas Drupas** — Orina bāze.
-7. **Kalna Kalts** — pēdējais reģions, virsotne.
+### Septiņas karaļvalstis (spēles reģioni)
+1. **Pelnu Purvs** — sabrukusi robežpils, iesācēju zona.
+2. **Sausokļu Mežs** — mūku brālība sarga senu kriptu.
+3. **Melnā Baznīca** — fanātiska bīskapa cietoksnis.
+4. **Ledus Kroņi** — ziemeļu klaidoņu klani, vilku dievs.
+5. **Sarkanās Pļavas** — lauku novads ar apsēstiem zemniekiem.
+6. **Stikla Pilsēta** — noslēpumaina tirgotāju republika, alķīmiķi.
+7. **Melnais Kalns** — tava paša cietoksnis (hub + fināls).
 
----
-
-## 3. Galvenā mehānika
-
-### 3.1. Kustība un vadība
-- **Peles klikšķis** — pārvieto varoni (Diablo stils).
-- **Alternatīva:** WASD tiešā vadība (spēlētājs izvēlas iestatījumos).
-- **Kamera:** fiksēts isometrisks leņķis, ar iespēju rotēt 90° soļos.
-
-### 3.2. Cīņa
-Reāllaika, mērķēta, ar izvairīšanās mehāniku.
-- **Vieglais uzbrukums** (LMB) — ātrs, mazs bojājums.
-- **Smagais uzbrukums** (RMB) — lēns, lauž vairogus.
-- **Izvairīšanās** (Space) — īsa rullēšana ar i-frames.
-- **Bloks** (Shift) — patērē izturību.
-- **Prasmes** (Q, E, R) — trīs aktīvas prasmes, kas mainās atkarībā no ekipējuma.
-
-**Trīs statistikas resursu joslas:**
-- **Dzīvība** (sarkana) — atjaunojas ar dziedināšanas flaķi.
-- **Izturība** (zaļa) — cīņas darbībām, ātri atjaunojas.
-- **Ticība** (zila) — burvestībām un lūgšanām.
-
-### 3.3. Progresija
-- **Līmeņi** — no 1 līdz 50.
-- **Sešas pamata statistikas:**
-  - *Spēks* — smago ieroču bojājumi.
-  - *Veiklība* — vieglo ieroču bojājumi, izvairīšanās.
-  - *Izturība* — dzīvības josla, izturība.
-  - *Prāts* — ticības josla, burvestību jauda.
-  - *Ticība* — svēto prasmju piekļuve.
-  - *Ļaunums* — nolādēto prasmju piekļuve (nāk ar cenu).
-- **Prasmju koks** — trīs zari: **Zobens**, **Sveka** (burvestības), **Lāsts** (nolādētās prasmes).
-
-### 3.4. Ekipējums
-- **Sešas slotes:** galva, rumpis, rokas, kājas, ierocis, sekundārais (vairogs / talismans / otrs ierocis).
-- **Krāsas pēc retuma:** parasts (pelēks), rūdīts (zils), sena (violets), reliktu (zelts), nolādēts (asins sarkans — spēcīgs, bet ar sāpēm).
-- **Kalt un uzlabot** — pie sētniekiem drošajās telpās.
-
-### 3.5. Drošās telpas ("Sveces")
-Kā ugunskuri Dark Souls — atjauno visu, saglabā progresu, respawn ienaidniekus. Katrā reģionā 2–4.
-
-### 3.6. Nāve
-- Nomirstot atmostas pēdējā svecē.
-- Zaudē pusi savāktā **Pelna** (valūta/pieredze).
-- Var to atgūt, aizsniedzot vietu, kur nomiris.
+Katrs reģions:
+- **Atvērts** — vairākas veiktenes, blakusuzdevumi, pasaules bosi (Diablo 4 stils).
+- **Dungeoni** — 4–6 uz reģionu, iet dziļāk pēc katra passa (**Murgu Dungeoni** endgame).
+- **Iekaroti reģioni** — pēc uzvaras pār reģiona bosu var tur pastāvīgi iemitināt savus minjonus, kas ienes zeltu.
 
 ---
 
-## 4. Stāsts un tā struktūra
+## 3. Galvenā mehānika — Minjonu komandēšana
+
+### Četru veidu minjoni (Overlord DNS ar gotisku pieskaņu)
+
+| Tips        | Krāsa      | Loma                    | Īpatnības                                                                 |
+|-------------|------------|-------------------------|---------------------------------------------------------------------------|
+| **Sūkšņi**  | Brūni      | Tuvcīņa, tanks          | Stipri, izturīgi, dumji. Var celt smagas lietas, lauzt vārtus.            |
+| **Sārtaji** | Sarkani    | Distance, uguns         | Šauj uguns bumbas, imūni pret uguni, sadedzina koka barjeras.             |
+| **Zaļči**   | Zaļi       | Zaglība, inde           | Neredzami krūmos, backstab, izgādā indi, atmet slazdus.                   |
+| **Zilspāri**| Zili       | Maģija, dziedināšana    | Dziedina komandu, ceļ nesenus mirušos kā īslaicīgus sabiedrotos.          |
+
+Sākumā tev pieejami tikai **Sūkšņi**. Katrus atklāj, atgriežot minjonu bedri no izmirušas.
+
+### Komandēšanas mehānika
+- **RMB uz vietas** — *"Ejiet tur!"* — minjoni skrien uz punktu.
+- **RMB uz mērķa** — *"Uzbrūkiet!"* — koncentrējas uz vienu ienaidnieku vai objektu.
+- **Shift + RMB** — *"Turieties tālāk"* — minjoni atkāpjas pie tevis.
+- **Q / E / R / T** — pārslēdz aktīvo minjonu tipu (kuriem sekot pavēlei).
+- **F** — *"Savāc!"* — minjoni sāk lasīt loot, kur pavēl.
+- **G** — *"Ekipējieties!"* — minjons paceļ ieroci/bruņas no zemes un lieto pats.
+
+### Minjonu limits
+- Sākumā: **10 minjoni** kopā (pa 2–3 tipiem).
+- Uzlabojot Melno Kalnu, aug līdz **30 minjoniem** (7–8 no katra tipa).
+- Minjoni mirst. Jaunus **audzē** minjonu bedrēs par savākto **dvēseļu enerģiju** (kritušie ienaidnieki izdala dvēseles).
+
+### Tavs paša varonis
+Tu **arī** cīnies, bet retāk. Tavas lomas:
+- **Aura** — minjoni ap tevi ir stiprāki.
+- **Personiskās prasmes** — spēcīgas AoE burvestības ar garu cooldown (Diablo ultimate stilā).
+- **Diplomātija/iebiedēšana** — tu runā ar NPC, ne minjoni.
+
+Tu vari nomirt. Ja nomirsti — minjoni bēg atpakaļ uz Melno Kalnu, tu atmostos tronī. Zaudē pusi *Pelna* (skat. tālāk).
+
+---
+
+## 4. Cīņas sistēma
+
+- **LMB** — tavs personiskais uzbrukums (nūja/zizli/lāsts).
+- **RMB** — minjonu komanda.
+- **Space** — izvairīšanās (i-frames).
+- **Q / E / R** — trīs aktīvās prasmes (mainās pēc ekipējuma un prasmju koka).
+- **Shift** — sprints.
+
+**Resursi:**
+- **Dzīvība** — atjaunojas ar dziedināšanas flaķi (Zilspāri var papildināt).
+- **Mana** — burvestībām.
+- **Dvēseļu enerģija** — kalpo minjonu radīšanai un dažām speciālām prasmēm.
+
+**Cīņas ritms:** ne tu, ne minjoni viens paši netiek galā ar boss. Uzvara — pareizā komandu kombinācija (piem., Zaļči backstab, kamēr Sūkšņi tur agro, tu met AoE).
+
+---
+
+## 5. Loot un ekipējums (Diablo 4 stils)
+
+### Retums (krāsa)
+- **Parasts** (pelēks)
+- **Rūdīts** (zils) — 1 affix
+- **Sens** (violets) — 2–3 affixi
+- **Reliktu** (zelts, "legendary") — unikāls power ar spēles-maiņas efektu
+- **Nolādēts** (asins sarkans, "unique") — vislabākais, bet ar sāpēm (piem., "-30% dzīvība, bet minjoni ir 2× stiprāki")
+
+### Slotes (spēlētājam)
+Galva, rumpis, rokas, kājas, ierocis, sekundārais, 2× gredzens, amulets = **9 slotes**.
+
+### Minjonu ekipējums
+Katrs minjons var nēsāt **3 lietas**: ķivere, ierocis, aksesuārs. Atrastas lietas — nodod minjoniem. Sūkšņi ar bruņu cepuri = dzīvi ilgāk. Sārtaji ar sadedzinātu vēdzelēm — smieklīgi bīstami.
+
+### Kalt un pārkalt
+- **Melnajā Kalnā** — kalējs, alķīmiķis, mūžīgais burvis.
+- **Pārkalt affixu** (Diablo Enchanter stils) — nomaini vienu affixu par cenu, kas aug pēc katras reizes.
+- **Ievietot pērles** — 5 pērļu tipi ar dažādiem bonusiem.
+
+---
+
+## 6. Progresija
+
+### Līmeņi
+- Spēlētājs: līmeņi 1–100 (Diablo 4 stils).
+- Pēc 100. — **Paragon punkti** endgame progresijai.
+
+### Prasmju koks
+Trīs zari:
+- **Kungs** — personiskās kaujas prasmes, aura, burvestības.
+- **Barvedis** — minjonu bonusi (vairāk minjonu, stiprāki, ātrāk atdzimst).
+- **Melnais Māksla** — nolādētās prasmes (celt mirušos, kliedziens, kas iebaida u.c.). Nāk ar cenu (mazāka dzīvība, dvēseļu maksa).
+
+### Melnā Kalna cietoksnis (tavs hub, aug ar tevi)
+- **Tronis** — galvenā telpa; NPC nāk pie tevis ar problēmām/quest.
+- **Minjonu bedres** — audzē minjonus, uzlabo katra tipa max skaitu.
+- **Bruņotava** — glabā ekipējumu, kalt.
+- **Alķīmiķa tornis** — flakoni, pārkalšana.
+- **Karte** — planē reidus un iekarojumus.
+- **Trofeju halle** — bosu galvas, unikāli mīli, kosmētikas atlīdzības.
+- **Melnais tronis** — sēdi, minjoni sanes tev meitenes, vīnu, un tu izvēlies **Kunga tonus** — glaimotās/naidīgās izvēles, kas ietekmē impērijas raksturu.
+
+---
+
+## 7. Stāsts un morāles ass
+
+Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
+
+### Ass: **Tirāns** ↔ **Mecēns**
+Katra izvēle spēlē pabīda tevi uz vienu vai otru pusi.
+
+- **Tirāns:** iekaro brutāli, minjoni izlaupa ciemus, NPC baidās, iedzīvotāji strādā verdziski. Ekonomika ātra, minjoni brutālāki. Beigas: draka pasauli.
+- **Mecēns:** aizsargā zemniekus (jo vergu strādnieki ir vērtīgāki nekā līķi), minjoni klīst ar puķēm cepurēs, NPC lūdzas tavu vārdu. Ekonomika ilglaicīga, sabiedrotie stiprāki. Beigas: kļūsti par tumšo, bet cieņā turēto imperatoru.
 
 ### Trīs cēlieni
-1. **Ceļš uz Kalnu** — reģioni 1–3. Iepazīsti pasauli, satiec ordeņa paliekas.
-2. **Kāpiens** — reģioni 4–5. Atklāj, ka Orins nebija ļauns — viņš meklēja glābiņu.
-3. **Virsotne** — reģioni 6–7. Izvēle: iznīcināt Kalnu (lāsts beidzas, bet arī maģija pasaulē zūd), sakausēt to sevī (kļūsti par jauno Sargu, bet mirstīgs) vai nokāpt (pieņem lāsta pastāvēšanu, izdzīvo pasauli, kāda tā ir).
+1. **Pamošanās** — reģioni 1–3. Atrast minjonu tipus, atgūt Kalnu.
+2. **Iekarošana** — reģioni 4–6. Saduroties ar seno ordeņu paliekām.
+3. **Impērija vai Bezdibenis** — reģ. 7 + fināla dungeons. Izvēlies impērijas likteni.
 
-### Trīs beigas
-- **Klusums** — lāsts salauzts, pasaule bez brīnumiem.
-- **Sargs** — spēlētājs kļūst par pusdievu Kalnā, mūžīgi vientuļš.
-- **Pelni** — pasaule paliek nolādēta, spēlētājs atgriežas ciemā mierā.
-
-### NPC (svarīgākie)
-- **Sētnieks Vīlmars** — vecs kalējs, ordeņa pēdējais māceklis; kalt ekipējumu.
-- **Māsa Elēna** — nabadzīga mūķene; pārdod dziedināšanu, atklāj lūgšanas.
-- **Klaidonis Bēks** — sarkanmatains klejotājs; parādās katrā reģionā, tirgo dīvainas lietas.
-- **Melnais Priesteris Orins** — antagonists un noslēpuma centrs.
+### Beigas (4)
+- **Melnais Imperators** — pilnīgs tirāns, pasaule dreb.
+- **Cieņā turētais Kungs** — mecenāta ceļš, gotiska stabilitāte.
+- **Bezdibeņa Karotājs** — atbrīvo seno demonu, kas apēd Kalnu (un tevi).
+- **Klusums** — atsakies no varas, atgriezies gulēt, minjoni izklīst.
 
 ---
 
-## 5. Enemy dizains (piemēri)
+## 8. Endgame (Diablo 4 stils)
 
-| Nosaukums          | Reģions      | Uzvedība                                                |
-|--------------------|--------------|---------------------------------------------------------|
-| Purva rāpulis      | 1            | Lēns tuvcīņas ienaidnieks, indīgs.                      |
-| Sapuvis kareivis   | 1–2          | Skrien uz priekšu, sitiens ar rūsainu zobenu.           |
-| Kliedzēja          | 2            | Distances kliedziens — atņem izturību.                  |
-| Kailās māsas       | 3            | Trio, koordinēti uzbrukumi.                             |
-| Ledus lopiņš       | 5            | Slēpjas sniegā, uzbrūk no aizmugures.                   |
-| **BOSS:** Bezacu Bīskaps | 3      | Zvana zvanus, sauc ģeneratīvus ienaidniekus.            |
-| **BOSS:** Orins    | 7 (fināls)   | Trīs fāzes — cilvēks, pusdievs, Kalns.                  |
+Kad izspēlē kampaņu (~40–60 h), atveras:
+
+- **Murgu Dungeoni** — grūtāku versiju dungeoni ar īpašiem affixiem, dropo augstākā retuma loot.
+- **Iekarojuma karte** — sūti minjonu grupas uz misijām bez tevis. Idle progresija.
+- **Pasaules Bosi** — parādās uz kartes ik pa laikam, sauc kopā ar draugiem (co-op vēlākā versijā).
+- **Sezonas** (post-launch) — jauns mehāniskais twist ik pēc 3 mēnešiem (piem., "Sarkanā Sezona" — jauns sarkanais minjonu apakštips, jauns dungeon set, jauna kampaņa 5–10h).
+- **Leaderboardi** — ātrākā Melnā Kalna atjaunošana, augstākais Murgu Dungeon.
 
 ---
 
-## 6. Minimālais spēlējamais prototips (MVP)
+## 9. Co-op (post-MVP)
 
-Lai pierādītu, ka koncepts strādā, mērķa MVP:
+- **2–4 spēlētāji.** Katrs kungs ar savu minjonu armiju.
+- Šķīrējs: minjonu limits samazināts par 30% co-op režīmā (citādi ekrāns pilns).
+- **PvP arēna** — kungs pret kungu, minjonu armijas duelis. Karnevāls Melnajā Kalnā.
 
-- Viens reģions (**Pelnu Purvs**).
-- Viens varonis ar pilnu kustību un pamata cīņu.
+---
+
+## 10. Minimālais spēlējamais prototips (MVP)
+
+- Viens reģions: **Pelnu Purvs**.
+- **Sūkšņu** minjoni (10 gab. limits), pilna komandu sistēma.
+- Spēlētāja pamata cīņa + viena aktīvā prasme + izvairīšanās.
 - Divi ienaidnieku tipi + viens mini-boss.
-- Viena droša telpa (svece) ar respawn.
-- Trīs ekipējuma priekšmeti (viens ierocis, vairogs, talismans).
-- Vienkāršs UI: dzīvība, izturība, ticība, mini-mapa.
-- Nāves loop ar Pelna zaudēšanu/atgūšanu.
+- Viens dungeon (5 telpas, boss beigās).
+- Melnais Kalns kā vienkāršs hub: tronis, minjonu bedre, kalējs.
+- Loot ar trim retumiem (parasts, rūdīts, sens).
+- Level up līdz 15.
+- Saglabāšana un nāves cikls.
 
-**Laika ietvars solo izstrādei:** 3–6 mēneši MVP.
+**Laiks solo:** 6–9 mēneši MVP.
+**Laiks nelielai komandai (3–5 cilv.):** 3–4 mēneši MVP.
 
 ---
 
-## 7. Tehniskais stack (Unreal Engine 5)
+## 11. Tehniskais stack (UE5)
 
-- **UE 5.4+** ar Lumen (dinamiska gaisma — svarīga gotikai) un Nanite.
-- **C++** pamatsistēmām (Character, Combat, Inventory, Save).
-- **Blueprints** UI, prasmēm, quest scripting.
+- **UE 5.4+** ar **Lumen** (gotikai dinamiska gaisma ir must) un **Nanite**.
+- **C++** kodolam: `KungsCharacter`, `MinionBase`, `MinionAIController`, `MinionCommandComponent`, `LootManager`, `SaveGameSystem`.
+- **Blueprints** UI, prasmēm, quest scripts.
+- **GAS (Gameplay Ability System)** prasmēm un statiem.
+- **Behavior Trees + Blackboard** — minjonu un ienaidnieku AI.
 - **Enhanced Input** vadībai.
-- **GAS (Gameplay Ability System)** prasmēm un statiem — jaudīgs, bet stāvs.
-- **Behavior Trees** ienaidnieku AI.
-- **Metasounds** audio.
+- **Niagara** minjonu partiklu efektiem (dūmi, uguns, mirdzumi).
+- **Metasounds** dinamiskam audio.
 
-### Ieteicamais projekta plugins
-- **Advanced Locomotion System** — kustībai.
-- **Electronic Nodes** — Blueprint tīrībai.
-- **Rider for Unreal** vai **Visual Studio 2022** — C++ redaktoram.
+### Kritiskās sistēmas dizains
+- **`MinionCommandComponent`** uz spēlētāja — apstrādā RMB komandas, sūta uz minjonu grupu.
+- **`MinionAIController`** — katram minjonam sava; formation, follow, attack, retreat states.
+- **`MinionGroupSubsystem`** (World Subsystem) — tur globālo minjonu sarakstu, tipu limitus.
+- **`LootManager`** — Diablo-style loot roll ar affix generation.
 
 ---
 
-## 8. Māksla un audio
+## 12. Māksla un audio
 
 ### Māksla
-Sākumam **stilizēti low-poly** ar spēcīgu apgaismojumu — reālistiska AAA māksla vienam cilvēkam nav sasniedzama, bet stils to var kompensēt (skat. *Return of the Obra Dinn*, *Death's Door*).
+- **Stilizēti low-poly** ar spēcīgu apgaismojumu (līdzīgs Death's Door / Hades noskaņai).
+- Reālistiska AAA māksla vienam cilvēkam nav sasniedzama — stils to kompensē.
+- **Minjoni:** ~1m augsti, karikatūriski, ar lielām acīm un ieročiem, kas viņiem lielāki par galvu. Vienlaicīgi draudīgi un smieklīgi.
+- **Bosi:** monumentāli, mazliet H.R. Giger + Bloodborne.
 
 ### Audio
-- Klusa, minimāla mūzika. Bass, korālis, iestrēguši zvani.
-- Vējš, tālas balsis, karkstoši koki — pastāvīgs ambient.
-- Nav "battle music" — cīņā skan tikai ieroči un ienaidnieks.
+- Klusa, minimāla mūzika. Bass, korālis, iestrēguši zvani, ērģeles.
+- Minjoni murmina savā valodā (kaut kas starp Grot un Ork no Warcraft) — humoris tikai skaņā.
+- Kad bosu cīņa — pievienojas trokšņainas ērģeles.
+- **Kunga balss** izvēles brīžos — dziļa, mierīga, tumša.
 
 ---
 
-## 9. Nākamie soļi
+## 13. Salīdzinājums ar iedvesmām
+
+| Aspekts               | Overlord (2007)         | Diablo IV                | *Kalna Kungs* (mēs)         |
+|-----------------------|--------------------------|--------------------------|-----------------------------|
+| Skats                 | Third-person aiz muguras | Isometrisks              | **Isometrisks**             |
+| Minjoni               | Jā, 4 tipi               | Nē (tikai sabiedrotie)   | **Jā, 4 gotiski tipi**      |
+| Loot                  | Ierobežots               | Blīvs, definējošs        | **Blīvs, Diablo-stila**     |
+| Prasmju koks          | Vienkāršs                | Sarežģīts + Paragon      | **Sarežģīts + Paragon**     |
+| Endgame               | Nav                      | Murgu D., sezonas        | **Murgu D., sezonas, idle** |
+| Morāle                | Labais/ļaunais ass       | Nav                      | **Tirāns/Mecēns ass**       |
+| Tonis                 | Melns humors             | Nopietns, gotisks        | **Abu miksts**              |
+| Hub                   | Tumšais Tornis           | Kyovashad u.c.           | **Melnais Kalns (aug)**     |
+
+---
+
+## 14. Nākamie soļi
 
 1. **Šis dokuments** ✅
-2. **Vienas ainas mockup** — bloku pasaule ar varoņa kustību Unreal.
-3. **Pamata C++ klases:** `SardzeCharacter`, `HealthComponent`, `WeaponBase`, `EnemyBase`.
-4. **Cīņas prototips** ar vienu ienaidnieku.
-5. **UI melnraksts** — HUD, inventārs, izvēlne.
-6. **MVP saraksts** ar konkrētiem uzdevumiem.
+2. **Prototipa arhitektūra** — detalizēts C++ klašu sarakts un saites.
+3. **`MinionCommandComponent`** — pirmais kritiskais kods, pierāda mehāniku.
+4. **Vienkārša aina** ar spēlētāju + 3 dumji minjoni + 1 ienaidnieks.
+5. **Loot generation** — pirmā versija.
+6. **MVP task list** ar konkrētiem uzdevumiem un aprēķinu.
 
 ---
 
-*Šis ir dzīvs dokuments. Rediģē brīvi, kad kāds elements neder — labs GDD mainās ar spēli.*
+*Šis ir dzīvs dokuments. Katrs elements ir apspriežams — pastāsti, kas nepatīk, un mainām.*
