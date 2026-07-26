@@ -1,0 +1,683 @@
+# Rūnu Katalogs
+
+*Visu 30 Rūnu (Glyphu) pilna specifikācija ar efektiem, sliekšņiem, drop avotiem un build ieteikumiem.*
+
+Pamata Rūnu sistēma — skat. `GameDesignDocument.md` §9.1 un `ParagonBoards.md` §1.1.
+
+---
+
+## 1. Ievads
+
+Rūnas ir mazi gotiski simboli, ko ievieto Paragon dēļu **Rūnu ligzdās**. Katra Rūna:
+
+- Ir **klases-agnostika** (var izmantot jebkurš) vai **klases-specifiska**.
+- Ir **līmenis 1–21** (max 21).
+- Ir **rādiuss** (aug ar līmeni), kurā ietekmē tuvos Paragon mezglus.
+- Dod bonusu pēc **mezglu tipa** vai **klases mehānikas** rādiusā.
+- Var dot **papildu bonusu**, ja **stat sliekšņa** rādiusā ir sasniegts.
+
+### 1.1. Rādiuss aug ar līmeni
+
+| Rūnas Lv | Rādiuss     | Mezglu skaits rādiusā (vidēji) |
+|----------|-------------|---------------------------------|
+| 1        | 2×2         | ~4                              |
+| 5        | 3×3         | ~9                              |
+| 10       | 4×4         | ~16                             |
+| 15       | 5×5         | ~25                             |
+| 21       | 6×6         | ~36                             |
+
+### 1.2. Drop avoti (kopīgi)
+
+| Avots                          | Kas dropo                                        |
+|--------------------------------|---------------------------------------------------|
+| **Galvenā stāsta bosi**        | Pirmās 6 Rūnas (viena uz reģionu, klases-agnostika) |
+| **Reģiona sekundārie bosi**    | Klases-agnostiskas Rūnas Lv 1                    |
+| **Klases boss** (tavas klases Zvērests) | Tavas klases-specifiskā Rūna Lv 1        |
+| **Murgu Dungeoni T1–T20**      | Random klases-agnostiskas Rūnas + Lv XP           |
+| **Murgu Dungeoni T20–T60**     | Retākas Rūnas + upgrade materials + Lv XP        |
+| **Murgu Dungeoni T60–T100**    | Legendārās Rūnas + Uber Rūnas + Lv XP eksponenciāli |
+| **World Bosi**                 | Rets drops uz **Uber Rūnu** (~5% chance)         |
+
+### 1.3. Upgrade cost (līmeņi)
+
+| Lv       | XP prasība                | Materiāli                          |
+|----------|---------------------------|------------------------------------|
+| 1 → 5    | 1 Murgu Dungeon T1 katrs  | 500 zelta                          |
+| 5 → 10   | 1 T10 katrs               | 5 000 zelta                        |
+| 10 → 15  | 1 T30 katrs               | 25 000 zelta + Melnā Rune          |
+| 15 → 20  | 1 T60 katrs               | 100 000 zelta + Zvana Sudrabs      |
+| 20 → 21  | 1 T100 katrs              | 500 000 zelta + Zvaigznes Skabarga |
+
+Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10-15 stundas per Rūna**. Endgame grinds.
+
+---
+
+# 2. Universālās Rūnas (18)
+
+## 2.1. Node-Type Focused (5)
+
+### #1. **Zvana Skaņa**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** Katrs **Parasts** mezgls rādiusā = +1% Crit Chance.
+**Max (Lv 21):** Katrs **Parasts** mezgls rādiusā = +2% Crit Chance.
+
+**Slieksnis:** Ja rādiusā ir 20+ Parasti mezgli, papildu +5% Crit Chance kopīgi.
+
+**Drop:** Elite bosi jebkurā dungeon T1+.
+
+**Ieteicamie buildi:** jebkuram, kas skaita uz crit — Berserker DPS, Zaglis Backstab, Sniegurgs Freeze Nuke.
+
+---
+
+### #2. **Asinssaite**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** Katrs **Maģisks** mezgls rādiusā = +2% Barveža (minjonu) dmg.
+**Max (Lv 21):** Katrs **Maģisks** mezgls rādiusā = +4% Barveža dmg.
+
+**Slieksnis:** Ja rādiusā ir 10+ Maģisks mezgli, minjoni +10% AS.
+
+**Drop:** Reģiona bosi (Ninhera, Vezirs).
+
+**Ieteicamie buildi:** minjonu buildi — Zaglis Zaļču Armija, Berserker Armijas Kliedzējs, Sniegurgs Skeletu Karaļvalsts.
+
+---
+
+### #3. **Ģerbonis**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Katrs **Rets** mezgls rādiusā = +2% pret elementārajiem bojājumiem.
+**Max (Lv 21):** Katrs **Rets** mezgls rādiusā = +5% pret elementārajiem bojājumiem un +2% dmg.
+
+**Slieksnis:** Ja rādiusā ir 4+ Reti mezgli, viens papildu Rets mezgls "aktivējas" (dubultā bāzes efekts).
+
+**Drop:** Murgu Dungeoni T15+.
+
+**Ieteicamie buildi:** Bruņinieks Falangas Tank, Berserker Rage-Sustain (defensive-fokusēti).
+
+---
+
+### #4. **Kroņa Roka**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Ja **Leģendārais** mezgls rādiusā, tā efekts +10%.
+**Max (Lv 21):** Ja **Leģendārais** mezgls rādiusā, tā efekts +40%.
+
+**Slieksnis:** Ja rādiusā ir arī 3+ Reti mezgli, Leģendāra efekts +papildu 20%.
+
+**Drop:** Murgu Dungeoni T30+.
+
+**Ieteicamie buildi:** visi endgame — būtiski nostiprināt Kritušā Krusta / Trakuma Zvēresti u.c. keystone efektus.
+
+---
+
+### #5. **Mezglu Kalums**
+
+**Tips:** Universāla
+**Rarity:** Leg (leģendāra)
+
+**Bāzes (Lv 1):** Rādiuss tiek pielīdzināts ar +1 kārtu (Lv 1 = 3×3 vietā 2×2).
+**Max (Lv 21):** Rādiuss +2 kārtas + katrs mezgls rādiusā dod +1% dmg neatkarīgi no tipa.
+
+**Slieksnis:** Ja rādiusā ir mezgli no visiem 4 tipiem (Parasts, Maģisks, Rets, Leģendārs), viss dmg +10%.
+
+**Drop:** Uber Bosi (rets).
+
+**Ieteicamie buildi:** min-max endgame visiem.
+
+---
+
+## 2.2. Elementāra (5)
+
+### #6. **Ugunslīnija**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** Fire dmg +5%.
+**Max (Lv 21):** Fire dmg +25%.
+
+**Slieksnis:** Ja rādiusā ir 4+ Uguns/Physical mezgli, papildu +15% Fire dmg.
+
+**Drop:** Asins Arēna reģiona bosi.
+
+**Ieteicamie buildi:** Berserker (Sārtaji sync), Bruņinieks Zvana Uguns Hibrīds.
+
+---
+
+### #7. **Sasala Zīme**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** Frost dmg +5%.
+**Max (Lv 21):** Frost dmg +25%.
+
+**Slieksnis:** Ja rādiusā ir 4+ Frost/Ledus mezgli, freeze ilgums +30%.
+
+**Drop:** Ledus Kroņi reģiona bosi.
+
+**Ieteicamie buildi:** Sniegurgs visi 3 buildi.
+
+---
+
+### #8. **Zibens Solis**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** Lightning dmg +5%.
+**Max (Lv 21):** Lightning dmg +25%.
+
+**Slieksnis:** Ja rādiusā ir 4+ Lightning mezgli, uzbrukumi 5% chance ķēdē uz 2 tuvākiem mērķiem.
+
+**Drop:** Tuksneša Bāzars reģiona bosi.
+
+**Ieteicamie buildi:** Alkas Kungs (chain lightning ar Zelta Lietus), Bezēnu Zaglis (ķēdes ar Ēnu Solis).
+
+---
+
+### #9. **Ēnu Zīme**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Shadow dmg +7%.
+**Max (Lv 21):** Shadow dmg +30%.
+
+**Slieksnis:** Ja rādiusā ir Ēna vai Shadow mehānika mezgls, tavas prasmes uzliek Vulnerable 4s.
+
+**Drop:** Bezēnu Zagļa reģiona boss (Vezirs) — arī pieejams Murgu T30+.
+
+**Ieteicamie buildi:** Zaglis visi 3 buildi, Sniegurgs (Nekromantija).
+
+---
+
+### #10. **Svētais Vaids**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Holy dmg +7%.
+**Max (Lv 21):** Holy dmg +30%.
+
+**Slieksnis:** Ja rādiusā ir 3+ Ticības mezgli, prasmes dziedina tevi 2% HP per hit.
+
+**Drop:** Debesu Virsotne reģiona boss (Ansels).
+
+**Ieteicamie buildi:** Bruņinieks Falangas Tank, Bruņinieks Heal-Tank.
+
+---
+
+## 2.3. Damage-Type Focused (4)
+
+### #11. **Kritušā Vaids**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** Physical dmg +5%.
+**Max (Lv 21):** Physical dmg +25%.
+
+**Slieksnis:** Ja rādiusā ir 10+ Str mezgli, Physical Reizinātājs +10%.
+
+**Drop:** Elite bosi visos reģionos.
+
+**Ieteicamie buildi:** Bruņinieks, Berserker, Zaglis.
+
+---
+
+### #12. **Puves Zvana**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** DoT dmg +7%.
+**Max (Lv 21):** DoT dmg +35%.
+
+**Slieksnis:** Ja rādiusā ir 3+ Prāta mezgli, DoT tick 20% ātrāk.
+
+**Drop:** Puvušais Mežs reģiona boss (Ninhera).
+
+**Ieteicamie buildi:** Mežonis DoT Spam, Mežonis Zone Control.
+
+---
+
+### #13. **Bezdibeņa Zīme**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Vulnerable dmg +7%.
+**Max (Lv 21):** Vulnerable dmg +30%.
+
+**Slieksnis:** Ja rādiusā ir 5+ Vek mezgli, tavas prasmes uzliek Vulnerable +2s.
+
+**Drop:** Murgu T20+.
+
+**Ieteicamie buildi:** Zaglis (Kaklaslazds combo), Sniegurgs, jebkuram DPS.
+
+---
+
+### #14. **Vecā Vaids**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Overpower dmg +10%.
+**Max (Lv 21):** Overpower dmg +40%.
+
+**Slieksnis:** Ja rādiusā ir 5+ Izturība mezgli, Overpower chance +3%.
+
+**Drop:** Murgu T30+.
+
+**Ieteicamie buildi:** Bruņinieks Grēksūdzes Bomba (broken build), Berserker Rage-Sustain.
+
+---
+
+## 2.4. Utility (4)
+
+### #15. **Slēgtais Vārds**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** CDR +2% ja Prāts rādiusā 200+.
+**Max (Lv 21):** CDR +8% ja Prāts rādiusā 400+.
+
+**Slieksnis:** Ja Prāts rādiusā 800+, papildu -15% cooldown visām prasmēm.
+
+**Drop:** Elite bosi Murgu T5+.
+
+**Ieteicamie buildi:** Sniegurgs (Prāts primary), Mežonis, Alkas Kungs.
+
+---
+
+### #16. **Vainaga Māc**
+
+**Tips:** Universāla
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Ult (100pt) cooldown -5%.
+**Max (Lv 21):** Ult cooldown -20% + ult ilgums +2s.
+
+**Slieksnis:** Ja rādiusā ir Leģendārs mezgls, ult prasme dubultā charges reizē.
+
+**Drop:** Murgu T40+.
+
+**Ieteicamie buildi:** Berserker (Asins Trakums), Sniegurgs (Torņa Redzējums), Zaglis (Kaklaslazds).
+
+---
+
+### #17. **Miglas Zīme**
+
+**Tips:** Universāla
+**Rarity:** Kopīga
+
+**Bāzes (Lv 1):** Barrier gen +10%.
+**Max (Lv 21):** Barrier gen +40% + Barrier ilgums +3s.
+
+**Slieksnis:** Ja rādiusā ir 3+ Izturība/HP mezgli, Barrier daļa (30%) konvertējas uz permanent HP.
+
+**Drop:** Murgu T20+.
+
+**Ieteicamie buildi:** Bruņinieks Heal-Tank, Berserker Rage-Sustain.
+
+---
+
+### #18. **Nolādētais Sirdsdedzis**
+
+**Tips:** Universāla
+**Rarity:** Uber (leģendāra)
+
+**Bāzes (Lv 1):** Visi rādiuss bonusi ×1.5, bet tu zaudē 1% max HP/sec cīņā.
+**Max (Lv 21):** Visi rādiuss bonusi ×2.5, bet tu zaudē 2% max HP/sec cīņā.
+
+**Slieksnis:** Nav sliekšnis — vienmēr aktīvs kad Rūna uzstādīta.
+
+**Drop:** Uber Bosi (rets), World Bosi (ļoti rets).
+
+**Ieteicamie buildi:** Bruņinieks Heal-Tank (Grēksūdzes cikls kompensē), Berserker (rage no zaudētās HP).
+
+---
+
+# 3. Klases-Specifiskās Rūnas (12)
+
+## 3.1. Bruņinieks
+
+### #19. **Sardzes Zīme**
+
+**Tips:** Klases-specifiska (Bruņinieks)
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Grēksūdze uzkrāj +10% ātrāk.
+**Max (Lv 21):** Grēksūdze uzkrāj +30% ātrāk + Grēksūdzes Zvans +25% heal.
+
+**Slieksnis:** Ja rādiusā ir Barveža mezgls, Sūkšņi ap tevi +15% dmg.
+
+**Drop:** Bīskaps Ansels (Bruņinieka klases boss) — pirmreizējs kill.
+
+**Ieteicamie buildi:** Bruņinieks visi 3 buildi.
+
+---
+
+### #20. **Krusta Kronis**
+
+**Tips:** Klases-specifiska (Bruņinieks)
+**Rarity:** Leg (leģendāra)
+
+**Bāzes (Lv 1):** Zvana prasmes (Krusta Zvans, Grēksūdzes Zvans, Melnais Zvans) +10% dmg un +5% AoE radius.
+**Max (Lv 21):** Zvana prasmes +40% dmg un +25% AoE radius + cooldown -15%.
+
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Krustnesis", Zvana prasmes atkārtojas 1× (2× vietā 1×).
+
+**Drop:** Murgu Dungeon "Kritušā Ordeņa Kripta" (Debesu Virsotnes reģions) T40+.
+
+**Ieteicamie buildi:** Bruņinieks Falangas Tank, Bruņinieks Heal-Tank.
+
+---
+
+## 3.2. Berserker
+
+### #21. **Trakuma Zīme**
+
+**Tips:** Klases-specifiska (Berserker)
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Rage uzkrāj +15% ātrāk.
+**Max (Lv 21):** Rage uzkrāj +40% ātrāk + Rage nekad neizzūd cīņā.
+
+**Slieksnis:** Ja rādiusā ir Nolādēts mezgls, tavas prasmes zem 30% HP dubultā dmg.
+
+**Drop:** Karagalvenis Talos (Berserker klases boss) — pirmreizējs kill.
+
+**Ieteicamie buildi:** Berserker visi 3 buildi.
+
+---
+
+### #22. **Arēnas Solis**
+
+**Tips:** Klases-specifiska (Berserker)
+**Rarity:** Leg (leģendāra)
+
+**Bāzes (Lv 1):** Dual-wield AS +10%.
+**Max (Lv 21):** Dual-wield AS +30% + katrs 3. sitiens ir garantēts crit.
+
+**Slieksnis:** Ja rādiusā ir 5+ Vek mezgli, Vēja Vējš teleporte cooldown -50%.
+
+**Drop:** Murgu "Trīs Tūkstoš Deviņi" (Asins Arēna reģions) T40+.
+
+**Ieteicamie buildi:** Berserker Dual-Wield DPS.
+
+---
+
+## 3.3. Alkas Kungs
+
+### #23. **Alkas Vaids**
+
+**Tips:** Klases-specifiska (Alkas Kungs)
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Zelta drop +15%.
+**Max (Lv 21):** Zelta drop +50% + zelta uzkrāšana par nāvēm +20 per kill.
+
+**Slieksnis:** Ja rādiusā ir 5+ Ļaunums mezgli, tavas prasmes patērē 25% mazāk zelta.
+
+**Drop:** Vecais Goldo (Alkas Kunga klases boss) — pirmreizējs kill.
+
+**Ieteicamie buildi:** Alkas Kungs visi 3 buildi.
+
+---
+
+### #24. **Zelta Māls**
+
+**Tips:** Klases-specifiska (Alkas Kungs)
+**Rarity:** Leg (leģendāra)
+
+**Bāzes (Lv 1):** Konstrukti (Ķērājs Golems, Rāceles Ķērājs) +15% dmg.
+**Max (Lv 21):** Konstrukti +50% dmg + +50% HP + eksplozija nāves gadījumā +100% weap.
+
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Vecā Goldo Mantinieks", 3 konstrukti max vietā 1.
+
+**Drop:** Murgu "Zelta Cietoksnis" (Zelta Raktuves) T50+.
+
+**Ieteicamie buildi:** Alkas Kungs Golemu Kalts.
+
+---
+
+## 3.4. Mežonis Kungs
+
+### #25. **Zvēras Zīme**
+
+**Tips:** Klases-specifiska (Mežonis Kungs)
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Vilka Āda ilgums +2s.
+**Max (Lv 21):** Vilka Āda ilgums +8s + Vilka Ādā melee dmg +25%.
+
+**Slieksnis:** Ja rādiusā ir 5+ Ļaunums mezgli, Vilka Ādā ienaidnieku dropo līķi paliek 2× ilgāk (nekromantijas sinerģija).
+
+**Drop:** Ninhera (Mežoņa Kunga klases boss) — pirmreizējs kill.
+
+**Ieteicamie buildi:** Mežonis Beast Melee, Mežonis Zone Control.
+
+---
+
+### #26. **Puves Vaids**
+
+**Tips:** Klases-specifiska (Mežonis Kungs)
+**Rarity:** Leg (leģendāra)
+
+**Bāzes (Lv 1):** DoT spread pieauguma dmg +20%.
+**Max (Lv 21):** DoT spread pieauguma dmg +80% + kad DoT nogalinā, spread uz +2 papildu ienaidniekiem.
+
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Puve Nekad Nemirst Kronis", spread iet uz visiem ienaidniekiem 20m rādiusā.
+
+**Drop:** Murgu "Elfu Karalienes Vārti" (Puvušais Mežs) T40+.
+
+**Ieteicamie buildi:** Mežonis DoT Spam.
+
+---
+
+## 3.5. Bezēnu Zaglis
+
+### #27. **Naktsāda Zīme**
+
+**Tips:** Klases-specifiska (Bezēnu Zaglis)
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Naktsāda Ēna izmaksa -15%.
+**Max (Lv 21):** Naktsāda Ēna izmaksa -50% + Naktsāda ilgums +3s.
+
+**Slieksnis:** Ja rādiusā ir 5+ Vek mezgli, Naktsāda dubultā charges reizē (2× vietā 1×).
+
+**Drop:** Vezirs (Zagļa klases boss) — pirmreizējs kill.
+
+**Ieteicamie buildi:** Bezēnu Zaglis Permanent Invis (kritiskā), pārējie 2 buildi arī noderīgi.
+
+---
+
+### #28. **Aizmugures Kronis**
+
+**Tips:** Klases-specifiska (Bezēnu Zaglis)
+**Rarity:** Leg (leģendāra)
+
+**Bāzes (Lv 1):** Backstab dmg +20%.
+**Max (Lv 21):** Backstab dmg +70% + backstab garantēts crit.
+
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Ēnas Skūpsts", visi tavi hiti no invisibility ir backstab (arī no priekšas).
+
+**Drop:** Murgu "Bezēnu Karaļvalsts" (Tuksneša Bāzars) T40+.
+
+**Ieteicamie buildi:** Zaglis visi 3 buildi.
+
+---
+
+## 3.6. Vientuļais Sniegurgs
+
+### #29. **Torņa Zīme**
+
+**Tips:** Klases-specifiska (Vientuļais Sniegurgs)
+**Rarity:** Reta
+
+**Bāzes (Lv 1):** Torņa Redzējums patēriņš -15%.
+**Max (Lv 21):** Torņa Redzējums patēriņš -50% + ilgums +5s.
+
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls, Torņa Redzējums prasme dmg +50%.
+
+**Drop:** Ievas Turaņa (Sniegurga klases boss) — pirmreizējs kill.
+
+**Ieteicamie buildi:** Sniegurgs Torņa Redzējums (kritiskā), Freeze Nuke.
+
+---
+
+### #30. **Skeleta Vaids**
+
+**Tips:** Klases-specifiska (Vientuļais Sniegurgs)
+**Rarity:** Leg (leģendāra)
+
+**Bāzes (Lv 1):** Skeletu max +1.
+**Max (Lv 21):** Skeletu max +5 + skeleti +40% HP.
+
+**Slieksnis:** Ja rādiusā ir Leģendārais mezgls "Sasala Kronis Kronis", skeleti sasaldē mērķi ar katru sitienu.
+
+**Drop:** Murgu "Skeletu Torņa" (Ledus Kroņi) T40+.
+
+**Ieteicamie buildi:** Sniegurgs Skeletu Karaļvalsts.
+
+---
+
+# 4. Rūnu ieteikumi pa buildiem
+
+## 4.1. Bruņinieks
+
+| Build              | Slot 1 (kritiskā)   | Slot 2 (dfns/utility) | Slot 3 (endgame)      |
+|--------------------|---------------------|------------------------|-----------------------|
+| Falangas Tank      | Sardzes Zīme        | Ģerbonis               | Kroņa Roka            |
+| Heal-Tank          | Sardzes Zīme        | Miglas Zīme            | Nolādētais Sirdsdedzis|
+| Zvana Uguns        | Krusta Kronis       | Ugunslīnija            | Kroņa Roka            |
+
+## 4.2. Berserker
+
+| Build              | Slot 1              | Slot 2                 | Slot 3                |
+|--------------------|---------------------|------------------------|-----------------------|
+| Dual-Wield DPS     | Arēnas Solis        | Zvana Skaņa            | Kritušā Vaids         |
+| Rage-Sustain       | Trakuma Zīme        | Nolādētais Sirdsdedzis | Vecā Vaids            |
+| Armijas Kliedzējs  | Trakuma Zīme        | Asinssaite             | Kroņa Roka            |
+
+## 4.3. Alkas Kungs
+
+| Build              | Slot 1              | Slot 2                 | Slot 3                |
+|--------------------|---------------------|------------------------|-----------------------|
+| Projectile Spam    | Alkas Vaids         | Zvana Skaņa            | Zibens Solis          |
+| Golemu Kalts       | Zelta Māls          | Asinssaite             | Kroņa Roka            |
+| Ekonomika          | Alkas Vaids         | Slēgtais Vārds         | Nolādētais Sirdsdedzis|
+
+## 4.4. Mežonis Kungs
+
+| Build              | Slot 1              | Slot 2                 | Slot 3                |
+|--------------------|---------------------|------------------------|-----------------------|
+| DoT Spam           | Puves Vaids         | Puves Zvana            | Bezdibeņa Zīme        |
+| Beast Melee        | Zvēras Zīme         | Kritušā Vaids          | Kroņa Roka            |
+| Zone Control       | Puves Vaids         | Slēgtais Vārds         | Asinssaite            |
+
+## 4.5. Bezēnu Zaglis
+
+| Build              | Slot 1              | Slot 2                 | Slot 3                |
+|--------------------|---------------------|------------------------|-----------------------|
+| Teleport-Backstab  | Aizmugures Kronis   | Zvana Skaņa            | Vainaga Māc           |
+| Permanent Invis    | Naktsāda Zīme       | Aizmugures Kronis      | Ēnu Zīme              |
+| Zaļču Armija       | Asinssaite          | Aizmugures Kronis      | Ēnu Zīme              |
+
+## 4.6. Vientuļais Sniegurgs
+
+| Build              | Slot 1              | Slot 2                 | Slot 3                |
+|--------------------|---------------------|------------------------|-----------------------|
+| Freeze Nuke        | Sasala Zīme         | Slēgtais Vārds         | Zvana Skaņa           |
+| Skeletu Karaļvalsts| Skeleta Vaids       | Asinssaite             | Sasala Zīme           |
+| Torņa Redzējums    | Torņa Zīme          | Slēgtais Vārds         | Nolādētais Sirdsdedzis|
+
+---
+
+# 5. Rūnu iegūšanas ceļvedis (kur farm)
+
+## 5.1. Reģionu bosi (klases-agnostiskie Lv 1)
+
+| Reģions            | Boss             | Rūna dropi                              |
+|--------------------|------------------|------------------------------------------|
+| Debesu Virsotne    | Bīskaps Ansels   | Svētais Vaids                           |
+| Asins Arēna        | Karagalvenis Talos | Ugunslīnija                           |
+| Zelta Raktuves     | Vecais Goldo     | (klases-spec: Alkas Vaids)               |
+| Puvušais Mežs      | Elfu Karaliene Ninhera | Puves Zvana                        |
+| Tuksneša Bāzars    | Melnās Kūkas Vezirs | Zibens Solis, Ēnu Zīme              |
+| Ledus Kroņi        | Ievas Turaņa     | Sasala Zīme                             |
+
+## 5.2. Klases-specifiskās (pirmreizējs klases boss kill)
+
+Katras klases pirmais Zvērests-boss dropo klases-specifisko Rūnu (Lv 1).
+
+## 5.3. Murgu Dungeoni
+
+| Tier      | Kas dropo                          | XP uz Rūnu             |
+|-----------|-------------------------------------|------------------------|
+| T1–T20    | Random universālas Rūnas Lv 1      | Lv 1→5 progress        |
+| T20–T40   | Retākas + upgrade materiāli        | Lv 5→10                |
+| T40–T60   | Leģendārās (klases-specifiskās Lv 1)| Lv 10→15              |
+| T60–T80   | Leg + upgrade materiāli            | Lv 15→18               |
+| T80–T100  | Uber Rūnu shanc + Zvaigznes Skabarga| Lv 18→21             |
+
+## 5.4. Uber Rūnas (Nolādētais Sirdsdedzis, Mezglu Kalums)
+
+**Iegūst tikai no:**
+- Uber Bosi (endgame, atslēdz ar rituālu 5× Melnā Rune + Zvaigznes Skabarga)
+- World Bosi (~1% chance uz Uber Rūnu drop)
+
+**Grūtums:** viens Uber Rūnu drop = **~50 stundu grinds** vidēji.
+
+---
+
+# 6. Rūnu ekonomika
+
+## 6.1. Cik daudz Rūnas var izmantot vienlaicīgi?
+
+Skat. `ParagonBoards.md` §9.2:
+
+- Bruņinieks / Berserker: 14 slots (Rūnas kopā)
+- Zaglis: 15 slots
+- Alkas Kungs: 16 slots
+- Mežonis / Sniegurgs: 17 slots
+
+Vidēji **spēlētājs izmanto 5–8 unikālās Rūnas** — pārējie sloti paliek tukši vai ar mazāk stipru Rūnu, kamēr endgame farm progressē.
+
+## 6.2. Ideāls Rūnu setup ceļvedis
+
+| Progresas posms  | Rūnu setup                                           |
+|------------------|------------------------------------------------------|
+| Level 50 (Paragon atslēdzas) | 1-2 klases-specifiskās Rūnas Lv 5-10  |
+| Paragon 100      | 3-4 Rūnas Lv 10                                     |
+| Paragon 200      | 5-6 Rūnas Lv 15                                      |
+| Paragon 300      | 6-7 Rūnas Lv 18                                      |
+| Paragon 350      | 6-8 Rūnas Lv 21 (max, endgame chase)                 |
+
+---
+
+# 7. Kopsavilkums
+
+- **30 Rūnas kopā** (18 universālas + 12 klases-specifiskas).
+- **Rūnu retumi:** ~15 kopīgas, ~10 retas, ~4 leģendāras, ~1 Uber.
+- **Iegūšana:** viena Rūna par bosu, pārējās no Murgu Dungeoniem.
+- **Upgrade:** Lv 1 → 21 = ~40 Murgu runs = 10-15 stundas per Rūna.
+- **Endgame chase:** pilnas 8 Rūnas Lv 21 = **~100 stundu grinds**.
+
+Rūnas ir viens no galvenajiem endgame retention mehānikas — ne visi spēlētāji sasniedz Lv 21 uz visām rūnām, tas ir top 1% chase.
+
+*Skaitļi ir sākuma balansa piedāvājums. Tuning notiek pēc playtesting.*
