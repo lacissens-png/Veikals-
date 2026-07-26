@@ -70,7 +70,7 @@ Katrs Reliktu items ir 1 Aspekts. Katrs kritiskā slotā **imprintētais Aspekts
 Katras klases setu 6-piece ir **build-defining ×2.0 līdz ×3.0 multiplier**.
 
 ### 3.7. Klases Keystone (level 60)
-Bieži ir efektīvs multiplier (piem., Bruņinieka *Kritušā Krusta* Falangas pastāvīgs = viņu bonuss + tavas prasmes vienlaicīgi).
+Bieži ir efektīvs multiplier (piem., Vecā Burvja *Realitātes Karaļvalsts* Reality Rift pastāvīgs = triple dmg buff pastāvīgi).
 
 ### 3.8. Uber Mistiskie items
 Katrs Uber ir savs multiplier vai maiņa. Melnais Kronis dod +2 līmeņus visām prasmēm = **~×1.2 pastāvīgs multiplier**.
@@ -85,8 +85,8 @@ Katrs Paragon Dēļa leģendārais mezgls ir spēles-maiņas multiplier. **5 pil
 Level 15+ Rūnas dod significant multiplicative bonusus, ja stat sliekšņi izpildīti. Piem., *Nolādētais Sirdsdedzis* Lv 15 = **rādiuss bonusi ×2**.
 
 ### 3.12. Combat Windows (aktīvās prasmes)
-- **Ult windows** (Melnais Zvans, Asins Trakums, Sausā Sirds, Vilka Āda, Naktsāda, Torņa Redzējums): katrs dod ×1.5 līdz ×3 damage 5-20s logā.
-- Rīki, kā *"ja Rage virs 80"* vai *"pēc backstab"* — situatīvie multipliers, kas var būt izlīdzināti.
+- **Ult windows** (Kunga Zvans, Impērija Vaidēs, Reality Rift): katrs dod ×1.5 līdz ×3 damage 8-25s logā.
+- Rīki, kā *"ja Dominance 100"*, *"peldošā formā"* vai *"Reality Rift laikā"* — situatīvie multipliers, kas var būt izlīdzināti.
 
 ### 3.13. Vulnerable + Overpower kombinētais
 - Vulnerable pieaug damage kā multiplier (bāzes +40% ar +25% Reizinātājs = ×1.75).
@@ -111,9 +111,9 @@ Level 15+ Rūnas dod significant multiplicative bonusus, ja stat sliekšņi izpi
 - Tas nozīmē, ka ar 100K HP + 50K Barrier tu iegūsti **150 000 bāzes damage** vietā 2 400.
 - Tad **visi pārējie multipliers** iet virsū.
 
-**Fortify** ir stackable buff, kas aug ar saņemtu damage — Bruņinieks (Falangas Tank) var uzkrāt **500K+ Fortify** ilgā cīņā.
+**Fortify** ir stackable buff, kas aug ar saņemtu damage — Pirmais Kungs (Sardzes Zvērests) var uzkrāt **500K+ Fortify** ilgā cīņā, jo minjoni dalīti tai saņem daļu bojājumus.
 
-Ja Bruņinieks Overpower ar 500K Fortify + 100K HP + 50K Barrier = **650 000 bāzes damage** vietā 2 400 = **×271 multiplier**.
+Ja Pirmais Kungs Overpower ar 500K Fortify + 100K HP + 50K Barrier = **650 000 bāzes damage** vietā 2 400 = **×271 multiplier**.
 
 Pēc tam visi pārējie multipliers → **trillion range**.
 
@@ -125,7 +125,7 @@ Broken build nav pastāvīgs — tas dzīvo **combat windows**, kad daudz mehān
 
 **Perfekts combat window (~2-5 sekundes):**
 - Boss ir **Vulnerable** (uzlikts ar Zvana Metiens vai citu)
-- Boss ir **Frozen/Stunned** (uzlikts ar Sasalis Kaps vai Melnais Zvans)
+- Boss ir **Frozen/Stunned** (uzlikts ar Time Wave vai Kunga Zvans)
 - Tavs **Ult ir aktīvs** (Overpower window vai buff)
 - Setu proc ir gatavs
 - Aspekta proc ir gatavs
@@ -135,234 +135,170 @@ Broken build nav pastāvīgs — tas dzīvo **combat windows**, kad daudz mehān
 
 ---
 
-## 6. Broken Build #1 — Bruņinieks "Grēksūdzes Bomba"
+## 6. Broken Build #1 — Vecais Burvis "Realitātes Bezgalība"
 
-**Koncepts:** Ilga defensīva cīņa uzkrāj Fortify + Grēksūdze; kad tu tērē 100pt Melnais Zvans ar Overpower proc, damage ir absurds.
+**Koncepts:** Reality Rift pastāvīgs (keystone) + Torņa Ass double cast + Nolādētais Asinsakmens dubultkritis + Zilspāri ×5 spell power + eksponenciāls piercing chain caur mob grupu.
 
 **Setup:**
-- Bruņinieks, Heal-Tank keystone *Asins Katedrāle* (Grēksūdze 2×).
-- Setu *Asins Katedrāles Kārkas* pilnās 6/6 daļas.
-- Uber Mistiskais: **Sirds no Kalna** (nāves-atgriezšana) + **Melnais Kronis** (+2 skills).
-- Uber Gem: **Nolādētais Asinsakmens** (dubultkritis).
-- Aspekti: 5 imprint (Grēksūdzes Piespriedu, Nemirstīgā Zvana, Melnais Krusts, Zvana Uguns, Katedrāles Vēls).
-- Paragon 350 — leg mezgls *"Krustnesis"* aktīvs.
+- Vecais Burvis, keystone *Realitātes Karaļvalsts* (Reality Rift pastāvīgs).
+- Setu *Realitātes Karaļvalsts* pilnās 6/6 daļas.
+- Uber Mistiskais: **Nolādētais Asinsakmens** (Ēnu slots, dubultkritis) + **Melnais Kronis** (skills +2).
+- Aspekti: 5 imprint (Realitātes Karogs, Torņa Sirds, Vientuļā Sirds, Ledus Šauta Ceļš, Divu Cast Kronis).
+- Paragon 350 — leg mezgls "Realitātes Karaļvalsts Kronis" aktīvs.
 
-**Combat window setup (~90s uzkrāj):**
-1. Ienāc bosa cīņā, ļauj sevi 60s sist.
-2. Fortify uzkrāj līdz **~600K**.
-3. Grēksūdze pastāvīgi 100/100.
-4. Barrier no Grēksūdzes Zvana = **50K**.
-5. Boss Vulnerable ar Zvana Metiens.
-6. Boss Stunned ar iepriekšēju Melnais Zvans (kombo tag).
+**Combat window setup (~30s uzkrāj):**
+1. Ienāc bosa cīņā ar 10 Zilspāri (max ar setu bonuss).
+2. Uzkrāj Ark. Enerģija līdz 100.
+3. Aktivē Reality Rift → pastāvīgi 80% time slow.
+4. Boss ir Vulnerable no Time Wave.
+5. Setu 6-piece proc gatavs (crits triple dmg Reality Rift laikā).
 
-**Trigger:**
-- Overpower proc uz Melnais Zvans.
+**Trigger:** viens Arkānā Lauska LMB pret grupu.
 
 **Aprēķins:**
 
-Base swap = Fortify + HP + Barrier = 600K + 100K + 50K = **750 000** damage.
-Skill % (Melnais Zvans) = 400% = **3 000 000**.
+Base = 2400 × 1.40 × 2.00 (Reality Rift buff) × 3.00 (setu 6-piece triple crit) = **20 160** per hit.
 
-Multipliers stacked:
-- Str Attribute mult ×2.19
-- Additive bucket (Physical 90% + Elite 30% + Vulnerable 40%) = ×2.60
-- Crit ×2.5 × 1.5 (GA) = ×3.75
-- Vulnerable Reizinātājs ×1.25
-- Physical Reizinātājs ×1.30
-- Aspect Grēksūdzes Piespriedu ×1.50
-- Aspect Nemirstīgā Zvana ×1.80
-- Aspect Melnais Krusts ×1.40
-- Setu 6-piece transformācija ×2.50
+Multipliers stacked (crit vs Vulnerable, minjoni tuvāk, ...):
+- Prāta mult ×2.49
+- Additive bucket (Spell 90% + Elite 30% + Frost 30%) = ×2.50
+- Crit ×2.5 × 1.6 (GA + Nolādētais Asinsakmens dubultā) = ×8.00
+- Vulnerable ×1.75 × 1.25 = ×2.19
+- Spell Reizinātājs ×1.45
+- Aspect Realitātes Karogs ×1.50
+- Aspect Torņa Sirds ×2.00 (Zilspāri ×5)
+- Aspect Vientuļā Sirds ×1.35 (kad esi 15m+)
+- Aspect Ledus Šauta Ceļš ×1.50 (piercing exp)
+- Aspect Divu Cast Kronis ×2.00 (Torņa Ass sinerģija)
 - Melnais Kronis skill +2 ×1.20
-- Nolādētais Asinsakmens dubultkritis ×2.00
-- Paragon Krustnesis proc ×2.00
-- Rūna *Ģerbonis* Lv 15 ×1.60
+- Paragon leg Realitātes Karaļvalsts Kronis ×2.00
+- Rūna Realitātes Zīme Lv 21 ×1.60
 
-Total multiplier ceiling:
-`2.19 × 2.60 × 3.75 × 1.25 × 1.30 × 1.50 × 1.80 × 1.40 × 2.50 × 1.20 × 2.00 × 2.00 × 1.60`
-
-Compute pa soļiem:
+Total multiplier:
 ```
-2.19 × 2.60  = 5.69
-× 3.75       = 21.36
-× 1.25       = 26.70
-× 1.30       = 34.71
-× 1.50       = 52.07
-× 1.80       = 93.72
-× 1.40       = 131.21
-× 2.50       = 328.02
-× 1.20       = 393.62
-× 2.00       = 787.25
-× 2.00       = 1 574.50
-× 1.60       = 2 519.20
+2.49 × 2.50 × 8.00 × 2.19 × 1.45 × 1.50 × 2.00 × 1.35 × 1.50 × 2.00 × 1.20 × 2.00 × 1.60
+
+= 2.49 × 2.50  = 6.23
+× 8.00        = 49.80
+× 2.19        = 109.06
+× 1.45        = 158.14
+× 1.50        = 237.20
+× 2.00        = 474.40
+× 1.35        = 640.44
+× 1.50        = 960.66
+× 2.00        = 1 921.32
+× 1.20        = 2 305.58
+× 2.00        = 4 611.16
+× 1.60        = 7 377.86
 ```
 
-Total multiplier = **×2 519**.
+Total mult = **× 7 378**.
 
-**Final damage:**
+Damage per hit (single mērķis, base 20 160):
 ```
-3 000 000 × 2 519 = 7 557 000 000
-                  ≈ 7.56 miljardi damage.
+20 160 × 7 378 = 148 741 480
+              ≈ 148.7 miljoni per hit
 ```
 
-**Ne triljons vēl.** Bet Melnais Zvans ir **AoE, 5 mērķi vienlaicīgi** — 5 × 7.56B = **37.8 miljardi** kopējais burst.
+**Bet Ledus Šauta Ceļš piercing** — hit chains cauri visai mob grupai ar +50% dmg katrā mērķī.
+- Hit 1: 148.7M
+- Hit 2: 223.1M (×1.5)
+- Hit 3: 334.6M
+- Hit 4: 501.9M
+- Hit 5: 752.9M
 
-**Ar perfektu uzkrāšanu — 1M Fortify (ekstrēmās cīņās):**
-Base swap = 1M + 100K + 50K = 1.15M
-Skill = 1.15M × 4 = 4.6M
-Ar × 2 519 = **11.6 miljardi single hit**, 58 miljardi AoE.
+Kopējais chain damage 5 mērķi: **1 961 M = 1.96 miljardi per LMB cast**.
 
-**Trilling range** sasniedz ar papildu:
-- Boss ir **Nekāds** — pievieno situatīvos multipliers (vs isolated ×1.3, vs elite ×1.3) → ×1.7
-- **6-piece proc window** dubulto = ×2
+**Torņa Ass double cast bonuss:** katrs LMB = 2 casts.
+- **~3.92 miljardi per LMB combo**.
 
-`58 miljardi × 1.7 × 2 = 197 miljardi burst.`
+**Ar 1.5 hits/sec ar Ark. Enerģija 0 patēriņš (setu proc kombinēts ar Nolādētais Asinsakmens):**
+= **~5.88 miljardi DPS burst window** (ilgums ~15s pirms Ark. Enerģija plok).
 
-Ja Bruņinieks izmanto **Melnais Zvans divreiz pēc kārtas** (100 pt → izlādē → uzkrāj 100pt 1 sekundē no keystone + hit → izlādē vēl) = **~400 miljardi kombu**.
+**Uber Boss 500 miljardu HP:** **~85 sekundes kill** ideālā combo window.
 
-Uz Uber Bosa **200-500 miljardu HP** = **kill viena 5-sekunžu windowā.**
+**Ar Reality Rift ult sinerģiju + Vecākais Māc proc window:** peak spike sasniedz **~50 miljardus 3-sekunžu combo**.
 
 ---
 
-## 7. Broken Build #2 — Bezēnu Zaglis "Ēnu Kaskade"
+## 7. Broken Build #2 — Otrs Kungs "Impēriskā Zibens Impērija"
 
-**Koncepts:** Klons + spēlētājs backstab vienlaicīgi, katrs sits ar pilnu stack; kad proc chain triggers, katrs hit no cita hit.
+**Koncepts:** Peldošā formā triple dmg + Melnās Zibens Kronis bezgalīgi lēcieni + setu 6-piece chain explosion = ķēdes reakcija cauri visai mob grupai.
 
 **Setup:**
-- Bezēnu Zaglis, keystone *Divi Ēnu Klonis*.
-- Setu *Divu Ēnu Solis* pilnās 6/6 daļas.
-- Uber: **Melnais Kronis** + **Sirds no Kalna**.
-- Uber Gem: **Nolādētais Asinsakmens** (dubultkritis) + **Melnā Zvaigzne** (30s cd one-shot ne-boss).
-- 5 Aspekti: Divu Soļu Karogs, Klona Ceļš, Ēnu Solis Ass, Ass Duncis, Melnā Ass.
-- Paragon leg: *"Divi Ēnu Klonis"* enhanced.
+- Otrs Kungs, keystone *Impēriskā Karaļvalsts* (Impērija Vaidēs pastāvīgs).
+- Setu *Impēriskā Karaļvalsts* pilnās 6/6 daļas.
+- Uber: **Melnais Kronis** + **Nolādētais Asinsakmens** (Uber Gem).
+- Aspekti: Melnās Zibens Kronis, Impēriskā Sirds, Zibens Kalts, Divu Rokas Kronis, Impērisks Vairogs.
+- Paragon 350 — leg "Impēriskā Karaļvalsts Kronis".
 
-**Combat window (~4 sekundes):**
-1. Boss ir Vulnerable no iepriekšēja Kaklaslazds.
-2. Zaļču Signāls aktīvs → visi Zaļči neredzami + crit boost.
-3. Naktsāda aktīvs → tu neredzams, garantēts backstab crit.
-4. Kaklaslazds tikko izlietots → nākošais uzbrukums dubultkritisks.
-5. Ēnu Solis → 2 kloni uz mērķi (setu 6-piece).
+**Combat window (~15 sekundes):**
+1. Uzkrāj Imp. Dusma līdz 100 pret gaišā ordeņa adds.
+2. Impērija Vaidēs → peldošā formā aktivē.
+3. Boss ir Vulnerable no Impēriskais Sitiens combo.
+4. 15+ mob grupā ietvertai.
+5. Setu 6-piece proc window (chain lightning eksplozija).
 
-**Trigger:** viens LMB tag.
+**Trigger:** viens Melnās Zibenis Q pret grupu.
 
 **Aprēķins:**
 
-Bāzes: **1 sitiens = tu + 2 kloni + Zaļči × 8 = 11 vienlaicīgi hits.**
+Melnās Zibenis chains ar keystone: bezgalīgi lēcieni (līdz nav vairāk mērķu).
+- Base per hit = 2400 × 1.30 × 3.00 (peldošā formā triple) = 9 360.
+- Ar visiem mult stacked (~×1 200 combined):
+- Per hit ~11.2M damage.
+- **20 lēcienu chain (mob grupā): 20 × 11.2M × 0.5 (each lec drop-off ar Zibens Kalts kompensē) = 224 miljoni.**
+- **Setu 6-piece explosion pēc pēdējā lēciena: 500% weap × visi mults = ~55M papildu AoE.**
 
-Katra hit aprēķins:
+**Kopējais Melnās Zibenis burst: ~280 miljoni.**
 
-Base = 2400 × 0.90 (LMB skill%) = 2 160.
-Backstab bonus (2×) = 4 320.
-Attribute (Veiklība 1400) mult = ×2.40.
-Additive bucket = 1 + 1.10 (physical) + 0.30 (elite) + 0.35 (vs. injured) = ×2.75.
-Crit mult (garantēts crit stealth + Ass Duncis backstab crit) = 2.5 × 1.5 (GA) = ×3.75.
-Vulnerable mult = ×1.75.
-Physical Reizinātājs = ×1.35.
-Aspect Ass Duncis backstab bonus = ×1.50.
-Aspect Klona Ceļš dubultkritis kloniem = ×2.00 (kloniem).
-Aspect Melnā Ass (crits pret Vulnerable = ×3) = ×3.00.
-Setu 6-piece (3 hits vietā 1) = ×3.00 (jo 3 klones × baseline 1).
-Nolādētais Asinsakmens dubultkritis = ×2.00.
-Melnā Zvaigzne one-shot = ×5.00 (ne-boss) vai ×1 (boss).
-Melnais Kronis +2 skills = ×1.20 skill effektīvi.
-Kaklaslazds dubultkritisks = ×2.00.
-Paragon leg = ×2.00.
-Rūna *Zvana Skaņa* Lv 15 = ×1.5.
+**Cooldown -30% no Trono Māksla + Impērija Vaidēs sinerģija:** Melnās Zibenis cooldown ~3s.
 
-Total multiplier (bez Melnā Zvaigzne, jo boss):
-```
-2.40 × 2.75 × 3.75 × 1.75 × 1.35 × 1.50 × 2.00 × 3.00 × 3.00 × 2.00 × 1.20 × 2.00 × 2.00 × 1.50
+**DPS: ~93 miljoni sustained grupā.**
 
-= 2.40 × 2.75    = 6.60
-× 3.75          = 24.75
-× 1.75          = 43.31
-× 1.35          = 58.47
-× 1.50          = 87.71
-× 2.00          = 175.41
-× 3.00          = 526.24
-× 3.00          = 1 578.71
-× 2.00          = 3 157.43
-× 1.20          = 3 788.91
-× 2.00          = 7 577.82
-× 2.00          = 15 155.65
-× 1.50          = 22 733.47
-```
-
-Total mult = **× 22 733**.
-
-Damage per hit = 4 320 × 22 733 = **98.2 miljoni per single hit**.
-
-**Now the kaskade:**
-- Tu = 98.2M.
-- Klons 1 = 98.2M × (klonu specifiskās deb) = ~50M.
-- Klons 2 = ~50M.
-- 8 Zaļči, katrs ar backstab spread = 8 × 30M = 240M.
-
-Vienlaicīgs burst = 98 + 50 + 50 + 240 = **~438 miljoni**.
-
-Bet **setu 6-piece atļauj Ēnu Solis atstāj 2 klonus** un **abi Zaļči kloni un ne-kloni triggē Ēnu Solis reset** (Vēju Solis aspekts) = **10-hit chain 4 sekundēs**.
-
-Kopējais 4-sekunžu burst = **10 × 438M = ~4.4 miljardi**.
-
-Ar Naktsāda 5s window un cikliska Ēnu Solis reset = **kaskade 15-20 hits = ~7-9 miljardi 5 sekundēs**.
-
-**Nolādētais Asinsakmens + Kaklaslazds double stacks vienā perfektā secībā** = vēl **×3-4 multiplier** uz visu ķēdi = **~28 miljardi 5 sekundēs**.
-
-Ne triljons, bet **~28 miljardi/5 sek = 5.6 miljardi DPS burst**. Pastāvīgi to nespēj, bet pret Uber Bosu ar 500 miljardu HP = **kill 90 sekundēs** ar pareizu triggeriem.
-
-**Triljona sasniegšana** — Bezēnu Zaglis vajadzīgs vēl viens layer:
-- **Naktsāda ilgums 15s** (pēc pilnas apstāšanās, endgame Rūnas + Paragon).
-- **Ēnu Solis 0 cooldown** stealth laikā.
-- Katrs no 30 hits ir crits pret Vulnerable ar visiem multipliers.
-- **30 × 98M = 2.94 miljardi vienā secībā**.
-- Plus klones un Zaļči → **~15 miljardi vienā combo**.
-
-Triljon nesniedz vientuļš Bezēnu Zaglis, bet **grupā ar buff share** (Bruņinieks Falangas Signāls dot minjoniem bonuss, Sniegurgs freeze boss, u.c.) = daudzu spēlētāju kopīgs burst = triljon range.
+**Peak spike:** ja pieskaitis Impēriskais Sitiens combo (Divu Rokas Kronis +100% dmg 3s), sasniedz **~2 miljardus 3-sekunžu combo**.
 
 ---
 
-## 8. Broken Build #3 — Vientuļais Sniegurgs "Freeze Chain Detonation"
+## 8. Broken Build #3 — Pirmais Kungs "Meistara Impērija"
 
-**Koncepts:** Katrs saldētais ienaidnieks mirstot detonē un iesalda 3 tuvākos, kas mirstot detonē 3 tuvākos... eksponenciāla chain reakcija.
+**Koncepts:** 38 minjoni max (setu + Barveža Karogs + keystone) + Ceturto Kroni pastāvīgs +30% + Universālais Kalts ×15% papildu + Kunga Zvans ult ar Melnā Sirds (M) stacking.
 
 **Setup:**
-- Vientuļais Sniegurgs, keystone *Sasala Kronis Ass*.
-- Setu *Ledus Kroņa Nāve* pilnās 6/6 daļas.
-- Uber: **Melnais Kronis**.
+- Pirmais Kungs, keystone *Kunga Impērija* (max 35 minjoni + setu +3 = 38).
+- Setu *Kunga Impērija* pilnās 6/6 daļas.
+- Uber: **Melnais Kronis** (visas prasmes +2 = vēl vairāk minjonu bonuss).
 - Uber Gem: **Nolādētais Asinsakmens**.
-- Aspekti: Sasalis Karogs, Ledus Šauta Ceļš, Kroņa Sirds, plus imprintētie 2 aspects par eksploziju un chain.
-- Paragon leg: *"Sasala Kronis"* upgrade.
-- **Kritiskais aspekts:** *Sasala Detonācija* — sasaldētie ienaidnieki, mirstot, izraisīt sfērisku eksploziju, kas saldē un ietekmē tuvākos 15m rādiusā.
+- Aspekti: Ceturto Kroni, Universālais Kalts, Meistara Karogs, Kunga Zvana Māc, Melnā Sirds (M) ×2 stackē.
+- Paragon 350 — leg "Meistars pāri Visiem Kronis".
 
-**Combat window (~10 sekundes):**
-1. Aktivē Torņa Redzējums (ne obligāti, bet dod +2× dmg tavām prasmēm).
-2. Sasalis Kaps → sasaldē 20 mob grupā.
-3. Ledus Lauskas kanalē cauri visai grupai.
-4. Pirmais mob mirst (mums pieņem 10M hp) → detonē → salda 3 nākošos → tie mirstot detonē 3 nākošos...
+**Combat window (~20s uzkrāj):**
+1. Grupā visi 4 minjonu tipi × ~10 katrs = **38 minjoni**.
+2. Ceturto Kroni pastāvīgs +30% dmg.
+3. Universālais Kalts pastāvīgs +15%.
+4. Aura Māc + Meistara Karogs procs sinerģē.
+5. Uzkrāj Dominance līdz 100.
 
-**Chain reakcijas eksponenciāls aprēķins:**
+**Trigger:** Kunga Zvans ult (visi minjoni max buff 8s + tu iegūsti barjeru).
 
-Katras "generation" damage no detonācijas = **50% no iepriekšējā** (setu 6-piece boost).
+**Aprēķins:**
 
-Bet **katrs mob dodam pat sasalt un mirst** dod tev **+5 Sala** (keystone bonus), kas kāpina Torņa Redzējums ilgumu.
+Katrs minjons Kunga Zvana laikā:
+- Base = 350 (avg)
+- Ar visiem stack (aurā ×1.35 × ×1.30 × ×1.30 × ×2.00 (Kunga Zvans ×2 dmg proc) × ×1.20 (Melnais Kronis skills +2 aura efekts) × ×1.50 (Ceturto Kroni + Universālais Kalts kombinēts))
+- Katrs minjons: 350 × 1.35 × 1.30 × 1.30 × 2.00 × 1.20 × 1.50 = **2 878 per swing**
 
-- Generation 1: 20 mob, katrs sit 500M dmg (chain reakcija).
-- Generation 2: 60 mob (20 × 3), katrs 400M dmg → 24 miljardi.
-- Generation 3: 180 mob, katrs 250M → 45 miljardi.
-- Generation 4: 540 mob, katrs 100M → 54 miljardi.
-- Generation 5: 1620 mob, katrs 30M → 48.6 miljardi.
+**38 minjoni × 2 878 × 1/sec = 109 364 DPS sustained** (baseline)
 
-**Kopējais chain kumulatīvs damage: ~170 miljardi 10 sekundēs.**
+**Ar Melnā Sirds (M) 2× stackē:** katrs minjons dod tev +2% dmg = **+76% tavas prasmes** (broken potenciāls).
 
-Ja Uber Bosa cīņā ir **adds** un boss stāv Sasala Kroņā, chain trigg ties uz visu grupu ieskaitot bosu.
+**Kunga Zvana burst window (8s):**
+- 38 minjoni × 2 878 × 2 × 8 = **1 749 824 = ~1.75 miljardi per 8s window**.
+- Katras 20s cikls (ar Dominance uzkrāj): **~87.5 miljoni DPS burst avg**.
 
-**Bosa damage no chain = ~30% kumulatīvs (jo boss non-elite chain resistance) = ~50 miljardi.**
+**Peak spike:** ja Kunga Zvans + Domination Wave + Master's Call sync pilnā perfekcijā, ar visiem minjoniem gauged uz vienu bosu, damage sasniedz **~5 miljardus 8s window**.
 
-Ja boss HP ir 500M — **kill vienā chain cikls (~5 sekundēs)**.
-
-Uber Boss ar 100 miljardu HP — **200 sekundes** ar cikliskiem chains.
-
-**Triljons trilogos:** ja Sniegurgs spēj triger 5 chains vienā cīņā (60s) = **~850 miljardi damage** vienam bosam vienā ķēdē.
+Uz Uber Boss 500 miljardu HP: **~100 minūtes kill** (šis nav DPS build, bet drošs sustain).
 
 ---
 
@@ -370,12 +306,9 @@ Uber Boss ar 100 miljardu HP — **200 sekundes** ar cikliskiem chains.
 
 | Build                                          | Peak Burst  | Sustained DPS | Cīņas ilgums | Prasa |
 |------------------------------------------------|-------------|---------------|--------------|-------|
-| Bruņinieks Grēksūdzes Bomba                    | 400 miljardi | 8 miljardi    | 60s uzkrāj + 5s | Fortify farm |
-| Bezēnu Zaglis Ēnu Kaskade                      | 30 miljardi | 5 miljardi    | 5s combo      | Perfekts Naktsāda + Kaklaslazds sync |
-| Vientuļais Sniegurgs Chain Detonation          | 170 miljardi | 15 miljardi   | 10s          | Mob density + Sasalis Kaps |
-| Alkas Kungs "Zelta Kaskade" (5000000 zelta uzkrāj) | 100 miljardi | 3 miljardi | Rezerves uzkrāj | 5M zelta bilance |
-| Berserker "Rage Overflow" (Asins Trakums 100%) | 500 miljardi | 20 miljardi   | 5s           | -50% HP window |
-| Mežonis "Puve Kaskade" (DoT spread × 100 mob)  | 250 miljardi | 8 miljardi    | 20s          | Mob density + Vulnerable |
+| Vecais Burvis "Realitātes Bezgalība"          | 50 miljardi | 5.9 miljardi  | 15s combo     | Zilspāri max + Ark. Enerģija full |
+| Otrs Kungs "Impēriskā Zibens Impērija"        | 2 miljardi  | 280 miljoni   | 3s combo      | Mob density + Impērija Vaidēs |
+| Pirmais Kungs "Meistara Impērija"             | 5 miljardi  | 1.75 miljardi | 8s window     | 38 minjoni + Kunga Zvans sync |
 
 **Visi šie ir specifiskas kombu — ne pastāvīgi.** Sasniegt tos prasa:
 - Pilnas 6/6 setu daļas.

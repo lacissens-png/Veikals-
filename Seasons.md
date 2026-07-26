@@ -38,9 +38,9 @@ Lielākā daļa hardcore spēlētāju rullē sezonas realmā.
 
 ## 2.1. Tematiskais koncepts
 
-Debesu Virsotnes cēliens ir atklājis noslēpumu: pirms Melnā Kalna krīzes, tas bija **6 karaļvalstu apvienība** ar vienu **Augstāko Karali**. Kad Kalns krita, karalis tika izspiestais no bezdibeņa un tagad **atgriežas kā līķis-imperators**, gribot sasniegt septiņas kronis un pārkrustīties par mūžīgu valdnieku.
+Melnā Torņa kampaņas cēliens ir atklājis noslēpumu: pirms 3 Kungu ērā, tas bija **augstākais Kunga tronis** ar vienu **Augstāko Karali**. Kad viņš krita, viņa dvēsele atgriezās bezdibenī un tagad **iemiesojas atpakaļ kā līķis-imperators**, gribot sasniegt visus 3 Zīmoglaukumus un kļūt par mūžīgu valdnieku.
 
-**Katrā no 6 karaļvalstīm parādās viņa vēstnieks** — pusizspreidzis mūks, kas cenšas iekarot vietējos valdniekus tumsas pusē.
+**Katrā no 3 karaļvalstīm parādās viņa vēstnieks** — pusizspreidzis mūks, kas cenšas iekarot vietējos valdniekus tumsas pusē.
 
 ## 2.2. Sezonas mehānika — *Karaļa Zvēresti*
 
@@ -65,22 +65,19 @@ Spēlētājs var zvērēt **līdz 3 Karaļa Zvēresti** vienlaicīgi. Katrs Zvē
 
 **Broken potenciāls:** 3 zvēresti kombinēti pareizi = **~×10 additive multiplier ap tavas prasmes**.
 
-**Piemērs:** Berserker + Uguns Karonis + Karagājienis Karonis + Sirds Karonis = pirmās 10s +50% AS + +40% dmg + +200% dmg zem 20% HP.
+**Piemērs:** Otrs Kungs + Uguns Karonis + Karagājienis Karonis + Sirds Karonis = pirmās 10s +50% AS + +40% dmg + +200% dmg zem 20% HP.
 
 ## 2.3. Jauns saturs
 
 ### Dungeoni
-- **6 jauni Karaļa Kripti** (1 uz reģionu) — līķa-imperatora ambasadora bāzes.
+- **3 jauni Karaļa Kripti** (1 uz reģionu) — līķa-imperatora ambasadora bāzes.
 - Katrs Kripts ir **elite Murgu variants** ar unikālu boss.
 
 ### Bosi
-- **6 Vēstnieku bosi** (klases-agnostiski, sezonas-eksklīvi):
-  - **Ansels-Puvējs** (Debesu Virsotne)
-  - **Talos-Kārestis** (Asins Arēna)
-  - **Goldo-Zeltājs** (Zelta Raktuves)
-  - **Ninhera-Skūpstītāja** (Puvušais Mežs)
-  - **Vezirs-Melnajs** (Tuksneša Bāzars)
-  - **Turaņa-Sasala** (Ledus Kroņi)
+- **3 Vēstnieku bosi** (klases-agnostiski, sezonas-eksklīvi):
+  - **Bornlejs-Puvējs** (Melnais Tornis)
+  - **Solariuss-Kārestis** (Nordberga)
+  - **Selriss-Realitātes-Kārkājs** (Vecais Tornis)
 - **1 fināla boss:** **Karalis-Imperators** (Melnā Kalna Katakombās).
 
 ### Jaunas prasmes
@@ -89,10 +86,10 @@ Spēlētājs var zvērēt **līdz 3 Karaļa Zvēresti** vienlaicīgi. Katrs Zvē
 ## 2.4. Jauni items
 
 ### Uniques
-- **12 jauni Nolādēti (unique) items** (2 per klase, Sezonas-eksklīvi).
+- **6 jauni Nolādēti (unique) items** (2 per klase, Sezonas-eksklīvi).
 
 ### Aspekti
-- **6 jauni Leģendārie Aspekti** — 1 per klase, no Kripta boss drops.
+- **3 jauni Leģendārie Aspekti** — 1 per klase, no Kripta boss drops.
 
 ### Ubers
 - **1 jauns Uber Mistiskais:** **Karalis Imperatora Kronis** — klases-agnostisks, visas prasmes +3 līmeņi (nevis +2 kā Melnais Kronis).
@@ -104,11 +101,11 @@ Spēlētājs var zvērēt **līdz 3 Karaļa Zvēresti** vienlaicīgi. Katrs Zvē
 
 Balstoties uz launch balance data:
 
-- **Bezēnu Zaglis Permanent Invis** — Naktsāda Ēna izmaksa palielināta uz 40 (bija 30). DPS krīt no 1.55M uz 1.30M.
-- **Sniegurgs Torņa Redzējums** — Sala patēriņš 1.75/sec (bija 1.5) sezonās. DPS krīt no 1.23M uz 1.05M.
-- **Bruņinieks Falangas Tank** — Sūkšņu bāzes dmg +15% (buff, palīdz balansēt).
-- **Alkas Kungs Projectile Spam** — Zelta Lietus monētu skaits 10 vietā 12 (nerf), bet cooldown -25% (buff).
-- **Berserker Dual-Wield** — Kara Kliedziens self AS buff 25% vietā 30%.
+- **Vecais Burvis Realitātes Karaļvalsts** — Ark. Enerģija patēriņš 1.75/sec (bija 1.5) sezonās. DPS krīt no 1.81M uz 1.55M.
+- **Vecais Burvis Torņa Ass** — Double cast Ark. Enerģija patēriņš 1.8× (bija 1.5×) sezonās. DPS krīt no 1.09M uz 900K.
+- **Pirmais Kungs Sardzes Zvērests** — Minjonu shared dmg buff (+15% papildu, palīdz balansēt).
+- **Otrs Kungs Permanent Empress** — Impēriskā Dusma patēriņš 2/sec (bija 1.5/sec), nedaudz nerf.
+- **Pirmais Kungs Kunga Impērija** — Minjonu max +2 (buff, sezonas ievads).
 
 ## 2.6. Battle Pass tier
 
@@ -149,12 +146,9 @@ Kad spēlētājs iet cauri Melnās Uguns laukam, viņš iegūst **Uguns Zīmi** 
 | V       | Visas prasmes ir Fire; **tavs Ult ir pilnīgi jauna prasme (skat. tālāk)** |
 
 **Ult transformācijas Lv V** (klases-specifiskas):
-- Bruņinieks: **Uguns Zvans** — 30m rādiuss, visi ienaidnieki iedeg + saņem 500% weap dmg pēc 3s.
-- Berserker: **Sarkanās Uguns Trakums** — 15s, tavi hiti raida fire wave.
-- Alkas Kungs: **Zelta Lava** — met kausētu zeltu, kas dedz + slow.
-- Mežonis: **Puvušā Uguns** — DoT + fire hibrīds, ienaidnieki puve + deg vienlaicīgi.
-- Zaglis: **Ēnu Uguns** — invisibility + fire trail, tu izsauc uguni.
-- Sniegurgs: **Sasala Uguns** — freeze + fire eksplozija (contradiction, bet strādā).
+- Pirmais Kungs: **Uguns Zvans** — 30m rādiuss, visi ienaidnieki iedeg + minjoni saņem fire aura buff 15s.
+- Otrs Kungs: **Impēriskā Uguns Vaidēs** — peldošā formā tavas prasmes raida fire wave 20m priekšā.
+- Vecais Burvis: **Realitātes Uguns** — Reality Rift laikā time slow arī saldē + dedz vienlaicīgi (paradox mehānika).
 
 ## 3.3. Jauns saturs
 
@@ -172,7 +166,7 @@ Kad spēlētājs iet cauri Melnās Uguns laukam, viņš iegūst **Uguns Zīmi** 
 ## 3.4. Jauni items
 
 ### Uniques
-- **12 jauni Fire-themed uniques** (2 per klase).
+- **6 jauni Fire-themed uniques** (2 per klase).
 
 ### Aspekti
 - **6 jauni Aspekti** ar Fire-mehāniku.
@@ -186,8 +180,8 @@ Kad spēlētājs iet cauri Melnās Uguns laukam, viņš iegūst **Uguns Zīmi** 
 ## 3.5. Balance changes (Q2)
 
 - **Uguns Cietokšņi** — droši overtuned uz launcham, adjust week 2.
-- **Alkas Kungs Ekonomika** — buff (community fedback: pārāk zems DPS Q1 sezonā).
-- **Bruņinieks Grēksūdzes Bomba (broken build)** — Overpower base swap cap uz 1M (bija bez cap). Trilion damage tagad prasa perfect Fortify farm.
+- **Pirmais Kungs Meistars pāri Visiem** — buff (community feedback: pārāk zems DPS Q1 sezonā).
+- **Pirmais Kungs Sardzes Zvērests (broken build)** — Overpower base swap cap uz 1M (bija bez cap). Trilion damage tagad prasa perfect Fortify farm.
 
 ## 3.6. Lore hook uz Season 3
 
@@ -218,14 +212,11 @@ Spēlētājs vāc **7 Zelta Fragmentus** (viens per reģions + Melnais Kalns) un
 
 **Piemēri:**
 
-| Klase        | Ancient Weapon               | Aspects                                      |
-|--------------|------------------------------|----------------------------------------------|
-| Bruņinieks   | **Kritušā Ordeņa Zobens**    | Krusta Karogs + Grēksūdzes Piespriedu       |
-| Berserker    | **Trakuma Kalts**            | Vēja Ceļš + Trakuma Katlaputiņa              |
-| Alkas Kungs  | **Vecā Goldo Ceremonijas Nūja** | Bagātā Sirds + Alkas Aura                 |
-| Mežonis      | **Elfu Karalienes Rieksti**  | Puves Migla + Ninheras Ērkšķi                |
-| Zaglis       | **Divu Ēnu Dagas**           | Ass Duncis + Klona Ceļš                      |
-| Sniegurgs    | **Torņa Vaids**              | Torņa Karogs + Ledus Kroņa Kronis            |
+| Klase           | Ancient Weapon               | Aspects                                    |
+|-----------------|------------------------------|--------------------------------------------|
+| Pirmais Kungs   | **Meistara Zobens**          | Meistara Karogs + Universālais Kalts       |
+| Otrs Kungs     | **Impērijas Zizli**          | Nordbergas Karogs + Impēriskā Sirds        |
+| Vecais Burvis  | **Torņa Vaids**              | Realitātes Karogs + Torņa Sirds            |
 
 ## 4.3. Jauns saturs
 
@@ -246,7 +237,7 @@ Spēlētājs vāc **7 Zelta Fragmentus** (viens per reģions + Melnais Kalns) un
 ## 4.4. Jauni items
 
 ### Ancient Weapons
-- **6 klases-eksklīvi Ancient Weapons** (skat. augšā).
+- **3 klases-eksklīvi Ancient Weapons** (skat. augšā).
 
 ### Uniques
 - **6 jauni Sezonas uniques** (klases-agnostiski).
@@ -261,8 +252,8 @@ Spēlētājs vāc **7 Zelta Fragmentus** (viens per reģions + Melnais Kalns) un
 ## 4.5. Balance changes (Q3)
 
 - **Ancient Weapons** ir vairāk stipri par regular — tas ir mērķis, bet mērķauditorija ir top 40% players. Casual players var iet cauri sezonai bez tiem.
-- **Bezēnu Zaglis Ēnu Kaskade broken build** — Klona dmg samazināts uz 40% (bija 100%). Peak burst krīt no 30G uz 10G.
-- **Sniegurgs Freeze Chain Detonation broken build** — chain dropoff paātrināts. Peak krīt no 170G uz 80G.
+- **Vecais Burvis Realitātes Bezgalība broken build** — Piercing dmg dropoff paātrināts pēc 5. mērķa. Peak burst krīt no 50G uz 20G.
+- **Otrs Kungs Impēriskā Zibens Impērija broken build** — Chain lightning lēcieni cap uz 25 (bija bez cap). Peak krīt no 5G uz 2G.
 
 ## 4.6. Lore hook uz Season 4
 
@@ -284,7 +275,7 @@ Sezonas laikā **spēlētājs izpēta Melnā Kalna katakombas** — dziļākos l
 
 Katrā katakomba iesniedzē spēlētājs atrod **Atmiņu Fragmentus** — Pirmā Kunga (un viņa 6 Zvērestu) atmiņas.
 
-**24 Atmiņu Fragmenti kopā** (4 per klase, klases-specifiskas), grupēti pa 4 komplektiem katrai klasei:
+**12 Atmiņu Fragmenti kopā** (4 per klase, klases-specifiskas), grupēti pa 4 komplektiem katrai klasei:
 
 | Komplekts        | Fragmentu skaits | Bonuss                                    |
 |------------------|------------------|-------------------------------------------|
@@ -295,14 +286,11 @@ Katrā katakomba iesniedzē spēlētājs atrod **Atmiņu Fragmentus** — Pirmā
 
 **Sākotnējais Zvērests keystones:**
 
-| Klase        | Jauns Keystone            | Efekts                                              |
-|--------------|---------------------------|-----------------------------------------------------|
-| Bruņinieks   | **Pirmā Krusta Vaids**    | Krusta Zvans arī uzliek 20 Grēksūdzi ienaidniekiem |
-| Berserker    | **Trakuma Nekad**         | Ja iesāc Rage 100, tu nekad neizzūd Trakumā        |
-| Alkas Kungs  | **Zelta Nāve**            | Ienaidnieki, mirstot, dropo 2× zelta un aug 2× ātrāk|
-| Mežonis      | **Vecā Elfu Māsa**        | Puvusī Migla + Vilka Āda + Sakņu Slazds vienlaicīgi|
-| Zaglis       | **Bezēnu Kronis**         | Ēnu Solis 5 charges + katrs charge dubultā klons   |
-| Sniegurgs    | **Ledus Vientulība**      | Kad esi vientuļš 30m rādiusā, +100% dmg + freeze immune |
+| Klase           | Jauns Keystone (Level 90) | Efekts                                              |
+|-----------------|---------------------------|-----------------------------------------------------|
+| Pirmais Kungs   | **Pirmā Kunga Kronis**    | Master's Call arī uzliek 30 Dominance ienaidniekiem un ceļ pusskeletus |
+| Otrs Kungs      | **Impērija Nekad Nekrit** | Ja iesāc Imp. Dusma 100, Impērija Vaidēs pastāvīga + 2× dmg burst |
+| Vecais Burvis   | **Realitātes Bezgalība**  | Reality Rift patēriņš 0 (nemaksa Ark. Enerģiju), triple dmg pastāvīgi |
 
 Šie keystones ir **spēlētāju gaidīts endgame chase** — pilna komplekta savākšana prasa 20-30h.
 
@@ -325,7 +313,7 @@ Katrā katakomba iesniedzē spēlētājs atrod **Atmiņu Fragmentus** — Pirmā
 ## 5.4. Jauni items
 
 ### Uniques
-- **12 jauni Sezonas uniques** (2 per klase).
+- **6 jauni Sezonas uniques** (2 per klase).
 
 ### Aspekti
 - **12 jauni Aspekti** — sinerģē ar Atmiņu Fragmentiem.
@@ -348,7 +336,7 @@ Katrā katakomba iesniedzē spēlētājs atrod **Atmiņu Fragmentus** — Pirmā
 
 - **Sākotnējie Keystones** — pielāgo pēc week 2 data.
 - **Ancient Weapons no Season 3** — mainīti par regular endgame items (pieejami ne-sezonāli, retākie).
-- **Bruņinieks Grēksūdzes Bomba** — Overpower cap tālākais pielāgojums.
+- **Pirmais Kungs Sardzes Zvērests** — Overpower cap tālākais pielāgojums.
 
 ## 5.6. Post-Season 4 roadmap
 

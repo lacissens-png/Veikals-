@@ -68,7 +68,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Elite bosi jebkurā dungeon T1+.
 
-**Ieteicamie buildi:** jebkuram, kas skaita uz crit — Berserker DPS, Zaglis Backstab, Sniegurgs Freeze Nuke.
+**Ieteicamie buildi:** jebkuram, kas skaita uz crit — Vecais Burvis Realitātes Karaļvalsts, Vecais Burvis Torņa Ass, Otrs Kungs Hybrid Balance.
 
 ---
 
@@ -82,9 +82,9 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Slieksnis:** Ja rādiusā ir 10+ Maģisks mezgli, minjoni +10% AS.
 
-**Drop:** Reģiona bosi (Ninhera, Vezirs).
+**Drop:** Reģiona bosi (Bornlejs, Solariuss).
 
-**Ieteicamie buildi:** minjonu buildi — Zaglis Zaļču Armija, Berserker Armijas Kliedzējs, Sniegurgs Skeletu Karaļvalsts.
+**Ieteicamie buildi:** minjonu buildi — Pirmais Kungs Meistars pāri Visiem, Pirmais Kungs Kunga Impērija, Vecais Burvis Zilspāri Storm.
 
 ---
 
@@ -100,7 +100,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Murgu Dungeoni T15+.
 
-**Ieteicamie buildi:** Bruņinieks Falangas Tank, Berserker Rage-Sustain (defensive-fokusēti).
+**Ieteicamie buildi:** Pirmais Kungs Sardzes Zvērests (defensīvs), Otrs Kungs Permanent Empress.
 
 ---
 
@@ -148,9 +148,9 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Slieksnis:** Ja rādiusā ir 4+ Uguns/Physical mezgli, papildu +15% Fire dmg.
 
-**Drop:** Asins Arēna reģiona bosi.
+**Drop:** Nordberga reģiona bosi (Solariuss).
 
-**Ieteicamie buildi:** Berserker (Sārtaji sync), Bruņinieks Zvana Uguns Hibrīds.
+**Ieteicamie buildi:** Otrs Kungs Hybrid Balance (Sūkšņi + Zilspāri sync).
 
 ---
 
@@ -164,9 +164,9 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Slieksnis:** Ja rādiusā ir 4+ Frost/Ledus mezgli, freeze ilgums +30%.
 
-**Drop:** Ledus Kroņi reģiona bosi.
+**Drop:** Vecais Tornis reģiona bosi.
 
-**Ieteicamie buildi:** Sniegurgs visi 3 buildi.
+**Ieteicamie buildi:** Vecais Burvis visi 3 buildi (frost + arkānais sinergs).
 
 ---
 
@@ -180,9 +180,9 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Slieksnis:** Ja rādiusā ir 4+ Lightning mezgli, uzbrukumi 5% chance ķēdē uz 2 tuvākiem mērķiem.
 
-**Drop:** Tuksneša Bāzars reģiona bosi.
+**Drop:** Nordberga reģiona bosi (Solariuss).
 
-**Ieteicamie buildi:** Alkas Kungs (chain lightning ar Zelta Lietus), Bezēnu Zaglis (ķēdes ar Ēnu Solis).
+**Ieteicamie buildi:** Otrs Kungs Chain Lightning (Melnās Zibens ķēdes).
 
 ---
 
@@ -196,9 +196,9 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Slieksnis:** Ja rādiusā ir Ēna vai Shadow mehānika mezgls, tavas prasmes uzliek Vulnerable 4s.
 
-**Drop:** Bezēnu Zagļa reģiona boss (Vezirs) — arī pieejams Murgu T30+.
+**Drop:** Bezēnu Zagļa reģiona boss (Solariuss) — arī pieejams Murgu T30+.
 
-**Ieteicamie buildi:** Zaglis visi 3 buildi, Sniegurgs (Nekromantija).
+**Ieteicamie buildi:** Vecais Burvis visi 3 buildi (Shadow spell sinergs).
 
 ---
 
@@ -212,9 +212,9 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Slieksnis:** Ja rādiusā ir 3+ Ticības mezgli, prasmes dziedina tevi 2% HP per hit.
 
-**Drop:** Debesu Virsotne reģiona boss (Ansels).
+**Drop:** Melnais Tornis reģiona boss (Bornlejs).
 
-**Ieteicamie buildi:** Bruņinieks Falangas Tank, Bruņinieks Heal-Tank.
+**Ieteicamie buildi:** Pirmais Kungs Sardzes Zvērests (holy sinergs).
 
 ---
 
@@ -232,7 +232,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Elite bosi visos reģionos.
 
-**Ieteicamie buildi:** Bruņinieks, Berserker, Zaglis.
+**Ieteicamie buildi:** Pirmais Kungs, Otrs Kungs (Hybrid Balance).
 
 ---
 
@@ -246,9 +246,9 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Slieksnis:** Ja rādiusā ir 3+ Prāta mezgli, DoT tick 20% ātrāk.
 
-**Drop:** Puvušais Mežs reģiona boss (Ninhera).
+**Drop:** Vecais Tornis reģiona boss (Selriss).
 
-**Ieteicamie buildi:** Mežonis DoT Spam, Mežonis Zone Control.
+**Ieteicamie buildi:** Vecais Burvis Realitātes Karaļvalsts (freeze DoT), Otrs Kungs Chain Lightning DoT sinergs.
 
 ---
 
@@ -264,7 +264,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Murgu T20+.
 
-**Ieteicamie buildi:** Zaglis (Kaklaslazds combo), Sniegurgs, jebkuram DPS.
+**Ieteicamie buildi:** Vecais Burvis (Vulnerable + freeze), Otrs Kungs (Impēriskais debuff), jebkuram DPS.
 
 ---
 
@@ -280,7 +280,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Murgu T30+.
 
-**Ieteicamie buildi:** Bruņinieks Grēksūdzes Bomba (broken build), Berserker Rage-Sustain.
+**Ieteicamie buildi:** Pirmais Kungs Sardzes Zvērests (Overpower ar Fortify farm), Otrs Kungs Permanent Empress.
 
 ---
 
@@ -298,7 +298,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Elite bosi Murgu T5+.
 
-**Ieteicamie buildi:** Sniegurgs (Prāts primary), Mežonis, Alkas Kungs.
+**Ieteicamie buildi:** Vecais Burvis (Prāts primary), Otrs Kungs (hybrid Prāts).
 
 ---
 
@@ -314,7 +314,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Murgu T40+.
 
-**Ieteicamie buildi:** Berserker (Asins Trakums), Sniegurgs (Torņa Redzējums), Zaglis (Kaklaslazds).
+**Ieteicamie buildi:** Vecais Burvis (Reality Rift), Otrs Kungs (Impērija Vaidēs), Pirmais Kungs (Kunga Zvans).
 
 ---
 
@@ -330,7 +330,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Murgu T20+.
 
-**Ieteicamie buildi:** Bruņinieks Heal-Tank, Berserker Rage-Sustain.
+**Ieteicamie buildi:** Pirmais Kungs Sardzes Zvērests, Otrs Kungs Permanent Empress.
 
 ---
 
@@ -346,7 +346,7 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 **Drop:** Uber Bosi (rets), World Bosi (ļoti rets).
 
-**Ieteicamie buildi:** Bruņinieks Heal-Tank (Grēksūdzes cikls kompensē), Berserker (rage no zaudētās HP).
+**Ieteicamie buildi:** Pirmais Kungs Sardzes Zvērests (minjonu shared dmg kompensē), Vecais Burvis Realitātes Karaļvalsts (Ark. Enerģija resurss).
 
 ---
 
@@ -459,53 +459,29 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 # 4. Rūnu ieteikumi pa buildiem
 
-## 4.1. Bruņinieks
+## 4.1. Pirmais Kungs
 
-| Build              | Slot 1 (kritiskā)   | Slot 2 (dfns/utility) | Slot 3 (endgame)      |
-|--------------------|---------------------|------------------------|-----------------------|
-| Falangas Tank      | Sardzes Zīme        | Ģerbonis               | Kroņa Roka            |
-| Heal-Tank          | Sardzes Zīme        | Miglas Zīme            | Nolādētais Sirdsdedzis|
-| Zvana Uguns        | Krusta Kronis       | Ugunslīnija            | Kroņa Roka            |
+| Build                      | Slot 1 (kritiskā)   | Slot 2 (dfns/utility) | Slot 3 (endgame)      |
+|----------------------------|---------------------|------------------------|-----------------------|
+| A. Meistars pāri Visiem    | Dominance Zīme      | Asinssaite             | Kroņa Roka            |
+| B. Sardzes Zvērests        | Kunga Kronis        | Ģerbonis               | Miglas Zīme           |
+| C. Kunga Impērija          | Dominance Zīme      | Asinssaite             | Kroņa Roka            |
 
-## 4.2. Berserker
+## 4.2. Otrs Kungs
 
-| Build              | Slot 1              | Slot 2                 | Slot 3                |
-|--------------------|---------------------|------------------------|-----------------------|
-| Dual-Wield DPS     | Arēnas Solis        | Zvana Skaņa            | Kritušā Vaids         |
-| Rage-Sustain       | Trakuma Zīme        | Nolādētais Sirdsdedzis | Vecā Vaids            |
-| Armijas Kliedzējs  | Trakuma Zīme        | Asinssaite             | Kroņa Roka            |
+| Build                  | Slot 1              | Slot 2                 | Slot 3                |
+|------------------------|---------------------|------------------------|-----------------------|
+| A. Hybrid Balance      | Nordbergas Solis    | Kritušā Vaids          | Slēgtais Vārds        |
+| B. Chain Lightning     | Impērijas Zīme      | Zibens Solis           | Zvana Skaņa           |
+| C. Permanent Empress   | Nordbergas Solis    | Nolādētais Sirdsdedzis | Vainaga Māc           |
 
-## 4.3. Alkas Kungs
+## 4.3. Vecais Burvis
 
-| Build              | Slot 1              | Slot 2                 | Slot 3                |
-|--------------------|---------------------|------------------------|-----------------------|
-| Projectile Spam    | Alkas Vaids         | Zvana Skaņa            | Zibens Solis          |
-| Golemu Kalts       | Zelta Māls          | Asinssaite             | Kroņa Roka            |
-| Ekonomika          | Alkas Vaids         | Slēgtais Vārds         | Nolādētais Sirdsdedzis|
-
-## 4.4. Mežonis Kungs
-
-| Build              | Slot 1              | Slot 2                 | Slot 3                |
-|--------------------|---------------------|------------------------|-----------------------|
-| DoT Spam           | Puves Vaids         | Puves Zvana            | Bezdibeņa Zīme        |
-| Beast Melee        | Zvēras Zīme         | Kritušā Vaids          | Kroņa Roka            |
-| Zone Control       | Puves Vaids         | Slēgtais Vārds         | Asinssaite            |
-
-## 4.5. Bezēnu Zaglis
-
-| Build              | Slot 1              | Slot 2                 | Slot 3                |
-|--------------------|---------------------|------------------------|-----------------------|
-| Teleport-Backstab  | Aizmugures Kronis   | Zvana Skaņa            | Vainaga Māc           |
-| Permanent Invis    | Naktsāda Zīme       | Aizmugures Kronis      | Ēnu Zīme              |
-| Zaļču Armija       | Asinssaite          | Aizmugures Kronis      | Ēnu Zīme              |
-
-## 4.6. Vientuļais Sniegurgs
-
-| Build              | Slot 1              | Slot 2                 | Slot 3                |
-|--------------------|---------------------|------------------------|-----------------------|
-| Freeze Nuke        | Sasala Zīme         | Slēgtais Vārds         | Zvana Skaņa           |
-| Skeletu Karaļvalsts| Skeleta Vaids       | Asinssaite             | Sasala Zīme           |
-| Torņa Redzējums    | Torņa Zīme          | Slēgtais Vārds         | Nolādētais Sirdsdedzis|
+| Build                      | Slot 1              | Slot 2                 | Slot 3                |
+|----------------------------|---------------------|------------------------|-----------------------|
+| A. Realitātes Karaļvalsts  | Realitātes Zīme     | Nolādētais Sirdsdedzis | Vientuļā Sirds bonuss |
+| B. Zilspāri Storm          | Torņa Vaids         | Asinssaite             | Zibens Solis          |
+| C. Torņa Ass Double Cast   | Realitātes Zīme     | Vainaga Māc            | Zvana Skaņa           |
 
 ---
 
@@ -513,18 +489,19 @@ Pilnīga Rūna no 1 → 21 = **~40 Murgu Dungeon runs** vidēji 5-15 min = **~10
 
 ## 5.1. Reģionu bosi (klases-agnostiskie Lv 1)
 
-| Reģions            | Boss             | Rūna dropi                              |
-|--------------------|------------------|------------------------------------------|
-| Debesu Virsotne    | Bīskaps Ansels   | Svētais Vaids                           |
-| Asins Arēna        | Karagalvenis Talos | Ugunslīnija                           |
-| Zelta Raktuves     | Vecais Goldo     | (klases-spec: Alkas Vaids)               |
-| Puvušais Mežs      | Elfu Karaliene Ninhera | Puves Zvana                        |
-| Tuksneša Bāzars    | Melnās Kūkas Vezirs | Zibens Solis, Ēnu Zīme              |
-| Ledus Kroņi        | Ievas Turaņa     | Sasala Zīme                             |
+| Reģions            | Boss                | Rūna dropi                              |
+|--------------------|---------------------|------------------------------------------|
+| Melnais Tornis     | Sardzes Kapteinis Bornlejs | Svētais Vaids, Ugunslīnija         |
+| Nordberga          | Emperors Solariuss  | Zibens Solis, Ēnu Zīme                  |
+| Vecais Tornis      | Vecākais Māceklis Selriss  | Sasala Zīme, Puves Zvana           |
+| Melnais Kalns      | Nāves Vēstnesis     | Kritušā Solis, Bezdibeņa Zvana           |
 
 ## 5.2. Klases-specifiskās (pirmreizējs klases boss kill)
 
-Katras klases pirmais Zvērests-boss dropo klases-specifisko Rūnu (Lv 1).
+Katras klases pirmais klases boss dropo klases-specifisko Rūnu (Lv 1):
+- **Pirmais Kungs:** Bornlejs → Dominance Zīme
+- **Otrs Kungs:** Solariuss → Impērijas Zīme
+- **Vecais Burvis:** Selriss → Realitātes Zīme
 
 ## 5.3. Murgu Dungeoni
 
@@ -550,12 +527,11 @@ Katras klases pirmais Zvērests-boss dropo klases-specifisko Rūnu (Lv 1).
 
 ## 6.1. Cik daudz Rūnas var izmantot vienlaicīgi?
 
-Skat. `ParagonBoards.md` §9.2:
+Skat. `ParagonBoards.md` §6.2:
 
-- Bruņinieks / Berserker: 14 slots (Rūnas kopā)
-- Zaglis: 15 slots
-- Alkas Kungs: 16 slots
-- Mežonis / Sniegurgs: 17 slots
+- **Pirmais Kungs:** 17 slots
+- **Otrs Kungs:** 15 slots
+- **Vecais Burvis:** 17 slots
 
 Vidēji **spēlētājs izmanto 5–8 unikālās Rūnas** — pārējie sloti paliek tukši vai ar mazāk stipru Rūnu, kamēr endgame farm progressē.
 
