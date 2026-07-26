@@ -179,21 +179,298 @@ Cīņas ritms: ne tu, ne minjoni viens pats netiek galā ar boss. Uzvara — par
 
 ---
 
-## 8. Loot un ekipējums (Diablo 4 stils)
+## 8. Loot, ekipējums un amatniecība (Diablo 4 stils)
 
-### Retums
-- **Parasts** (pelēks)
-- **Rūdīts** (zils) — 1 affix
-- **Sens** (violets) — 2–3 affixi
-- **Reliktu** (zelts, "legendary") — unikāls power
-- **Nolādēts** (asins sarkans, "unique") — power ar sāpēm
+### 8.1. Item Power un līmeņu skala
 
-### Slotes
-Spēlētājs: galva, rumpis, rokas, kājas, ierocis, sekundārais, 2× gredzens, amulets = **9 slotes**.
-Katrs minjons: **3 slotes** (ķivere, ierocis, aksesuārs).
+Katram item ir **Item Power (iP)** — bāzes stipruma skaits, kas nosaka, cik lieli var būt affixi. iP nāk no ienaidnieka līmeņa, kurš item nomet.
 
-### Klasei-specifiski legendāri
-Katrai klasei ir **~8 klases-eksklīvi legendāri** ar tikai tai domātām saliktām spēlēm (piem., Berserker "Divi Zobeni Vienā" — pēc katra hita 5% chance uzsvērums cīņas laikā).
+| Player līmenis | iP diapazons | Tier                                |
+|----------------|--------------|-------------------------------------|
+| 1–15           | 1–200        | Iesācēju                            |
+| 15–30          | 200–500      | Vidus                               |
+| 30–50          | 500–700      | **Rūdīts** (sacred pretinieks)      |
+| 50–70          | 700–850      | **Sens** (ancestral pretinieks)     |
+| 70–80          | 850–925      | **Endgame** (max scaling)           |
+| 80+ (Paragon)  | 925 fixed    | Viss dropo maxā, jautā pēc affixiem |
+
+**Reliktu** un **Uber Mistiskie** items vienmēr nāk maxā iP (925), lai tos varētu lietot no pirmās sekundes, kad izkrituši.
+
+---
+
+### 8.2. Item retumi
+
+| Retums               | Krāsa            | Affixi                       | Piezīmes                                              |
+|----------------------|------------------|------------------------------|-------------------------------------------------------|
+| **Parasts**          | Pelēks           | 0                            | Salvage materiāls, nekas cits                         |
+| **Rūdīts** (Magic)   | Zils             | 1–2                          | Ērts agrīnā spēlē                                     |
+| **Sens** (Rare)      | Dzeltens         | 4                            | Galvenais craftinga materiāls                         |
+| **Reliktu** (Legendary) | Zelts         | 4 + **Aspekts**              | Vari izlobīt Aspektu un pārstādīt uz Senu             |
+| **Nolādēts** (Unique)| Asinssarkans     | Fiksēti stati + Unikālais spēks | Klases- vai lomas-specifisks; power ar cenu       |
+| **Uber Mistiskais**  | Balta gaisma     | 4 GA vienmēr + super-power   | Retākais gearā; ~1 uz playthrough                     |
+
+### 8.3. Great Affix (Lielā Zīme, GA)
+
+Katrs sena vai augstāka retuma affix var reti izrolēt kā **Lielā Zīme** — ~**+50% stats** pār normālu roll. Marķēts ar zvaigzni ★ pirms teksta.
+
+- Chance uz vienu affix: **~5%** pie standarta drops, augst ar bosu tieru.
+- **4 GA** vienā item = "perfekts item"; endgame chase.
+- **Uber Mistiskie** vienmēr rullē ar **4 GA**.
+
+---
+
+### 8.4. Damage matemātika un stati
+
+Damage aprēķina ķēde (multiplikatīvi, kad iespējams — kā D4):
+
+```
+Final Damage
+ = Bāzes prasmes bojājums
+ × (1 + Weapon Damage%)
+ × (1 + Attribute Bonus%)              (primārais atribūts)
+ × (1 + Physical Dmg%) × PhysMult      (pirmais fizika slānis)
+ × (1 + DoT%) × DoTMult                (par DoT prasmēm)
+ × (1 + Crit Chance) × CritDmg × CritMult   (ja krits)
+ × (1 + Vulnerable Dmg%) × VulnMult    (ja mērķis vulnerable)
+ × Additive skill damage%
+ × Overpower / Special modifiers
+```
+
+**Galvenie stati uz ekipējuma:**
+
+| Stats                          | Kur rullē                                        |
+|--------------------------------|--------------------------------------------------|
+| **Kritiskā Šanse**             | Vairogs, gredzeni, amulets, ierocis              |
+| **Kritiskais Bojājums**        | Rokas, amulets, gredzeni                         |
+| **Kritiskais Bojājums Reizinātājs** | Ierocis (GA), amulets (GA)                  |
+| **Fiziskais Bojājums %**       | Ierocis, rokas, sekundārais                      |
+| **Fiziskais Bojājums Reizinātājs** | Ierocis (GA), amulets                        |
+| **Bojājums Over Time %**       | Ierocis, gredzeni                                |
+| **DoT Reizinātājs**            | Amulets (GA), zvana ligzda gem                   |
+| **Vulnerable Bojājums %**      | Amulets, gredzeni                                |
+| **Vulnerable Reizinātājs**     | Amulets (GA), ierocis (GA)                       |
+| **Overpower Damage**           | Ierocis, amulets                                 |
+| **Attack Speed**               | Ierocis, rokas, gredzeni                         |
+| **Cooldown Reduction**         | Amulets, gredzeni, ķivere                        |
+| **Resource Generation**        | Ierocis, sekundārais                             |
+| **Minjonu Bojājums %**         | Ierocis, sekundārais, rokas                      |
+| **Minjonu Dzīvība %**          | Rumpis, ķivere                                   |
+
+**Aizsardzības stati:** Bruņas, Life %, Kopējais Resists, Elementārie Resists (Uguns/Ledus/Ēna/Svēts), Damage Reduction from close/distant/injured, Barrier Generation.
+
+---
+
+### 8.5. Aspekti un Leģendārie Aspekti
+
+Katrs **Reliktu** item nes **Aspektu** — mehānisks efekts, kas maina spēli.
+
+- **Ofensīvie:** *"Krusta Zvans papildu 2 sekundēs stunē"*
+- **Defensīvie:** *"Kad tavs Barjēra beidzas, dziedini 10% max HP"*
+- **Utility:** *"Space cooldown -30%, bet i-frames uz pusi"*
+- **Minjonu:** *"Sūkšņi ar >50% dzīvības darbojas +30% ātrāk"*
+
+**Divi veidi, kā iegūt Aspektus:**
+
+1. **Extraction** — pie **Okultista** izlobā Aspektu no Reliktu item (item pazūd, iegūsti Aspektu ar 100% rullēto stipru variantu).
+2. **Kodekss (Codex of Power)** — pabeidzot dungeon, atslēdz šī dungeon Aspektu Kodeksā. **Pastāvīgs**, bet vienmēr **75% no max roll** (worse par extraction).
+
+**Aspekta uzstādīšana (Imprint):** pie Okultista uzlieci Aspektu uz Sena vai Reliktu item par materiāliem — item kļūst Reliktu ar tavu Aspektu.
+
+**Aspekta slotes uz item:** viens Aspekts uz item. Ja imprintē uz item, kuram jau ir, pārraksta.
+
+---
+
+### 8.6. Setu komplekti (Sets, D3-stila)
+
+Katrai klasei — **3 Setu Komplekti**, 6 daļas katrs. **18 seti kopā.**
+
+- **2 daļas:** neliels bonuss (piem., +20% Sūkšņu bojājums).
+- **4 daļas:** vidējs bonuss + jauna mehānika (piem., Sūkšņi automātiski atgriežas pie tevis, ja atkāpies).
+- **6 daļas (pilnais)**: build-defining transformācija (piem., "Tavs Krusta Zvans arī pieprasa uguns damage; Sārtaji dubultā").
+
+Setu daļas dropo tikai no **specifiskiem bosiem** (viena boss = viena Setu daļa targeted farm).
+
+**Setu piemēri:**
+
+**Melnais Bruņinieks:**
+- *Kritušā Krusta Zvēresti* — falangas build (Sūkšņi + Bruņinieks kā vienība)
+- *Asins Katedrāles Kārkas* — heal-tank stils, Grēksūdze kā mana
+- *Zvana Uguns* — Sārtaji + Bruņinieks hibrīds
+
+**Berserkers:**
+- *Trīs Tūkstoš Deviņi* — dual-wield, augsts attack speed
+- *Kliedziena Karogs* — rage nekad nemazinās
+- *Sarkano Smilšu Kalambs* — visi minjoni iet rage
+
+... u.c. pārējām klasēm.
+
+---
+
+### 8.7. Uber Mistiskie items (Uber Uniques)
+
+**Retākie itemi spēlē.** ~6 kopā spēles launchā, viens per klase (plus 2 klases-agnostiski).
+
+- **Drop chance:** ~0.05% no **Elite Bosiem** T80+, **World Bosiem**, un **Murgu Dungeoniem T80+**.
+- **Vienmēr 4 GA + max iP.**
+- Piemēri:
+  - **Melnais Kronis** (klases-agnostisks ķivere) — visas prasmes +2 līmeņi, Grēksūdze / Rage / Zelts / Sula / Ēna / Sala akumulē 2× ātrāk.
+  - **Sirds no Kalna** (klases-agnostisks amulets) — kad nomirsti, atmostas ar 50% HP vienreiz per boss cīņa.
+  - **Vecā Goldo Roka** (Alkas Kunga ierocis) — 30% no visa savāktā zelta konvertējas uz Damage Reduction.
+  - **Ninheras Ērkšķu Piespriedu** (Mežoņa Kunga bruņas) — ienaidnieki tuvāk 10m tiek pastāvīgi indeti.
+  - (u.c.)
+
+**Uber Mistiskie ir aspirācijas priekšmets** — spēlētājs var uz jau esošu build, bet nepieciešamības nav.
+
+---
+
+### 8.8. World items (Ļoti reti pasaules mīli)
+
+Speciāla kategorija — **~15 pasaules mīli**, kas dropo **tikai no World Bosiem** un dažiem pasaules notikumiem.
+
+- Ne tik retie kā Uber Mistiskie, bet **klases-agnostiski**.
+- Bieži utility (movement speed, resurss regen, quality-of-life).
+- Piemēri: **Ceļotāja Zābaki** (+40% MS ārpus cīņas), **Sardzes Zvans** (auto-heal kritiskos brīžos), **Ēnu Spogulis** (rediza mainām karti).
+
+---
+
+### 8.9. Slotes
+
+**Spēlētājs (12 slotes):**
+- Ķivere, Amulets
+- Rumpis, Sekundārais (vairogs/talismans/off-hand)
+- Ierocis (primārais)
+- Rokas, Josta
+- Kājas, Zābaki
+- 2× Gredzens
+- **Ēnu slots** — tikai Uber Mistiskie Gems (skat. 8.10)
+
+**Minjoni (3 slotes katrs):** ķivere, ierocis, aksesuārs.
+
+---
+
+### 8.10. Gemi (Edelakmeņi) un upgrade
+
+**6 pamata gemu tipi:**
+
+| Gems         | Ierocis           | Bruņas             | Rotaslietas       |
+|--------------|-------------------|--------------------|--------------------|
+| **Rubīns**   | +Physical Dmg     | +Max Life          | +Overpower Dmg     |
+| **Safīrs**   | +Frost Dmg        | +Barrier Gen       | +Crit vs. crowd-controlled |
+| **Smaragds** | +Crit Dmg         | +Thorns            | +Poison Dmg        |
+| **Ametists** | +DoT Dmg          | +DoT Resistance    | +Vulnerable Dmg    |
+| **Topāzs**   | +Lightning Dmg    | +Lightning Res     | +Resource Gen      |
+| **Dimants**  | +Holy Dmg         | +All Res           | +Cooldown Reduction |
+
+**Gemu tieri: 1 → 5** (Grubs → Chipped → Flawed → Normal → Flawless → Royal → **Star**).
+
+**Upgrade:** **3 zemāki gemi + zelts** = 1 augstāks tiers pie **Juveliera**.
+
+- Tier 1 → 2: 3× tier 1 + 500 zelta
+- Tier 5 → 6 (Royal): 3× tier 5 + 25 000 zelta + 1× **Melnā Māldivara** (rets materiāls)
+- Tier 6 → 7 (Star): 3× tier 6 + **Zvaigznes Skabarga** (drop tikai no world bosiem)
+
+**Uber Mistiskie Gemi (Uber Gems):**
+- **6 unikāli gemi**, ietilpst tikai **Ēnu slotā** uz spēlētāja.
+- Katrs dod build-defining efektu, piem.:
+  - **Nolādētais Asinsakmens** — visi tavi hiti izspiež 5% HP no tevis, bet dubulto crit damage.
+  - **Melnā Zvaigzne** — reizi 30s tavs nākošais uzbrukums nogalinā jebkuru non-boss ienaidnieku.
+- Iegūst no **Uber Bosiem** endgame.
+
+---
+
+### 8.11. Amatnieki (NPCs Melnajā Kalnā)
+
+Katrs amatnieks atrodas savā telpā Melnajā Kalnā. Aug ar Melnā Kalna līmeni.
+
+#### **Kalējs** — Repair, Upgrade, **Masterworking**
+- Salaboj ekipējumu.
+- **Masterworking** (endgame): 12 līmeņu upgrade uz Senam/Reliktu/Uber item, katrs līmenis dod +5% visiem affixiem. Katrs 4. līmenis (**4/8/12**) izvēlas nejaušu affix un dod +25% *tikai* tam ("crit"). Var mērķēt ar rerollu.
+- Materiāli: **Bruņu skavas** (no salvaged bruņām), **Karaļa Dzelzs** (no world bosiem), **Zvana Sudrabs** (T80+ Murgu Dungeoni).
+
+#### **Dziedniece** — Flakoni, buffi
+- Dziedināšanas flakonu upgrade (līmeņi 1–10, dod vairāk HP heal).
+- Uzlabo klases signāles resursu regen.
+- Pārdod atveseļošanas eliksīrus (temp buff).
+- Materiāli: **Sausējuma zāles**, **Sniega Rasa**, **Ērceles Piens** (no dažādām biomām).
+
+#### **Laboratorija (Alķīmiķis)** — **Tempering**
+- **Tempering:** uzlieci vienu papildu affix no **Tempering Manual** (rets grāmatu drops).
+- Katrs item var tikt temperēts **2 reizes** ("Tempering Durability"). Nomaināms.
+- Manuāli specializēti pa lomām: *Ofensīvais*, *Defensīvais*, *Minjonu*, *Utility*, *Resurss*.
+- Materiāli: **Alķīmiskais smilšakmens**, **Nolādētais dzīvsudrabs**, **Sarkanā fosfora migla**.
+
+#### **Okultisti** — Aspekti, Salvage, Reroll
+- **Extract Aspect** no Reliktu item (item pazūd).
+- **Imprint Aspect** uz Sen/Reliktu item.
+- **Reroll Affix** — nomaina vienu affix par materiāliem un pieaugošu zelta cenu.
+- **Salvage** Uniques par unikāliem materiāliem.
+- Materiāli: **Zvēresta Pelni**, **Melnā Rune**, **Dvēseļu Pilieni**.
+
+#### **Juvelieris** — Gemi, Slotes, Uber Gems
+- **Cutting** un **upgrade** gemus (skat. 8.10).
+- **Add socket** uz ierociem/bruņām/rotaslietām — noteikts skaits slotu vienam item.
+- Instalē **Uber Mistiskos Gemus** Ēnu slotā.
+- Materiāli: **Nešķīts kristāls**, **Karaļa Dzelzs**, **Melnā Māldivara**, **Zvaigznes Skabarga**.
+
+---
+
+### 8.12. Wardrobe (Garderobe)
+
+Sistēma cosmetic + build save.
+
+**Cosmetic Transmog:**
+- Katrs item, ko atrod, tiek atslēgts **Garderobes bibliotēkā**.
+- Vari uzlikt jebkura atslēgta item izskatu uz aktīvās gearu (bez stat izmaiņām).
+- Krāsu maiņa (dyes) atsevišķi — nopirk pie tirgotājiem vai iegūst pasaulē.
+
+**Build Presets:**
+- Saglabā **līdz 6 pilniem buildu presetiem** vienam varonim.
+- Preset satur: ekipējums, gemi, prasmju koks, Paragon dēļu izvēle, klases prasmju alokācija.
+- Nomaina vienu presetu → automātiski pārcērt zvaigznes visos slotos, respec.
+- Preset switch — brīvs Melnajā Kalnā, maksā zeltu ārpus tā.
+
+**Minjonu Garderobe:**
+- Krāsu shēmas minjoniem (base atslēgti par klases progresiju, papildu — pasaules notikumos).
+- Aksesuārs (cepures, mugursomas u.c.) tikai kosmētisks.
+
+---
+
+### 8.13. Loot avoti
+
+**Ikdienas dropi (mobi):**
+- Standarta pieauguma līknē; Rūdīti + Seni dropi bieži, Reliktu — ~2–3% šansei per elite.
+
+**Loot Stash pie katra Bosa:**
+- Pēc bosa nogalināšanas parādās **Kunga Lāde** (troņa priekšā vai kritušā vietā).
+- Vienmēr **garantēts 1 Sen + 1 Reliktu** item.
+- Chance uz **Setu daļu** (targeted pa bosam).
+- Elite bosiem — chance uz **Uber Mistisko**.
+
+**Elite Bosi (mini-bosi):**
+- Katrā dungeonā 2–3 Elite bosi + dungeon boss.
+- Katram Elite bosam sava mazā **Elite Lāde**.
+- Loot: augsts iP, chance uz **Aspektu Kodeksu unlock** un **Rūnu** dropu.
+
+**Pazemes Dungeoni:**
+- ~50 dungeoni kopā spēlē (visos reģionos).
+- Katrs dod unikālu **Kodeksa Aspektu** pirmo reizi pabeidzot.
+- **Murgu Versijas** endgame (T1–T100), affix modi, ērtāki Rūnu dropi.
+
+**World Bosi:**
+- Spawn pasaules kartes 4 fiksētās vietās, katrs ik pēc **6 stundām** (real time).
+- Grupas kontenta priekšskaitis (post-MVP co-op).
+- **Garantēts** Reliktu drop, chance uz **World Item** un **Uber Mistiskā** drop.
+- Materiāli: **Zvaigznes Skabarga**, **Karaļa Dzelzs**, **Melnā Māldivara**.
+
+**Uber Bosi (endgame):**
+- Atslēdzas ar rituāla kombinēšanu (piem., 5× Melnā Rune + Zvaigznes Skabarga).
+- Vienīgais avots **Uber Mistiskajiem Gemiem**.
+
+---
+
+### 8.14. Klasei-specifiski Reliktu items
+
+Katrai klasei — **~8 klases-eksklīvi Reliktu items** ar aspektiem, kas domāti tikai tai (piem., Berserker "Divi Zobeni Vienā" — pēc katra hita 5% šansei automātisks nākamais uzbrukums).
 
 ---
 
