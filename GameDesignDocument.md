@@ -205,6 +205,97 @@ Katrai klasei ir **~8 klases-eksklīvi legendāri** ar tikai tai domātām salik
 
 ---
 
+### 9.1. Paragon sistēma (Diablo 4 stils)
+
+**Atslēdzas:** Kad sasniedz līmeni **50**. Pēc tam katra iegūta XP porcija turpina dot **līmeņus** līdz 80. Sasniedzot 80, visa turpmākā XP dod **Paragon punktus**. Max **350 Paragon punktus** vienam varonim.
+
+**Kur tos ieguldīt:** klases **Paragon Dēļos** (*Paragon Boards*) — vizuāli lielos 21×21 režģa dēļos ar ceļiem, kas savieno mezglus.
+
+#### Paragon Dēļi (Boards)
+
+Katrai klasei ir **1 sākuma dēlis** (klases emblēma centrā) un **~10 pieejamie papildu dēļi**, no kuriem izmanto **5**. Papildu dēlis pievienojas caur **Vārtu Mezglu** (Gate Node) uz sākuma dēļa malas — vari **rotēt** to par 0°/90°/180°/270°, mainot, kā tā mezgli sakrīt ar tavu ceļu.
+
+Kopīgi tematiskie dēļi (visām klasēm pieejami, bonusi mainās pēc klases):
+
+| Dēlis                 | Fokuss                                      |
+|-----------------------|---------------------------------------------|
+| **Zvērests**          | Sākuma dēlis, klases identitāte, balansēts  |
+| **Karagājienis**      | Ofensīvs — bojājums, kritiskais, tempo     |
+| **Tvirtīgums**        | Defensīvs — dzīvība, bruņas, resists       |
+| **Barvedis**          | Minjonu buffi — skaits, spēks, DoT         |
+| **Nolādēts**          | Riska/atlīdzības — spēcīgi, ar cenu        |
+| **Troņa Māksla**      | Utility — cooldown, resurss, kustība       |
+| **Melnais Kaisms**    | Klases-eksklīvs 6. dēlis, atslēdzas kampaņas fināla |
+
+Katram dēlim ir **~80 mezgli** kopā. Lai sasniegtu izejas **Vārtu Mezglu**, jāizceļo caur **60–70 mezgliem** (atkarībā no ceļa). Ar **350 punktiem** vidēji aizpildi **5 pilnus dēļus** (~70 punkti katrs).
+
+#### Mezglu tipi
+
+| Tips           | Krāsa       | Efekts                                                                                     |
+|----------------|-------------|--------------------------------------------------------------------------------------------|
+| **Parasts**    | Balts       | Neliels stats: **+5 primārā stats** vai **+2% minoritārs bonuss**                          |
+| **Maģisks**    | Zils        | Vidējs stats: **+10 primārā stats** vai **+3% bojājums pret ienaidnieku tipu**             |
+| **Rets**       | Dzeltens    | Liels bonuss + **statistiku slieksni**: piem., *"+15% Sūkšņu bojājums; ja tev ir 300+ Spēka, papildu +15%"* |
+| **Leģendārs**  | Zelts       | **Viens uz dēli**, klases-specifisks, spēles-maiņas efekts                                 |
+| **Vārtu**      | Sudrabs     | Uz dēļa malas — pievieno tur nākošo dēli                                                  |
+| **Rūnu ligzda**| Purpurs     | Vieta, kur ievieto **Rūnu** (skat. tālāk); dod area-of-effect bonusu ap sevi              |
+
+Katrā dēlī: **~50 parasti**, **~20 maģiski**, **~6 reti**, **1 leģendārs**, **1 rūnu ligzda**, **1–4 vārti** malās.
+
+#### Leģendārie mezgli (piemēri pa klasēm)
+
+- **Melnais Bruņinieks** — *"Krustnesis"*: kad iedarbini Krusta Zvanu, visi Sūkšņi tuvumā iegūst 5s neatgriezenības un dubulto uzbrukumu bojājumu.
+- **Berserkers** — *"Nekad Vairs Mierā"*: Rage nekad neizzūd cīņas laikā; kritums no dzīvības zem 30% iedarbina 3s berserker automātiski.
+- **Alkas Kungs** — *"Zelts Ir Asinis"*: 20% no savāktā zelta konvertējas uz temporāro dzīvību (uzkrājas līdz 2× max dzīvība).
+- **Mežonis Kungs** — *"Puve Nekad Nemirst"*: inde no tavām prasmēm spread uz 2 tuvākajiem ienaidniekiem, kad mērķis nomirst.
+- **Bezēnu Zaglis** — *"Divi Ēnu Klonis"*: Ēnu Solis atstāj ilūziju, kas veic vienu automātisku sitienu.
+- **Vientuļais Sniegurgs** — *"Sasala Kronis"*: sasaldētie ienaidnieki, saplīstot, dod +10 Sala un ceļ vājo skeletu.
+
+#### Rūnas (mūsu Glyphs)
+
+**Rūnas ir mazi gotiski simboli**, kurus ievieto Paragon Dēļa **Rūnu ligzdās**. Katra Rūna:
+- Ir **klases-agnostika** (var izmantot jebkurš) vai **klases-specifiska**.
+- Ir **līmenis 1–21** (max 21). Sāk 1, augst caur **Murgu Dungeoniem**.
+- Ir **rādiuss** (2×2 → 4×4 → 6×6 mezgli ap ligzdu), kas aug ar līmeni.
+- Dod bonusu pēc **mezglu tipa** rādiusā — piem., *"Katrs Maģiskais mezgls tavā rādiusā dod +2% Sūkšņu bojājumu"*.
+- Dod **papildu bonusu**, ja **stats sliekšnis** rādiusā ir sasniegts — piem., *"Ja tavā rādiusā ir 40+ Veiklības, bonuss × 2"*.
+
+**Rūnu piemēri:**
+
+| Rūna              | Efekts                                                                          |
+|-------------------|---------------------------------------------------------------------------------|
+| **Ģerbonis**      | Katrs Rets mezgls rādiusā dod +3% pret elementārajiem bojājumiem                |
+| **Asinssaite**    | Katrs Maģisks mezgls rādiusā dod +2% Barveža bojājumu                          |
+| **Slēgtais Vārds**| Ja rādiusā ir 100+ Prāta, prasmju cooldown -15%                               |
+| **Zvana Skaņa**   | Katrs Parasts mezgls rādiusā dod +1% kritiskā sitiena šansei                   |
+| **Nolādētais Sirdsdedzis** | Rūna arī iznīcina 1% max dzīvības 5s cīņas laikā, bet dubulto visus rādiuss bonusus |
+
+**Rūnu iegūšana:**
+- Pirmās 5 Rūnas — no galvenā stāsta bosiem (viena uz reģionu).
+- Pārējās (līdz ~30) — random dropi no **Murgu Dungeoniem** (skat. Endgame).
+
+**Rūnu līmeņa celšana:**
+- Katra pabeigta Murgu Dungeon iedod **XP** izvēlētajai Rūnai (ne visām).
+- Tier XP: **Murgu D. Tier 1** = maza XP, **Tier 100** = milzīga XP. Kāpumi eksponenciāli.
+- Level 15 → 21 prasa augsto tieru dungeonus (endgame grinds).
+
+#### Paragon ekonomija — kā tas jūtas
+
+- **Pirmie 50 punkti (līdz 130 kopā):** aizpildi sākuma dēli, sāc pirmo papildu dēli.
+- **150–200 punkti:** trešā dēļa ceļš, sāk parādīties spēles-maiņas leģendārie mezgli.
+- **250–300 punkti:** ceturtā/piektā dēļa optimizācija, Rūnu min-maxing.
+- **300–350 punkti:** perfekcijas grind — pēdējie Rūnu līmeņi, min-max ceļu maiņa (kombinācijas).
+
+**Cīņa nemainās pēc jaudas skaitliski (nav jautri), bet pēc kombinācijām un buildu identitātēm.** Diablo 4 stila **build diversity** — divi Berserkeri ar 300 Paragon punktiem izskatās un jūtas pilnīgi atšķirīgi.
+
+#### Respec (pārtīrīšana)
+
+- **Bezmaksas** pa mezglam pa mezglam (nomainīt vienu punktu = 100 zelta agrīnā spēlē, aug ar līmeni).
+- **Pilna Paragon respec** — vienu reizi nedēļā bezmaksas, tad par pieaugošu **Dvēseļu enerģijas** cenu.
+- Klases prasmju koka respec ir atsevišķs, dārgāks.
+
+---
+
 ## 10. Melnā Kalna cietoksnis (hub, aug)
 
 Nemainīgs kopš iepriekšējās versijas:
