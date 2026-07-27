@@ -810,3 +810,72 @@ Dots outside the map rect are clipped so nothing smears across the
 screen. Actor queries use `UGameplayStatics::GetAllActorsOfClass` on
 render — for very large levels, replace with a spatially-partitioned
 lookup later.
+
+## 33. Environmental Hazard Zones
+
+`ASOHazardZone` is a placeable actor with a `UBoxComponent` trigger.
+Any pawn that enters the box takes `DamagePerTick` every
+`TickInterval` seconds until they leave. A timer fires `Lifetime`
+seconds after spawn — if set non-zero the zone self-destructs.
+
+**Types** (`ESOHazardType`): Fire, Poison, Frost, Lightning, Necrotic.
+Each type drives a helper color returned by `GetHazardColor()` so the
+ground decal can be tinted dynamically.
+
+Slots: `DecalMaterial` for the ground projection, `AmbientParticles`
+for looping VFX, `HitFX` played per-victim per-tick.
+
+### Setup
+
+1. Place a `ASOHazardZone` actor in your arena.
+2. Set `HazardType = Fire`, `DamagePerTick = 8`, `TickInterval = 0.5`
+   (16 DPS), `Lifetime = 10` (pool burns for 10 s then goes away).
+3. Assign a decal material and particle in the slots.
+4. To spawn from a boss: `GetWorld()->SpawnActor<ASOHazardZone>(...)` 
+   inside `OnPhaseEnteredBP`; set `Lifetime` to match the phase window.
+
+## 34. Quest System
+
+`USOQuestData` is a `UPrimaryDataAsset` holding:
+- `QuestTitle` / `QuestDescription`
+- `Objectives` (`TArray<FSOQuestObjective>`) — each objective has a
+  `Type`, optional `TargetClass` or `TargetMaterial`, `RequiredCount`,
+  and (for ReachLocation) a `TargetLocation + AcceptanceRadius`.
+- `Reward` (XP, gold, optional item).
+- `PrerequisiteQuest` (gate behind another quest completion).
+
+**Objective types**: KillEnemies, CollectMaterial, ClearWaves,
+DefeatBoss, ReachLocation.
+
+`USOQuestComponent` lives on `ASOCharacter` and tracks
+`ActiveQuests[]` + `CompletedQuests[]`.
+
+**Wire-up**:
+- Kill events flow from `ASOEnemyCharacter::HandleDeath` → player's
+  `QuestComponent->NotifyEnemyKilled(enemy)` automatically.
+- Wave clears propagate via `ASOEnemySpawner::OnWaveCleared` delegate
+  bound in `BeginPlay`.
+- Inventory material counts update via
+  `InventoryComponent::OnMaterialCountChanged`.
+- ReachLocation objectives are polled at 4 Hz on Tick.
+
+**HUD**: Active quests are listed in the left panel below the
+attribute readouts. Up to `MaxQuestsInTracker` quests shown; each
+objective line shows `[ ] Desc 0/3` or `[x] Desc 3/3` in green when
+done.
+
+**BP delegates**: `OnQuestAccepted`, `OnObjectiveUpdated`,
+`OnQuestCompleted`, `OnQuestFailed` — bind in the HUD Blueprint for
+animated popups.
+
+### Setup
+
+1. Create `DA_Quest_Survive` (title "Survive the Assault"):
+   - Objective 0: Type=ClearWaves, RequiredCount=3, Description="Clear 3 waves".
+   - Objective 1: Type=KillEnemies, TargetClass=BP_MeleGrunt, RequiredCount=10, Description="Kill 10 Grunts".
+   - Reward: XP=500, Gold=200.
+2. In the level BP (or a trigger volume), call
+   `Character->QuestComponent->AcceptQuest(DA_Quest_Survive)`.
+3. Play — the quest tracker appears in the HUD left panel; it
+   auto-advances as enemies die and waves clear.
+

@@ -9,6 +9,7 @@
 #include "SODamageType.h"
 #include "SOEnemyAIController.h"
 #include "SOExperienceComponent.h"
+#include "SOQuestComponent.h"
 #include "SOHealthComponent.h"
 #include "SOItemData.h"
 #include "SOItemPickup.h"
@@ -97,14 +98,22 @@ void ASOEnemyCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, ACo
 		MyController->UnPossess();
 	}
 
-	// Award XP to the killer's SOCharacter if they have an XP component.
-	if (XPReward > 0 && InstigatedBy)
+	// Award XP and advance kill quests for the killing player.
+	if (InstigatedBy)
 	{
 		if (ASOCharacter* Killer = Cast<ASOCharacter>(InstigatedBy->GetPawn()))
 		{
-			if (USOExperienceComponent* XP = Killer->FindComponentByClass<USOExperienceComponent>())
+			if (XPReward > 0)
 			{
-				XP->GainXP(XPReward);
+				if (USOExperienceComponent* XP = Killer->ExperienceComponent)
+				{
+					XP->GainXP(XPReward);
+				}
+			}
+
+			if (Killer->QuestComponent)
+			{
+				Killer->QuestComponent->NotifyEnemyKilled(this);
 			}
 		}
 	}

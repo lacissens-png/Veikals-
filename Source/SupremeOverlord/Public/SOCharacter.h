@@ -75,6 +75,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Inventory")
 	TObjectPtr<class USOInventoryComponent> InventoryComponent;
 
+	/** Quest tracking — active quests, objectives, and completion rewards. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Quests")
+	TObjectPtr<class USOQuestComponent> QuestComponent;
+
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
 	float CameraDistance = 1200.0f;

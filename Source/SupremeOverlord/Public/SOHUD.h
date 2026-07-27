@@ -265,6 +265,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Pause")
 	FString PauseHintText = TEXT("ESC  Resume     |     F10  Quit");
 
+	/** Show the active quest tracker on the left side of the screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests")
+	bool bShowQuestTracker = true;
+
+	/** How many quests to display at once (oldest accepted first). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests", meta = (ClampMin = "1", UIMin = "1", UIMax = "5"))
+	int32 MaxQuestsInTracker = 2;
+
+	/** Pixels from the top of the screen where the quest panel begins. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float QuestTrackerTopOffset = 170.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float QuestTrackerScale = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests")
+	FLinearColor QuestTitleColor = FLinearColor(0.98f, 0.85f, 0.35f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests")
+	FLinearColor QuestObjectiveColor = FLinearColor(0.92f, 0.92f, 0.92f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests")
+	FLinearColor QuestObjectiveCompleteColor = FLinearColor(0.4f, 1.0f, 0.4f, 1.0f);
+
 private:
 	/** Renders one skill tile with cooldown overlay + labels. */
 	void DrawSkillTile(class UCanvas* InCanvas,

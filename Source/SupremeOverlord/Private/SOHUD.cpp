@@ -16,6 +16,8 @@
 #include "SOManaComponent.h"
 #include "SOItemPickup.h"
 #include "SOPickupOrb.h"
+#include "SOQuestComponent.h"
+#include "SOQuestData.h"
 #include "SOVendorNPC.h"
 #include "SOWeaponData.h"
 
@@ -176,6 +178,58 @@ void ASOHUD::DrawHUD()
 			{
 				DrawLine(FString::Printf(TEXT("Unspent points: %d"), Unspent), UnspentPointsColor);
 			}
+		}
+	}
+
+	// -- Quest tracker (left side, below attributes panel) -------------------
+	if (bShowQuestTracker && MediumFont && SO->QuestComponent)
+	{
+		const TArray<FSOActiveQuest>& ActiveQuests = SO->QuestComponent->ActiveQuests;
+		const float LineH = 18.0f * QuestTrackerScale;
+		float QY = QuestTrackerTopOffset;
+		const float QX = HealthBarOffset.X;
+		const int32 MaxShow = FMath::Min(MaxQuestsInTracker, ActiveQuests.Num());
+
+		for (int32 q = 0; q < MaxShow; ++q)
+		{
+			const FSOActiveQuest& AQ = ActiveQuests[q];
+			if (!AQ.Data) continue;
+
+			// Quest title
+			{
+				FCanvasTextItem TitleItem(FVector2D(QX, QY),
+				                         AQ.Data->QuestTitle,
+				                         MediumFont,
+				                         QuestTitleColor);
+				TitleItem.Scale = FVector2D(QuestTrackerScale * 1.1f, QuestTrackerScale * 1.1f);
+				TitleItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(TitleItem);
+				QY += LineH * 1.3f;
+			}
+
+			// Objectives
+			for (int32 i = 0; i < AQ.Data->Objectives.Num(); ++i)
+			{
+				const FSOQuestObjective& Obj = AQ.Data->Objectives[i];
+				const int32 Have     = AQ.Progress.IsValidIndex(i) ? AQ.Progress[i] : 0;
+				const bool  bDone    = Have >= Obj.RequiredCount;
+				const FString Check  = bDone ? TEXT("[x] ") : TEXT("[ ] ");
+				const FString ObjStr = FString::Printf(TEXT("%s%s  %d / %d"),
+				                                       *Check,
+				                                       *Obj.Description.ToString(),
+				                                       Have, Obj.RequiredCount);
+
+				FCanvasTextItem ObjItem(FVector2D(QX + 8.0f, QY),
+				                        FText::FromString(ObjStr),
+				                        MediumFont,
+				                        bDone ? QuestObjectiveCompleteColor : QuestObjectiveColor);
+				ObjItem.Scale = FVector2D(QuestTrackerScale, QuestTrackerScale);
+				ObjItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(ObjItem);
+				QY += LineH;
+			}
+
+			QY += LineH * 0.8f; // inter-quest gap
 		}
 	}
 
