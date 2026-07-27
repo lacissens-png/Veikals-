@@ -66,6 +66,28 @@ void ASOCharacter::BeginPlay()
 	{
 		HealthComponent->OnDeath.AddDynamic(this, &ASOCharacter::HandleDeath);
 	}
+
+	Gold = FMath::Max(0, StartingGold);
+	if (Gold != 0)
+	{
+		OnGoldChanged.Broadcast(0, Gold, Gold);
+	}
+}
+
+void ASOCharacter::AddGold(int32 Amount)
+{
+	if (Amount == 0)
+	{
+		return;
+	}
+
+	const int32 OldGold = Gold;
+	Gold = FMath::Max(0, Gold + Amount);
+	const int32 Delta = Gold - OldGold;
+	if (Delta != 0)
+	{
+		OnGoldChanged.Broadcast(OldGold, Gold, Delta);
+	}
 }
 
 void ASOCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AController* InstigatedBy, AActor* DamageCauser)

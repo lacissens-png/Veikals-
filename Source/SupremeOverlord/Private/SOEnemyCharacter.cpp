@@ -1,12 +1,14 @@
 #include "SOEnemyCharacter.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "Kismet/GameplayStatics.h"
 #include "SODamageType.h"
 #include "SOEnemyAIController.h"
 #include "SOHealthComponent.h"
+#include "SOPickupOrb.h"
 
 ASOEnemyCharacter::ASOEnemyCharacter()
 {
@@ -97,8 +99,53 @@ void ASOEnemyCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, ACo
 		Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
+	DropLoot();
+
 	if (CorpseLifetime > 0.0f)
 	{
 		SetLifeSpan(CorpseLifetime);
+	}
+}
+
+void ASOEnemyCharacter::DropLoot()
+{
+	UWorld* World = GetWorld();
+	if (!World || LootTable.Num() == 0)
+	{
+		return;
+	}
+
+	const FVector CorpseLocation = GetActorLocation();
+
+	for (const FSOLootDrop& Drop : LootTable)
+	{
+		if (!Drop.OrbClass || Drop.DropChance <= 0.0f)
+		{
+			continue;
+		}
+
+		if (FMath::FRand() > Drop.DropChance)
+		{
+			continue;
+		}
+
+		const int32 SafeMin = FMath::Max(1, Drop.MinCount);
+		const int32 SafeMax = FMath::Max(SafeMin, Drop.MaxCount);
+		const int32 Count   = FMath::RandRange(SafeMin, SafeMax);
+
+		for (int32 i = 0; i < Count; ++i)
+		{
+			// Uniformly sample a disk of radius LootSpreadRadius.
+			const float Angle    = FMath::FRandRange(0.0f, 2.0f * PI);
+			const float DiskR    = LootSpreadRadius * FMath::Sqrt(FMath::FRand());
+			const FVector Offset = FVector(FMath::Cos(Angle) * DiskR, FMath::Sin(Angle) * DiskR, LootSpawnHeight);
+			const FVector SpawnLoc = CorpseLocation + Offset;
+
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			Params.Owner = this;
+
+			World->SpawnActor<ASOPickupOrb>(Drop.OrbClass, SpawnLoc, FRotator::ZeroRotator, Params);
+		}
 	}
 }

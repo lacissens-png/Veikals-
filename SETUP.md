@@ -308,3 +308,84 @@ To replace the whole thing with a UMG widget later:
 | Q     | PrimaryAttack |
 | E     | ShadowBolt    |
 | K     | Debug damage  |
+
+## 13. Mana
+
+`USOManaComponent` is a lightweight regenerating pool:
+
+- `MaxMana` / `StartingMana` / `RegenPerSecond` (default 100 / full / 10 s⁻¹).
+- `RegenDelayAfterConsume` (default 1.0 s) briefly pauses regen after a
+  successful `Consume(Cost)`, so casting a spell has bite.
+- `Consume(Cost)` returns true if the pool had enough.
+- `Restore(Amount)` / `RefillToMax()` add mana back.
+- `OnManaChanged(OwningComp, Old, New, Delta)` is `BlueprintAssignable`.
+
+The player character owns one automatically. `CastShadowBolt` refuses to
+fire (and `CanCastShadowBolt()` returns false) when the pool has less
+than `ShadowBoltManaCost` (default 25). The HUD draws a blue mana bar
+above the HP bar.
+
+**Tuning on `BP_SOCharacter` (Mana):** `MaxMana`, `StartingMana`,
+`RegenPerSecond`, `RegenDelayAfterConsume`.
+**Tuning on the character (ShadowBolt):** `ShadowBoltManaCost`.
+
+## 14. Loot drops
+
+Enemies roll a table on death and spawn `ASOPickupOrb` actors around
+their corpse. Orbs bob and spin, magnetize toward the player once close,
+and apply their payload on overlap.
+
+### Orb setup
+
+`ASOPickupOrb` has an `OrbType` enum:
+
+| OrbType | Effect on pickup                                    |
+|---------|-----------------------------------------------------|
+| Health  | Calls `HealthComponent->Heal(Amount)`               |
+| Mana    | Calls `ManaComponent->Restore(Amount)`              |
+| Gold    | Calls `ASOCharacter::AddGold(RoundToInt(Amount))`   |
+
+Create three BP subclasses so the loot table has something to reference:
+- `BP_Orb_Health` — OrbType = Health, Amount = 25, red material on the mesh.
+- `BP_Orb_Mana`   — OrbType = Mana,   Amount = 30, blue material on the mesh.
+- `BP_Orb_Gold`   — OrbType = Gold,   Amount = 10, yellow material on the mesh.
+
+Tunable per orb: `MagnetRadius`, `MagnetInterpSpeed`, `SpinRateDegPerSec`,
+`BobAmplitude`, `BobRateHz`, `DespawnAfter` (30 s default). `OnPickedUp`
+is a BP hook for pickup VFX/SFX.
+
+### Enemy loot table
+
+`ASOEnemyCharacter` now has a `LootTable` (array of `FSOLootDrop`). Each
+row has:
+
+- `OrbClass` — a `BP_Orb_*` subclass.
+- `DropChance` — probability 0..1 that this row fires.
+- `MinCount` / `MaxCount` — quantity spawned on a successful roll.
+
+Additional knobs: `LootSpreadRadius` (disk around the corpse, default
+80 cm) and `LootSpawnHeight` (default 50 cm so orbs float above the ground).
+
+Recommended starting table on `BP_MeleeGrunt`:
+
+| Row | OrbClass       | DropChance | Min | Max |
+|-----|----------------|-----------:|----:|----:|
+| 0   | BP_Orb_Gold    |       1.00 |   1 |   3 |
+| 1   | BP_Orb_Health  |       0.35 |   1 |   1 |
+| 2   | BP_Orb_Mana    |       0.35 |   1 |   1 |
+
+### Gold + HUD
+
+`ASOCharacter::AddGold(int32)` and `GetGold()` manage the currency
+counter. The HUD draws a yellow "Gold: N" readout in the top-right;
+tune position/color/scale under `SupremeOverlord|HUD|Gold`. Blueprint
+subscribers can bind to `OnGoldChanged(Old, New, Delta)` for UI
+animations.
+
+### End-to-end loot test
+
+1. Create `BP_Orb_Health`, `BP_Orb_Mana`, `BP_Orb_Gold` (BP subclasses
+   of `SOPickupOrb`) and set their `OrbType` / `Amount`.
+2. Open `BP_MeleeGrunt` → `Loot Table` → add rows per the table above.
+3. Play. Kill the grunt with **RMB** or **E**. Orbs will spawn around
+   the corpse, float toward you when close, and top up HP / Mana / Gold.

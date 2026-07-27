@@ -137,6 +137,24 @@ void ASOHUD::DrawHUD()
 		}
 	}
 
+	// -- Gold counter (top-right) --------------------------------------------
+	if (bShowGoldCounter && MediumFont)
+	{
+		const FString GoldText = FString::Printf(TEXT("Gold: %d"), SO->GetGold());
+
+		float TextW = 0.0f;
+		float TextH = 0.0f;
+		Canvas->TextSize(MediumFont, GoldText, TextW, TextH, GoldCounterScale, GoldCounterScale);
+
+		FCanvasTextItem GoldItem(FVector2D(ScreenW - TextW - GoldCounterOffset.X, GoldCounterOffset.Y),
+		                         FText::FromString(GoldText),
+		                         MediumFont,
+		                         GoldCounterColor);
+		GoldItem.Scale = FVector2D(GoldCounterScale, GoldCounterScale);
+		GoldItem.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(GoldItem);
+	}
+
 	// -- Death overlay --------------------------------------------------------
 	if (bShowDeathOverlay && Health->IsDead() && LargeFont)
 	{

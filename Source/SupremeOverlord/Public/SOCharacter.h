@@ -11,6 +11,8 @@ class USOManaComponent;
 class USODamageType;
 class ASOShadowBoltProjectile;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSOOnGoldChanged, int32, OldGold, int32, NewGold, int32, Delta);
+
 UCLASS()
 class SUPREMEOVERLORD_API ASOCharacter : public ACharacter
 {
@@ -178,10 +180,32 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Combat|ShadowBolt")
 	void OnShadowBoltCast(const FVector& MuzzleLocation, const FVector& AimDirection, ASOShadowBoltProjectile* SpawnedBolt);
 
+	// -----------------------------------------------------------------------
+	// Currency.
+	// -----------------------------------------------------------------------
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Currency")
+	int32 GetGold() const { return Gold; }
+
+	/** Adds gold (or subtracts if negative). Fires OnGoldChanged when the value moves. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Currency")
+	void AddGold(int32 Amount);
+
+	/** Broadcast whenever Gold changes. Params: OldGold, NewGold, Delta. */
+	UPROPERTY(BlueprintAssignable, Category = "SupremeOverlord|Currency")
+	FSOOnGoldChanged OnGoldChanged;
+
+	/** Starting gold. Applied on BeginPlay. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Currency", meta = (ClampMin = "0", UIMin = "0"))
+	int32 StartingGold = 0;
+
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;
 	bool bPrimaryAttackOnCooldown = false;
 
 	FTimerHandle ShadowBoltCooldownHandle;
 	bool bShadowBoltOnCooldown = false;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Currency", Transient)
+	int32 Gold = 0;
 };

@@ -6,6 +6,30 @@
 
 class USOHealthComponent;
 class USODamageType;
+class ASOPickupOrb;
+
+/** One row of an enemy's loot table. */
+USTRUCT(BlueprintType)
+struct FSOLootDrop
+{
+	GENERATED_BODY()
+
+	/** Orb class to spawn on a successful roll. Typically a BP subclass of ASOPickupOrb. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Loot")
+	TSubclassOf<ASOPickupOrb> OrbClass;
+
+	/** Probability [0..1] that this row drops when the enemy dies. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Loot", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float DropChance = 1.0f;
+
+	/** Minimum number of orbs spawned if the roll succeeds. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Loot", meta = (ClampMin = "1", UIMin = "1"))
+	int32 MinCount = 1;
+
+	/** Maximum number of orbs spawned if the roll succeeds. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Loot", meta = (ClampMin = "1", UIMin = "1"))
+	int32 MaxCount = 1;
+};
 
 UCLASS()
 class SUPREMEOVERLORD_API ASOEnemyCharacter : public ACharacter
@@ -58,6 +82,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "60.0"))
 	float CorpseLifetime = 5.0f;
 
+	/** Loot rolled and spawned on death. Each row is an independent chance. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot")
+	TArray<FSOLootDrop> LootTable;
+
+	/** Horizontal spread (cm) each spawned orb is offset by from the corpse. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "500.0"))
+	float LootSpreadRadius = 80.0f;
+
+	/** Vertical offset (cm) applied to spawned orbs so they float above the ground. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "300.0"))
+	float LootSpawnHeight = 50.0f;
+
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Enemy")
 	bool IsAlive() const;
 
@@ -68,4 +104,8 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Combat")
 	bool PerformAttack(AActor* Target);
+
+	/** Rolls LootTable and spawns any resulting orbs around the corpse. Public so BP subclasses can chain into it. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Loot")
+	void DropLoot();
 };

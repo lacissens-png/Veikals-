@@ -65,6 +65,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
 	float ManaTextScale = 1.0f;
 
+	/** Show a gold counter in the top-right of the screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Gold")
+	bool bShowGoldCounter = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Gold")
+	FVector2D GoldCounterOffset = FVector2D(24.0f, 24.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Gold")
+	FLinearColor GoldCounterColor = FLinearColor(1.0f, 0.84f, 0.15f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Gold", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "4.0"))
+	float GoldCounterScale = 1.3f;
+
 	/** Show a one-line reminder of the primary keybinds across the top of the screen. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
 	bool bShowControlHints = true;
