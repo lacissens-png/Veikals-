@@ -150,6 +150,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "8.0"))
 	float DeathOverlayScale = 3.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Pause")
+	bool bShowPauseOverlay = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Pause")
+	FLinearColor PauseDimColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.55f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Pause")
+	FString PauseTitleText = TEXT("PAUSED");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Pause")
+	FString PauseHintText = TEXT("ESC  Resume     |     F10  Quit");
+
 private:
 	/** Renders one skill tile with cooldown overlay + labels. */
 	void DrawSkillTile(class UCanvas* InCanvas,

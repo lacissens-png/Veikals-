@@ -6,6 +6,7 @@
 #include "GameFramework/DamageType.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "NavigationSystem.h"
 #include "Particles/ParticleSystem.h"
 #include "SOCharacter.h"
@@ -56,6 +57,13 @@ void ASOPlayerController::SetupInputComponent()
 
 	// Life Drain - R by default.
 	InputComponent->BindAction("LifeDrain",    IE_Pressed, this, &ASOPlayerController::OnLifeDrainPressed);
+
+	// Pause / quit - ESC + F10. Executed while paused too.
+	FInputActionBinding& PauseBinding = InputComponent->BindAction("TogglePause", IE_Pressed, this, &ASOPlayerController::OnTogglePausePressed);
+	PauseBinding.bExecuteWhenPaused = true;
+
+	FInputActionBinding& QuitBinding  = InputComponent->BindAction("QuitGame",    IE_Pressed, this, &ASOPlayerController::OnQuitPressed);
+	QuitBinding.bExecuteWhenPaused = true;
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -176,6 +184,28 @@ void ASOPlayerController::OnLifeDrainPressed()
 	{
 		SOCharacter->CastLifeDrain();
 	}
+}
+
+void ASOPlayerController::OnTogglePausePressed()
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	const bool bNowPaused = !UGameplayStatics::IsGamePaused(this);
+	UGameplayStatics::SetGamePaused(this, bNowPaused);
+}
+
+void ASOPlayerController::OnQuitPressed()
+{
+	// Only accept quit while paused so a stray F10 during combat doesn't kill the session.
+	if (!UGameplayStatics::IsGamePaused(this))
+	{
+		return;
+	}
+	UKismetSystemLibrary::QuitGame(this, this, EQuitPreference::Quit, /*bIgnorePlatformRestrictions*/ false);
 }
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)

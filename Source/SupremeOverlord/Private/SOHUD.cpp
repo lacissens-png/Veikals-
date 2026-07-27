@@ -5,6 +5,7 @@
 #include "Engine/Engine.h"
 #include "Engine/Font.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "SOCharacter.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
@@ -292,6 +293,42 @@ void ASOHUD::DrawHUD()
 		DeadItem.Scale = FVector2D(DeathOverlayScale, DeathOverlayScale);
 		DeadItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(DeadItem);
+	}
+
+	// -- Pause overlay (drawn last so it sits over everything) ---------------
+	if (bShowPauseOverlay && UGameplayStatics::IsGamePaused(this))
+	{
+		{
+			FCanvasTileItem Dim(FVector2D(0.0f, 0.0f), FVector2D(ScreenW, ScreenH), PauseDimColor);
+			Dim.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(Dim);
+		}
+
+		if (LargeFont)
+		{
+			const float TitleScale     = 2.5f;
+			const float ApproxHalfW    = PauseTitleText.Len() * 6.0f * TitleScale;
+			FCanvasTextItem Title(FVector2D(ScreenW * 0.5f - ApproxHalfW, ScreenH * 0.42f),
+			                      FText::FromString(PauseTitleText),
+			                      LargeFont,
+			                      FLinearColor(0.98f, 0.85f, 0.4f, 1.0f));
+			Title.Scale = FVector2D(TitleScale, TitleScale);
+			Title.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(Title);
+		}
+
+		if (MediumFont)
+		{
+			float TW = 0.0f, TH = 0.0f;
+			Canvas->TextSize(MediumFont, PauseHintText, TW, TH, 1.2f, 1.2f);
+			FCanvasTextItem Hint(FVector2D((ScreenW - TW) * 0.5f, ScreenH * 0.55f),
+			                     FText::FromString(PauseHintText),
+			                     MediumFont,
+			                     FLinearColor(0.95f, 0.95f, 0.95f, 1.0f));
+			Hint.Scale = FVector2D(1.2f, 1.2f);
+			Hint.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(Hint);
+		}
 	}
 }
 

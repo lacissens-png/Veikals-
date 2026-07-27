@@ -75,6 +75,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat")
 	void OnLifeDrainPressed();
 
+	/** Bound to the "TogglePause" and "QuitGame" actions. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|UI")
+	void OnTogglePausePressed();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|UI")
+	void OnQuitPressed();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;
