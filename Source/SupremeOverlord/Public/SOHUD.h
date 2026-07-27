@@ -187,6 +187,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "4.0"))
 	float BossNameScale = 1.4f;
 
+	/** Show a "[F] Buy   [G] Sell" prompt when the player is inside a vendor's interaction sphere. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Vendor")
+	bool bShowVendorPrompt = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Vendor", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float VendorPromptScale = 1.3f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Vendor")
+	FLinearColor VendorPromptColor = FLinearColor(0.95f, 0.9f, 0.55f, 1.0f);
+
 	/** Show "YOU DIED" overlay when the player's health component reports dead. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death")
 	bool bShowDeathOverlay = true;

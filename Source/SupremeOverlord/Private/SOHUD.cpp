@@ -13,6 +13,7 @@
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
+#include "SOVendorNPC.h"
 #include "SOWeaponData.h"
 
 ASOHUD::ASOHUD()
@@ -377,6 +378,46 @@ void ASOHUD::DrawHUD()
 			WaveItem.Scale = FVector2D(WaveCounterScale, WaveCounterScale);
 			WaveItem.EnableShadow(FLinearColor::Black);
 			Canvas->DrawItem(WaveItem);
+		}
+	}
+
+	// -- Vendor prompt (centered above the skill panel) ----------------------
+	if (bShowVendorPrompt && MediumFont)
+	{
+		TArray<AActor*> Vendors;
+		UGameplayStatics::GetAllActorsOfClass(this, ASOVendorNPC::StaticClass(), Vendors);
+
+		ASOVendorNPC* Nearest = nullptr;
+		for (AActor* A : Vendors)
+		{
+			if (ASOVendorNPC* Vendor = Cast<ASOVendorNPC>(A))
+			{
+				if (Vendor->IsPlayerInRange(SO))
+				{
+					Nearest = Vendor;
+					break;
+				}
+			}
+		}
+
+		if (Nearest)
+		{
+			const FString Name = Nearest->VendorDisplayName.IsEmpty()
+				? FString(TEXT("Vendor"))
+				: Nearest->VendorDisplayName.ToString();
+			const FString Prompt = FString::Printf(TEXT("%s     [F] Buy Next     [G] Sell Weapon"), *Name);
+
+			float TW = 0.0f, TH = 0.0f;
+			Canvas->TextSize(MediumFont, Prompt, TW, TH, VendorPromptScale, VendorPromptScale);
+			const float PromptY = ScreenH * 0.5f + 90.0f;
+
+			FCanvasTextItem PromptItem(FVector2D((ScreenW - TW) * 0.5f, PromptY),
+			                           FText::FromString(Prompt),
+			                           MediumFont,
+			                           VendorPromptColor);
+			PromptItem.Scale = FVector2D(VendorPromptScale, VendorPromptScale);
+			PromptItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(PromptItem);
 		}
 	}
 

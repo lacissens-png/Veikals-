@@ -13,6 +13,7 @@
 #include "SOCharacter.h"
 #include "SODamageType.h"
 #include "SOHealthComponent.h"
+#include "SOVendorNPC.h"
 
 ASOPlayerController::ASOPlayerController()
 {
@@ -76,6 +77,10 @@ void ASOPlayerController::SetupInputComponent()
 	SaveBind.bExecuteWhenPaused = true;
 	FInputActionBinding& LoadBind = InputComponent->BindAction("QuickLoad", IE_Pressed, this, &ASOPlayerController::OnQuickLoadPressed);
 	LoadBind.bExecuteWhenPaused = true;
+
+	// Interact - vendor buy (F) / sell (G).
+	InputComponent->BindAction("Interact", IE_Pressed, this, &ASOPlayerController::OnInteractPressed);
+	InputComponent->BindAction("Sell",     IE_Pressed, this, &ASOPlayerController::OnSellPressed);
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -248,6 +253,53 @@ void ASOPlayerController::OnQuickLoadPressed()
 	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
 	{
 		SOCharacter->QuickLoad();
+	}
+}
+
+static ASOVendorNPC* FindNearbyVendor(ASOCharacter* Player)
+{
+	if (!Player)
+	{
+		return nullptr;
+	}
+	TArray<AActor*> Vendors;
+	UGameplayStatics::GetAllActorsOfClass(Player, ASOVendorNPC::StaticClass(), Vendors);
+
+	ASOVendorNPC* Closest = nullptr;
+	float ClosestDistSq = TNumericLimits<float>::Max();
+	const FVector PlayerLoc = Player->GetActorLocation();
+	for (AActor* A : Vendors)
+	{
+		ASOVendorNPC* Vendor = Cast<ASOVendorNPC>(A);
+		if (!Vendor || !Vendor->IsPlayerInRange(Player))
+		{
+			continue;
+		}
+		const float DistSq = FVector::DistSquared(PlayerLoc, Vendor->GetActorLocation());
+		if (DistSq < ClosestDistSq)
+		{
+			ClosestDistSq = DistSq;
+			Closest       = Vendor;
+		}
+	}
+	return Closest;
+}
+
+void ASOPlayerController::OnInteractPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (ASOVendorNPC* Vendor = FindNearbyVendor(SOCharacter))
+	{
+		Vendor->TryBuyNext(SOCharacter);
+	}
+}
+
+void ASOPlayerController::OnSellPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (ASOVendorNPC* Vendor = FindNearbyVendor(SOCharacter))
+	{
+		Vendor->TrySellCurrentWeapon(SOCharacter);
 	}
 }
 

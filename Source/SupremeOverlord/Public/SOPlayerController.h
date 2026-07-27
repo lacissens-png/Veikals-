@@ -97,6 +97,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Save")
 	void OnQuickLoadPressed();
 
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Interact")
+	void OnInteractPressed();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Interact")
+	void OnSellPressed();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;
