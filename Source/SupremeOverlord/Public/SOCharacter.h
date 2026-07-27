@@ -7,6 +7,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class USOHealthComponent;
+class USODamageType;
 
 UCLASS()
 class SUPREMEOVERLORD_API ASOCharacter : public ACharacter
@@ -72,4 +73,64 @@ public:
 	/** Cosmetic + gameplay reaction to death: stops movement, disables capsule collision, drops input. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health")
 	void OnCharacterDied(AController* InstigatedBy, AActor* DamageCauser);
+
+	// -----------------------------------------------------------------------
+	// Primary attack — melee sphere overlap in front of the character.
+	// -----------------------------------------------------------------------
+
+	/** Damage dealt per primary swing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "1000.0"))
+	float PrimaryAttackDamage = 15.0f;
+
+	/** How far in front of the character the hit sphere is centered (cm). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "50.0", UIMin = "50.0", UIMax = "800.0"))
+	float PrimaryAttackRange = 220.0f;
+
+	/** Sphere radius (cm) used for the overlap check. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "20.0", UIMin = "20.0", UIMax = "500.0"))
+	float PrimaryAttackRadius = 140.0f;
+
+	/** Seconds between primary attacks. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "0.05", UIMin = "0.05", UIMax = "5.0"))
+	float PrimaryAttackCooldown = 0.5f;
+
+	/** DamageType class used by the primary attack. Leave null to fall back to the base USODamageType. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary")
+	TSubclassOf<USODamageType> PrimaryAttackDamageType;
+
+	/** Trace channel used to filter the sphere overlap (defaults to Pawn). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary")
+	TEnumAsByte<ECollisionChannel> PrimaryAttackChannel = ECC_Pawn;
+
+	/** When true, snaps the character's yaw to face the attack direction on every swing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary")
+	bool bFaceAttackDirection = true;
+
+	/** Debug: draws the attack sphere every time a swing is performed. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Debug")
+	bool bDrawPrimaryAttackDebug = false;
+
+	/** True while the primary attack is off cooldown and legal to fire. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Primary")
+	bool CanPrimaryAttack() const;
+
+	/**
+	 * Executes a primary swing aimed at TargetLocation.
+	 * Applies PrimaryAttackDamage to every ACharacter with a live USOHealthComponent
+	 * inside the sphere. Fires OnPrimaryAttackPerformed on success.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat|Primary")
+	void PerformPrimaryAttack(FVector TargetLocation);
+
+	/**
+	 * BP hook for animation, VFX, and SFX. Called every time a swing goes off
+	 * (before the overlap is evaluated). ImpactActors lists everything the
+	 * overlap touched — plug into it to spawn per-hit VFX/SFX.
+	 */
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Combat|Primary")
+	void OnPrimaryAttackPerformed(const FVector& AttackCenter, const TArray<AActor*>& ImpactActors);
+
+private:
+	FTimerHandle PrimaryAttackCooldownHandle;
+	bool bPrimaryAttackOnCooldown = false;
 };

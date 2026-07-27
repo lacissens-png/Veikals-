@@ -63,6 +63,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Debug")
 	void DebugDamageSelf();
 
+	/** Bound to the "PrimaryAttack" input action. Resolves the cursor into world space and asks the pawn to swing. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat")
+	void OnPrimaryAttackPressed();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;

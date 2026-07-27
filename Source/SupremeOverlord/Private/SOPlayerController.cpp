@@ -47,6 +47,9 @@ void ASOPlayerController::SetupInputComponent()
 
 	// Debug helper - defaults to the K key, remap under Project Settings > Input.
 	InputComponent->BindAction("DebugDamageSelf", IE_Pressed, this, &ASOPlayerController::DebugDamageSelf);
+
+	// Primary attack - RMB or Q by default (see DefaultInput.ini).
+	InputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASOPlayerController::OnPrimaryAttackPressed);
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -118,6 +121,28 @@ void ASOPlayerController::DebugDamageSelf()
 		this,
 		ControlledPawn,
 		USODamageType::StaticClass());
+}
+
+void ASOPlayerController::OnPrimaryAttackPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	// Resolve the cursor to a world location. If the cursor is over nothing
+	// (edge of screen, no ground) we fall back to the character's forward
+	// vector so the swing still fires in a sensible direction.
+	FVector AttackTarget = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * SOCharacter->PrimaryAttackRange;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		AttackTarget = Hit.ImpactPoint;
+	}
+
+	SOCharacter->PerformPrimaryAttack(AttackTarget);
 }
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)

@@ -193,3 +193,54 @@ end-to-end.
 If you want a stronger elite variant, create another BP subclass of
 `SOEnemyCharacter` and bump `AttackDamage`, `MaxHealth`, and swap
 `AttackDamageType` for a `BP_Damage_Shadow` subclass of `USODamageType`.
+
+## 10. Player primary attack
+
+The player has a melee-style primary attack driven from `ASOCharacter`.
+It is a sphere overlap in front of the character, keyed to two inputs by
+default:
+
+| Input | Action        |
+|-------|---------------|
+| LMB   | MoveTo        |
+| RMB   | PrimaryAttack |
+| Q     | PrimaryAttack |
+| K     | Debug damage  |
+
+When PrimaryAttack fires:
+1. The controller resolves the cursor to a world location (falls back to
+   the character's forward vector if the cursor is over nothing).
+2. `ASOCharacter::PerformPrimaryAttack(FVector)` snaps the character's
+   yaw to face the target (toggleable via `bFaceAttackDirection`).
+3. A sphere overlap of radius `PrimaryAttackRadius` is centered
+   `PrimaryAttackRange` cm in front of the character on the trace channel
+   `PrimaryAttackChannel` (default `ECC_Pawn`).
+4. Every unique actor with a live `USOHealthComponent` gets
+   `PrimaryAttackDamage` applied via `UGameplayStatics::ApplyDamage`
+   using `PrimaryAttackDamageType` (falls back to `USODamageType`).
+5. `OnPrimaryAttackPerformed(AttackCenter, ImpactActors)` fires — a
+   `BlueprintImplementableEvent` for wiring up animation montages, hit
+   VFX, camera shake, or SFX later.
+6. A cooldown timer starts (`PrimaryAttackCooldown` seconds) blocking
+   further swings until it elapses.
+
+**Tuning on `BP_SOCharacter` (SupremeOverlord | Combat | Primary):**
+- `PrimaryAttackDamage` (default 15)
+- `PrimaryAttackRange` (default 220 cm — how far in front the hit sphere sits)
+- `PrimaryAttackRadius` (default 140 cm — width of the swing)
+- `PrimaryAttackCooldown` (default 0.5 s)
+- `PrimaryAttackDamageType` (subclass of `USODamageType`)
+- `PrimaryAttackChannel` (default `ECC_Pawn`)
+- `bFaceAttackDirection` (default true)
+- `bDrawPrimaryAttackDebug` — turn on to see the swing sphere and reach
+  line every time you attack.
+
+### Full end-to-end combat test
+
+1. Drop a `BP_MeleeGrunt` onto the NavMesh (see section 9).
+2. Enable `bDrawPrimaryAttackDebug` on `BP_SOCharacter` so you can see
+   where the swing lands.
+3. Play. Walk into the enemy's sight radius — it'll chase you and start
+   hitting. Press **RMB** (or Q) to swing back; the sphere overlap
+   applies damage every 0.5 s. Kill it and it'll drop, unpossess, and
+   despawn after `CorpseLifetime`.
