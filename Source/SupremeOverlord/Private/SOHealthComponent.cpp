@@ -1,0 +1,92 @@
+#include "SOHealthComponent.h"
+
+#include "GameFramework/Actor.h"
+#include "GameFramework/Controller.h"
+
+USOHealthComponent::USOHealthComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
+}
+
+void USOHealthComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// StartingHealth == 0 means "start at full" — the common case.
+	CurrentHealth = (StartingHealth > 0.0f) ? FMath::Min(StartingHealth, MaxHealth) : MaxHealth;
+	bIsDead       = (CurrentHealth <= 0.0f);
+
+	if (AActor* Owner = GetOwner())
+	{
+		Owner->OnTakeAnyDamage.AddDynamic(this, &USOHealthComponent::HandleAnyDamage);
+	}
+}
+
+void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage, const UDamageType* /*DamageType*/, AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (bIsDead || bInvulnerable || Damage <= 0.0f)
+	{
+		return;
+	}
+
+	const float ScaledDamage = Damage * IncomingDamageMultiplier;
+	if (ScaledDamage <= 0.0f)
+	{
+		return;
+	}
+
+	ApplyHealthDelta(-ScaledDamage, InstigatedBy, DamageCauser);
+}
+
+float USOHealthComponent::Heal(float HealAmount, AController* Instigator, AActor* Healer)
+{
+	if (bIsDead || HealAmount <= 0.0f)
+	{
+		return 0.0f;
+	}
+
+	const float OldHealth = CurrentHealth;
+	ApplyHealthDelta(HealAmount, Instigator, Healer);
+	return CurrentHealth - OldHealth;
+}
+
+void USOHealthComponent::Kill(AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (bIsDead)
+	{
+		return;
+	}
+
+	// Bypass invulnerability by hand-writing the transition.
+	ApplyHealthDelta(-CurrentHealth, InstigatedBy, DamageCauser);
+}
+
+void USOHealthComponent::Revive(float ReviveHealth)
+{
+	const float OldHealth = CurrentHealth;
+	CurrentHealth = (ReviveHealth < 0.0f) ? MaxHealth : FMath::Clamp(ReviveHealth, 0.0f, MaxHealth);
+	bIsDead       = (CurrentHealth <= 0.0f);
+
+	OnHealthChanged.Broadcast(this, OldHealth, CurrentHealth, CurrentHealth - OldHealth, nullptr, nullptr);
+}
+
+void USOHealthComponent::ApplyHealthDelta(float Delta, AController* InstigatedBy, AActor* DamageCauser)
+{
+	const float OldHealth = CurrentHealth;
+	CurrentHealth = FMath::Clamp(OldHealth + Delta, 0.0f, MaxHealth);
+
+	const float ActualDelta = CurrentHealth - OldHealth;
+	if (FMath::IsNearlyZero(ActualDelta))
+	{
+		return;
+	}
+
+	OnHealthChanged.Broadcast(this, OldHealth, CurrentHealth, ActualDelta, InstigatedBy, DamageCauser);
+
+	if (!bIsDead && CurrentHealth <= 0.0f)
+	{
+		bIsDead = true;
+		OnDeath.Broadcast(this, InstigatedBy, DamageCauser);
+	}
+}

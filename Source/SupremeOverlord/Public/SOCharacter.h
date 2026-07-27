@@ -6,6 +6,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class USOHealthComponent;
 
 UCLASS()
 class SUPREMEOVERLORD_API ASOCharacter : public ACharacter
@@ -19,6 +20,10 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 
+	/** Bound to HealthComponent->OnDeath — flips the character into a dead state. */
+	UFUNCTION()
+	void HandleDeath(USOHealthComponent* OwningComponent, AController* InstigatedBy, AActor* DamageCauser);
+
 public:
 	/** Fixed isometric spring arm - not driven by pawn rotation. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Camera")
@@ -27,6 +32,10 @@ public:
 	/** Follow camera used for the isometric view. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Camera")
 	TObjectPtr<UCameraComponent> TopDownCamera;
+
+	/** Health / damage / death tracking. Any actor can read this to query if the character is alive. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Health")
+	TObjectPtr<USOHealthComponent> HealthComponent;
 
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
@@ -55,4 +64,12 @@ public:
 	/** Applies MovementSpeed / RotationRateYaw to the movement component. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Movement")
 	void ApplyMovementSettings();
+
+	/** Convenience getter — true while HealthComponent reports alive. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Health")
+	bool IsAlive() const;
+
+	/** Cosmetic + gameplay reaction to death: stops movement, disables capsule collision, drops input. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health")
+	void OnCharacterDied(AController* InstigatedBy, AActor* DamageCauser);
 };

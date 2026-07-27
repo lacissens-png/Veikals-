@@ -55,6 +55,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Movement")
 	void CommandMoveTo(FVector WorldLocation);
 
+	/** How much damage the debug key applies to the possessed pawn per press. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Debug", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "1000.0"))
+	float DebugDamageAmount = 10.0f;
+
+	/** Fires DebugDamageAmount at the possessed pawn. Bound to the "DebugDamageSelf" action. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Debug")
+	void DebugDamageSelf();
+
 private:
+	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
+	bool CanIssueMoveOrders() const;
+
 	bool bMoveToHeld = false;
 };

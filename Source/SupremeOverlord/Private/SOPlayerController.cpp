@@ -3,10 +3,14 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/DecalComponent.h"
 #include "Engine/World.h"
+#include "GameFramework/DamageType.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
 #include "Particles/ParticleSystem.h"
+#include "SOCharacter.h"
+#include "SODamageType.h"
+#include "SOHealthComponent.h"
 
 ASOPlayerController::ASOPlayerController()
 {
@@ -40,10 +44,33 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("MoveTo", IE_Pressed,  this, &ASOPlayerController::OnMoveToPressed);
 	InputComponent->BindAction("MoveTo", IE_Released, this, [this]() { bMoveToHeld = false; });
 	InputComponent->BindAction("MoveTo", IE_Repeat,   this, &ASOPlayerController::OnMoveToHeld);
+
+	// Debug helper - defaults to the K key, remap under Project Settings > Input.
+	InputComponent->BindAction("DebugDamageSelf", IE_Pressed, this, &ASOPlayerController::DebugDamageSelf);
+}
+
+bool ASOPlayerController::CanIssueMoveOrders() const
+{
+	const APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn)
+	{
+		return false;
+	}
+
+	if (const ASOCharacter* SOCharacter = Cast<ASOCharacter>(ControlledPawn))
+	{
+		return SOCharacter->IsAlive();
+	}
+	return true;
 }
 
 void ASOPlayerController::OnMoveToPressed()
 {
+	if (!CanIssueMoveOrders())
+	{
+		return;
+	}
+
 	bMoveToHeld = true;
 
 	FHitResult Hit;
@@ -55,7 +82,7 @@ void ASOPlayerController::OnMoveToPressed()
 
 void ASOPlayerController::OnMoveToHeld()
 {
-	if (!bMoveToHeld)
+	if (!bMoveToHeld || !CanIssueMoveOrders())
 	{
 		return;
 	}
@@ -64,17 +91,33 @@ void ASOPlayerController::OnMoveToHeld()
 	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
 	{
 		// While held we re-issue the move without re-spawning the decal so we don't flood the world.
-		if (APawn* ControlledPawn = GetPawn())
-		{
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.ImpactPoint);
-			(void)ControlledPawn;
-		}
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.ImpactPoint);
 	}
 }
 
 void ASOPlayerController::CommandMoveTo(FVector WorldLocation)
 {
+	if (!CanIssueMoveOrders())
+	{
+		return;
+	}
 	MovePawnToLocation(WorldLocation);
+}
+
+void ASOPlayerController::DebugDamageSelf()
+{
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn || DebugDamageAmount <= 0.0f)
+	{
+		return;
+	}
+
+	UGameplayStatics::ApplyDamage(
+		ControlledPawn,
+		DebugDamageAmount,
+		this,
+		ControlledPawn,
+		USODamageType::StaticClass());
 }
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)

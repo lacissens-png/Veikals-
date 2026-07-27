@@ -121,3 +121,28 @@ tune them per-instance in a Blueprint subclass or per-actor in the editor:
 - `ClickDecalSize` — footprint of the decal (X thickness, Y/Z ground size).
 - `ClickDecalLifetime` — how long the decal stays before fading.
 - `ClickTraceChannel` — collision channel used for the cursor trace.
+- `DebugDamageAmount` — HP subtracted from the pawn every time `K` is pressed.
+
+## 8. Health, damage, and death
+
+The character now carries a `USOHealthComponent` (created in
+`ASOCharacter`'s constructor). Anything that calls
+`UGameplayStatics::ApplyDamage` on the character will funnel through it.
+
+- **Test it in play:** press **`K`** to apply `DebugDamageAmount` damage to
+  yourself. When HP hits 0 the character stops accepting move orders,
+  disables its capsule collision, and freezes movement. `OnDeath` fires so
+  Blueprint / UI can react (e.g. show a "You Died" screen later).
+- **Tune HP:** on `BP_SOCharacter`, expand *SupremeOverlord | Health* and
+  edit `Max Health`, `Starting Health`, `Incoming Damage Multiplier`, or
+  `Invulnerable`.
+- **Custom damage types:** subclass `USODamageType` in Blueprint
+  (`BP_Damage_Shadow`, `BP_Damage_Fire`, …) and set the `Category` enum.
+  Later systems (resistances, floating combat text, hit VFX) key off this.
+- **Revive for testing:** call `HealthComponent->Revive()` from Blueprint or
+  the console to restore HP. Note that this alone does not re-enable the
+  capsule — for full respawn you'll want a dedicated Respawn flow.
+
+Bindable component events (all `BlueprintAssignable`):
+- `OnHealthChanged(OwningComponent, Old, New, Delta, Instigator, Causer)`
+- `OnDeath(OwningComponent, Instigator, Causer)`
