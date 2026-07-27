@@ -82,6 +82,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|UI")
 	void OnQuitPressed();
 
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Attributes")
+	void OnAllocateStrengthPressed();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Attributes")
+	void OnAllocateIntellectPressed();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Attributes")
+	void OnAllocateVitalityPressed();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;

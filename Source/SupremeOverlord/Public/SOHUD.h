@@ -135,7 +135,22 @@ public:
 	bool bShowControlHints = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
-	FString ControlHintText = TEXT("LMB Move   |   RMB / Q Primary Attack   |   E Shadow Bolt   |   R Life Drain   |   K Debug Damage");
+	FString ControlHintText = TEXT("LMB Move   |   RMB / Q Primary   |   E Shadow Bolt   |   R Life Drain   |   F1/F2/F3 Allocate   |   K Debug   |   ESC Pause");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
+	bool bShowAttributesPanel = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
+	FVector2D AttributesPanelOffset = FVector2D(32.0f, 44.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float AttributesTextScale = 1.05f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
+	FLinearColor AttributesTextColor = FLinearColor(0.92f, 0.92f, 0.92f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
+	FLinearColor UnspentPointsColor = FLinearColor(1.0f, 0.85f, 0.25f, 1.0f);
 
 	/** Show "YOU DIED" overlay when the player's health component reports dead. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death")

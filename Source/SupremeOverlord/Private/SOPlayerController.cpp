@@ -9,6 +9,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "NavigationSystem.h"
 #include "Particles/ParticleSystem.h"
+#include "SOAttributesComponent.h"
 #include "SOCharacter.h"
 #include "SODamageType.h"
 #include "SOHealthComponent.h"
@@ -64,6 +65,11 @@ void ASOPlayerController::SetupInputComponent()
 
 	FInputActionBinding& QuitBinding  = InputComponent->BindAction("QuitGame",    IE_Pressed, this, &ASOPlayerController::OnQuitPressed);
 	QuitBinding.bExecuteWhenPaused = true;
+
+	// Attribute allocation - keyboard shortcuts.
+	InputComponent->BindAction("AllocateStrength",  IE_Pressed, this, &ASOPlayerController::OnAllocateStrengthPressed);
+	InputComponent->BindAction("AllocateIntellect", IE_Pressed, this, &ASOPlayerController::OnAllocateIntellectPressed);
+	InputComponent->BindAction("AllocateVitality",  IE_Pressed, this, &ASOPlayerController::OnAllocateVitalityPressed);
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -207,6 +213,21 @@ void ASOPlayerController::OnQuitPressed()
 	}
 	UKismetSystemLibrary::QuitGame(this, this, EQuitPreference::Quit, /*bIgnorePlatformRestrictions*/ false);
 }
+
+static void SOAllocate(APlayerController* PC, ESOAttribute Attribute)
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(PC ? PC->GetPawn() : nullptr))
+	{
+		if (USOAttributesComponent* Attrs = SOCharacter->AttributesComponent)
+		{
+			Attrs->AllocatePoint(Attribute);
+		}
+	}
+}
+
+void ASOPlayerController::OnAllocateStrengthPressed()  { SOAllocate(this, ESOAttribute::Strength);  }
+void ASOPlayerController::OnAllocateIntellectPressed() { SOAllocate(this, ESOAttribute::Intellect); }
+void ASOPlayerController::OnAllocateVitalityPressed()  { SOAllocate(this, ESOAttribute::Vitality);  }
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)
 {

@@ -8,6 +8,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SOAttributesComponent.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
@@ -41,6 +42,7 @@ ASOCharacter::ASOCharacter()
 	HealthComponent     = CreateDefaultSubobject<USOHealthComponent>(TEXT("HealthComponent"));
 	ManaComponent       = CreateDefaultSubobject<USOManaComponent>(TEXT("ManaComponent"));
 	ExperienceComponent = CreateDefaultSubobject<USOExperienceComponent>(TEXT("ExperienceComponent"));
+	AttributesComponent = CreateDefaultSubobject<USOAttributesComponent>(TEXT("AttributesComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -165,6 +167,11 @@ void ASOCharacter::HandleLevelUp(USOExperienceComponent* /*OwningComponent*/, in
 
 	PrimaryAttackDamage  += PrimaryDamagePerLevel   * LevelsGained;
 	ShadowBoltBaseDamage += ShadowBoltDamagePerLevel * LevelsGained;
+
+	if (AttributesComponent)
+	{
+		AttributesComponent->GrantPoints(AttributesComponent->PointsPerLevel * LevelsGained);
+	}
 
 	OnLevelUpReached(NewLevel);
 }

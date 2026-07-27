@@ -6,6 +6,7 @@
 #include "Engine/Font.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "SOAttributesComponent.h"
 #include "SOCharacter.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
@@ -137,6 +138,38 @@ void ASOHUD::DrawHUD()
 			ManaItem.Scale = FVector2D(ManaTextScale, ManaTextScale);
 			ManaItem.EnableShadow(FLinearColor::Black);
 			Canvas->DrawItem(ManaItem);
+		}
+	}
+
+	// -- Attributes panel (top-left, under the control hint line) ------------
+	if (bShowAttributesPanel && MediumFont)
+	{
+		if (USOAttributesComponent* Attrs = SO->AttributesComponent)
+		{
+			const float LineHeight = 20.0f * AttributesTextScale;
+			float Y = AttributesPanelOffset.Y;
+
+			auto DrawLine = [&](const FString& Text, const FLinearColor& Color)
+			{
+				FCanvasTextItem Item(FVector2D(AttributesPanelOffset.X, Y),
+				                     FText::FromString(Text),
+				                     MediumFont,
+				                     Color);
+				Item.Scale = FVector2D(AttributesTextScale, AttributesTextScale);
+				Item.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(Item);
+				Y += LineHeight;
+			};
+
+			DrawLine(FString::Printf(TEXT("STR  %d   (F1)"), Attrs->GetAttribute(ESOAttribute::Strength)),  AttributesTextColor);
+			DrawLine(FString::Printf(TEXT("INT  %d   (F2)"), Attrs->GetAttribute(ESOAttribute::Intellect)), AttributesTextColor);
+			DrawLine(FString::Printf(TEXT("VIT  %d   (F3)"), Attrs->GetAttribute(ESOAttribute::Vitality)),  AttributesTextColor);
+
+			const int32 Unspent = Attrs->GetUnspentPoints();
+			if (Unspent > 0)
+			{
+				DrawLine(FString::Printf(TEXT("Unspent points: %d"), Unspent), UnspentPointsColor);
+			}
 		}
 	}
 
