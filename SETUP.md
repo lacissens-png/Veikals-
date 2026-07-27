@@ -146,3 +146,50 @@ The character now carries a `USOHealthComponent` (created in
 Bindable component events (all `BlueprintAssignable`):
 - `OnHealthChanged(OwningComponent, Old, New, Delta, Instigator, Causer)`
 - `OnDeath(OwningComponent, Instigator, Causer)`
+
+## 9. Enemies and melee AI
+
+The project ships with a self-contained melee grunt so you can test combat
+without any BehaviorTree assets:
+
+- `ASOEnemyCharacter` — a `ACharacter` that owns a `USOHealthComponent` and
+  exposes combat knobs (`SightRadius`, `LoseSightRadius`, `AttackRange`,
+  `AttackDamage`, `AttackCooldown`, `AttackDamageType`, `CorpseLifetime`).
+- `ASOEnemyAIController` — a native-C++ `AAIController` that runs an
+  Idle → Chasing → Attacking state machine on a `ThinkInterval` timer
+  (default 0.15s). It uses `MoveToActor` for pathing and calls the enemy's
+  `PerformAttack` to apply damage. Enable `bDrawDebug` on the AI controller
+  CDO or instance to visualize sight/attack radii and the target line.
+
+### Drop one into the map
+
+1. Compile the project.
+2. In the Content Browser, right-click and create
+   **Blueprint Class → SOEnemyCharacter**, name it `BP_MeleeGrunt`, and drop
+   any skeletal or static mesh onto its Mesh component just so you can see it.
+   (For a first test even the placeholder capsule is enough.)
+3. Set tuning defaults on the Blueprint (recommended starting values):
+   - `Movement Speed`: 400
+   - `Sight Radius`: 1500 / `Lose Sight Radius`: 2200
+   - `Attack Range`: 180
+   - `Attack Damage`: 12 / `Attack Cooldown`: 1.4
+   - `Corpse Lifetime`: 5.0
+4. Drag `BP_MeleeGrunt` into your `L_TestArena` level, **inside the
+   NavMeshBoundsVolume** so it can pathfind.
+5. Play. The enemy will chase you as soon as you enter its sight radius,
+   swing when in melee range, and die when your health component fires
+   `OnDeath` (killing it back is not yet wired — that comes with the next
+   task: player abilities).
+
+### Damage flow
+
+`ASOEnemyCharacter::PerformAttack` calls `UGameplayStatics::ApplyDamage`,
+which fires the target actor's `OnTakeAnyDamage` — the same delegate the
+player's `USOHealthComponent` is bound to. So the entire loop
+(spawn enemy → chase → hit → apply damage → HP drops → OnDeath →
+character death handler → controller stops accepting moves) already works
+end-to-end.
+
+If you want a stronger elite variant, create another BP subclass of
+`SOEnemyCharacter` and bump `AttackDamage`, `MaxHealth`, and swap
+`AttackDamageType` for a `BP_Damage_Shadow` subclass of `USODamageType`.

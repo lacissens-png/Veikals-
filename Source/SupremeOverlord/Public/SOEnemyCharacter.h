@@ -1,0 +1,71 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Character.h"
+#include "SOEnemyCharacter.generated.h"
+
+class USOHealthComponent;
+class USODamageType;
+
+UCLASS()
+class SUPREMEOVERLORD_API ASOEnemyCharacter : public ACharacter
+{
+	GENERATED_BODY()
+
+public:
+	ASOEnemyCharacter();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void HandleDeath(USOHealthComponent* OwningComponent, AController* InstigatedBy, AActor* DamageCauser);
+
+public:
+	/** Health/damage/death — same component the player uses. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Health")
+	TObjectPtr<USOHealthComponent> HealthComponent;
+
+	/** Max walk speed the AI moves at. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Movement", meta = (ClampMin = "50.0", UIMin = "50.0", UIMax = "1500.0"))
+	float MovementSpeed = 400.0f;
+
+	/** Radius (cm) within which this enemy notices the player and begins chasing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|AI", meta = (ClampMin = "100.0", UIMin = "100.0", UIMax = "5000.0"))
+	float SightRadius = 1500.0f;
+
+	/** Once aggro'd, the enemy will keep chasing until the player leaves this larger radius. Prevents jitter. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|AI", meta = (ClampMin = "100.0", UIMin = "100.0", UIMax = "8000.0"))
+	float LoseSightRadius = 2200.0f;
+
+	/** Distance (cm) at which this enemy stops moving and starts hitting. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Combat", meta = (ClampMin = "50.0", UIMin = "50.0", UIMax = "1000.0"))
+	float AttackRange = 180.0f;
+
+	/** Damage dealt per melee swing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Combat", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "1000.0"))
+	float AttackDamage = 12.0f;
+
+	/** Seconds between attacks. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Combat", meta = (ClampMin = "0.1", UIMin = "0.1", UIMax = "10.0"))
+	float AttackCooldown = 1.4f;
+
+	/** Damage type class used when hitting the player. Assign a BP_Damage_* subclass in the editor to key resistances/VFX. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Combat")
+	TSubclassOf<USODamageType> AttackDamageType;
+
+	/** After death the actor stays this long before being destroyed. Set to 0 to persist forever (until GC). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "60.0"))
+	float CorpseLifetime = 5.0f;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Enemy")
+	bool IsAlive() const;
+
+	/**
+	 * Called by the AI controller when the enemy should swing.
+	 * Applies AttackDamage to Target using AttackDamageType (defaults to USODamageType if unset).
+	 * Returns true if damage was successfully applied.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Combat")
+	bool PerformAttack(AActor* Target);
+};
