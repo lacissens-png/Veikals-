@@ -99,11 +99,12 @@ public:
 
 	/**
 	 * Called by the AI controller when the enemy should swing.
-	 * Applies AttackDamage to Target using AttackDamageType (defaults to USODamageType if unset).
-	 * Returns true if damage was successfully applied.
+	 * Default: applies AttackDamage to Target using AttackDamageType.
+	 * Returns true if the attack "landed" (damage applied or projectile spawned).
+	 * Subclasses (e.g. ranged casters) override to spawn a projectile instead.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Combat")
-	bool PerformAttack(AActor* Target);
+	virtual bool PerformAttack(AActor* Target);
 
 	/** Rolls LootTable and spawns any resulting orbs around the corpse. Public so BP subclasses can chain into it. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Loot")
