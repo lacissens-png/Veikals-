@@ -165,6 +165,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Waves")
 	FLinearColor WaveCounterColor = FLinearColor(0.95f, 0.75f, 0.35f, 1.0f);
 
+	/** Show a nameplate + HP bar for the closest live boss on screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss")
+	bool bShowBossBar = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss")
+	FVector2D BossBarSize = FVector2D(600.0f, 22.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "300.0"))
+	float BossBarTopOffset = 90.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss")
+	FLinearColor BossBarBackgroundColor = FLinearColor(0.08f, 0.0f, 0.0f, 0.9f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss")
+	FLinearColor BossBarFillColor = FLinearColor(0.68f, 0.05f, 0.15f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss")
+	FLinearColor BossNameColor = FLinearColor(0.98f, 0.9f, 0.6f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Boss", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "4.0"))
+	float BossNameScale = 1.4f;
+
 	/** Show "YOU DIED" overlay when the player's health component reports dead. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death")
 	bool bShowDeathOverlay = true;

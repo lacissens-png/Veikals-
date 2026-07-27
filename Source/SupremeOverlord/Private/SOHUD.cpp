@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
+#include "SOBossCharacter.h"
 #include "SOCharacter.h"
 #include "SOEnemySpawner.h"
 #include "SOExperienceComponent.h"
@@ -376,6 +377,72 @@ void ASOHUD::DrawHUD()
 			WaveItem.Scale = FVector2D(WaveCounterScale, WaveCounterScale);
 			WaveItem.EnableShadow(FLinearColor::Black);
 			Canvas->DrawItem(WaveItem);
+		}
+	}
+
+	// -- Boss bar (closest live boss to the player) --------------------------
+	if (bShowBossBar && MediumFont)
+	{
+		TArray<AActor*> Bosses;
+		UGameplayStatics::GetAllActorsOfClass(this, ASOBossCharacter::StaticClass(), Bosses);
+
+		ASOBossCharacter* Closest = nullptr;
+		float ClosestDistSq = TNumericLimits<float>::Max();
+		const FVector PlayerLoc = SO->GetActorLocation();
+		for (AActor* A : Bosses)
+		{
+			ASOBossCharacter* Boss = Cast<ASOBossCharacter>(A);
+			if (!Boss || !Boss->IsAlive())
+			{
+				continue;
+			}
+			const float DistSq = FVector::DistSquared(PlayerLoc, Boss->GetActorLocation());
+			if (DistSq < ClosestDistSq)
+			{
+				ClosestDistSq = DistSq;
+				Closest       = Boss;
+			}
+		}
+
+		if (Closest && Closest->HealthComponent)
+		{
+			const float BX = (ScreenW - BossBarSize.X) * 0.5f;
+			const float BY = BossBarTopOffset;
+			const float Pct = FMath::Clamp(Closest->HealthComponent->GetHealthPercent(), 0.0f, 1.0f);
+
+			{
+				FCanvasTileItem BorderItem(FVector2D(BX - Border, BY - Border),
+				                           FVector2D(BossBarSize.X + Border * 2.0f, BossBarSize.Y + Border * 2.0f),
+				                           HealthBarBorderColor);
+				BorderItem.BlendMode = SE_BLEND_Translucent;
+				Canvas->DrawItem(BorderItem);
+			}
+			{
+				FCanvasTileItem BG(FVector2D(BX, BY), BossBarSize, BossBarBackgroundColor);
+				BG.BlendMode = SE_BLEND_Translucent;
+				Canvas->DrawItem(BG);
+			}
+			if (Pct > 0.0f)
+			{
+				FCanvasTileItem Fill(FVector2D(BX, BY),
+				                     FVector2D(BossBarSize.X * Pct, BossBarSize.Y),
+				                     BossBarFillColor);
+				Fill.BlendMode = SE_BLEND_Translucent;
+				Canvas->DrawItem(Fill);
+			}
+
+			const FString Name = Closest->BossDisplayName.IsEmpty()
+				? FString(TEXT("Boss"))
+				: Closest->BossDisplayName.ToString();
+			float TW = 0.0f, TH = 0.0f;
+			Canvas->TextSize(MediumFont, Name, TW, TH, BossNameScale, BossNameScale);
+			FCanvasTextItem NameItem(FVector2D((ScreenW - TW) * 0.5f, BY - TH - 4.0f),
+			                         FText::FromString(Name),
+			                         MediumFont,
+			                         BossNameColor);
+			NameItem.Scale = FVector2D(BossNameScale, BossNameScale);
+			NameItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(NameItem);
 		}
 	}
 
