@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
 #include "SOCharacter.h"
+#include "SOEnemySpawner.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
@@ -326,6 +327,56 @@ void ASOHUD::DrawHUD()
 		DeadItem.Scale = FVector2D(DeathOverlayScale, DeathOverlayScale);
 		DeadItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(DeadItem);
+	}
+
+	// -- Wave counter (top-center; sums across every spawner in the level) ---
+	if (bShowWaveCounter && MediumFont)
+	{
+		TArray<AActor*> Spawners;
+		UGameplayStatics::GetAllActorsOfClass(this, ASOEnemySpawner::StaticClass(), Spawners);
+
+		if (Spawners.Num() > 0)
+		{
+			int32 MaxWave        = 0;
+			int32 AliveTotal     = 0;
+			int32 TargetTotal    = 0;
+			bool  bEveryoneDone  = true;
+
+			for (AActor* A : Spawners)
+			{
+				if (const ASOEnemySpawner* Spawner = Cast<ASOEnemySpawner>(A))
+				{
+					MaxWave      = FMath::Max(MaxWave, Spawner->GetCurrentWave());
+					AliveTotal  += Spawner->GetAliveEnemyCount();
+					TargetTotal += Spawner->GetTargetEnemyCount();
+					if (!Spawner->AreAllWavesCleared())
+					{
+						bEveryoneDone = false;
+					}
+				}
+			}
+
+			FString WaveText;
+			if (bEveryoneDone)
+			{
+				WaveText = TEXT("All waves cleared");
+			}
+			else
+			{
+				WaveText = FString::Printf(TEXT("Wave %d  -  %d / %d enemies"), MaxWave, AliveTotal, TargetTotal);
+			}
+
+			float TW = 0.0f, TH = 0.0f;
+			Canvas->TextSize(MediumFont, WaveText, TW, TH, WaveCounterScale, WaveCounterScale);
+
+			FCanvasTextItem WaveItem(FVector2D((ScreenW - TW) * 0.5f, WaveCounterTopOffset),
+			                         FText::FromString(WaveText),
+			                         MediumFont,
+			                         WaveCounterColor);
+			WaveItem.Scale = FVector2D(WaveCounterScale, WaveCounterScale);
+			WaveItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(WaveItem);
+		}
 	}
 
 	// -- Pause overlay (drawn last so it sits over everything) ---------------

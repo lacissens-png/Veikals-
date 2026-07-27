@@ -473,11 +473,111 @@ Bound to **R** by default.
 
 ### Full input table
 
-| Input | Action        |
-|-------|---------------|
-| LMB   | MoveTo        |
-| RMB   | PrimaryAttack |
-| Q     | PrimaryAttack |
-| E     | ShadowBolt    |
-| R     | LifeDrain     |
-| K     | Debug damage  |
+| Input | Action              |
+|-------|---------------------|
+| LMB   | MoveTo              |
+| RMB   | PrimaryAttack       |
+| Q     | PrimaryAttack       |
+| E     | ShadowBolt          |
+| R     | LifeDrain           |
+| F1    | Allocate Strength   |
+| F2    | Allocate Intellect  |
+| F3    | Allocate Vitality   |
+| ESC   | Toggle Pause        |
+| F10   | Quit (when paused)  |
+| K     | Debug damage        |
+
+## 19. Item drops
+
+`ASOItemPickup` is a floating cube-shaped pickup that carries any
+`USOItemData` (weapons for now). On overlap with the player it calls
+`EquipWeapon` and self-destroys. The mesh is tinted with a Dynamic
+Material Instance to the item's rarity color so drops are readable at
+a glance.
+
+Enemies now also have an **item drop pool** on top of the orb loot
+table:
+
+- `ItemPickupClass` — a `BP_ItemPickup` subclass of `ASOItemPickup`.
+- `ItemDropChance` — overall chance any item drops (default 0.15).
+- `ItemDropPool` — weighted rows of `USOItemData` assets. Higher
+  Weight = more common. `RollItemDrop` weighted-picks one row and
+  spawns `ItemPickupClass` carrying it.
+
+**Recipe for weapon drops:**
+1. Create data assets `DA_Wpn_RustedSword` (Common, +8),
+   `DA_Wpn_MagicBlade` (Magic, +14), `DA_Wpn_LegendaryStaff`
+   (Legendary, `PrimaryDamageBonus=6`, `ShadowBoltDamageBonus=24`).
+2. Create `BP_ItemPickup` (BP subclass of `SOItemPickup`).
+3. On `BP_MeleeGrunt`: set `ItemPickupClass = BP_ItemPickup`,
+   `ItemDropChance = 0.20`, and populate `ItemDropPool` with the three
+   weapons at weights 6 / 3 / 1.
+4. Kill enough grunts and a colored cube will drop. Walk over it to
+   auto-equip.
+
+## 20. Skill panel HUD
+
+The HUD now renders a centered row of three skill tiles (Strike /
+Shadow / Drain) above the XP bar. Each tile shows:
+
+- Key label (top-left)
+- Skill name (bottom)
+- Top-down cooldown overlay with seconds remaining
+- Mana cost line below (turns red and desaturates the tile when the
+  player can't afford it)
+
+Tile size, gap, border, and cooldown-overlay tint are exposed under
+`SupremeOverlord|HUD|Skills`.
+
+## 21. Pause menu
+
+`ESC` toggles pause via `UGameplayStatics::SetGamePaused`. The HUD
+dims the screen and shows a **PAUSED** title plus a hint line
+(`ESC Resume | F10 Quit`). `F10` only quits while paused, so a stray
+press during combat doesn't kill the session. Both actions are bound
+`bExecuteWhenPaused = true` so they fire under the paused clock.
+
+## 22. Passive attributes (STR / INT / VIT)
+
+`USOAttributesComponent` grants `PointsPerLevel` unspent points at
+every level-up. Spend them with **F1 (STR)**, **F2 (INT)**, **F3 (VIT)**.
+Each point applies immediately to the owning character's pools:
+
+- **STR** → +1 `PrimaryAttackDamage` per point
+- **INT** → +1.5 `ShadowBoltBaseDamage`, +3 `MaxMana` per point (and refills the delta)
+- **VIT** → +5 `MaxHealth` per point (and heals the delta)
+
+Multipliers live on the component as `EditAnywhere` UPROPERTYs, so you
+can tune them without recompiling.
+
+HUD panel in the top-left shows the three attributes + F-key hints and
+a golden "Unspent points: N" line when you have points to spend.
+
+## 23. Wave spawner
+
+`ASOEnemySpawner` runs waves of enemies picked from a weighted pool
+inside a disc around the spawner:
+
+- `EnemyPool` — array of `{EnemyClass, Weight}` rows.
+- `EnemiesPerWave` (default 3), `EnemiesPerWaveGrowth` (+1 per wave),
+  `MaxEnemiesPerWave` (cap).
+- `SpawnRadius` (default 800 cm — visualized by the sphere gizmo).
+- `SpawnStagger` (delay between individual spawns inside a wave).
+- `InterWaveDelay` (rest between waves).
+- `bLimitTotalWaves` + `TotalWaves` (endless by default).
+
+Delegates: `OnWaveStarted(WaveIndex, EnemyCount)`,
+`OnWaveCleared(WaveIndex)`, `OnAllWavesCleared`.
+
+The HUD auto-detects any `ASOEnemySpawner` in the level and draws a
+"Wave N — X / Y enemies" counter across the top, transitioning to
+"All waves cleared" once every spawner finishes.
+
+### Setup
+
+1. Drop `SOEnemySpawner` into the level, inside your NavMesh.
+2. Populate `EnemyPool` with `BP_MeleeGrunt` (weight 3) and
+   `BP_CultistCaster` (weight 1).
+3. Play. Wave 1 spawns 3 enemies; kill them → 5s rest → wave 2 spawns
+   4. Repeats indefinitely (or set `bLimitTotalWaves` + `TotalWaves =
+   5` for a fixed 5-wave arena).

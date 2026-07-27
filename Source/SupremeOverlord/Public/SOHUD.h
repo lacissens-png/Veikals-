@@ -152,6 +152,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
 	FLinearColor UnspentPointsColor = FLinearColor(1.0f, 0.85f, 0.25f, 1.0f);
 
+	/** Show a Wave X / Enemies Y counter across the top when a spawner is active. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Waves")
+	bool bShowWaveCounter = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Waves", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "200.0"))
+	float WaveCounterTopOffset = 44.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Waves", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "4.0"))
+	float WaveCounterScale = 1.4f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Waves")
+	FLinearColor WaveCounterColor = FLinearColor(0.95f, 0.75f, 0.35f, 1.0f);
+
 	/** Show "YOU DIED" overlay when the player's health component reports dead. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death")
 	bool bShowDeathOverlay = true;
