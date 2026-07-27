@@ -114,6 +114,10 @@ void ASOPickupOrb::HandleOverlap(UPrimitiveComponent* /*OverlappedComp*/, AActor
 	}
 
 	bClaimed = true;
+	if (PickupSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, PickupSFX, GetActorLocation());
+	}
 	OnPickedUp(Picker);
 	Destroy();
 }

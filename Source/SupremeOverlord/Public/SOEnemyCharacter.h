@@ -146,4 +146,10 @@ public:
 	/** Rolls the item pool once and spawns an ItemPickupClass carrying the picked item if the roll succeeds. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Loot|Items")
 	void RollItemDrop();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Audio")
+	TObjectPtr<class USoundBase> AttackSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Audio")
+	TObjectPtr<class USoundBase> DeathSFX;
 };

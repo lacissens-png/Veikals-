@@ -174,6 +174,10 @@ void ASOCharacter::HandleLevelUp(USOExperienceComponent* /*OwningComponent*/, in
 		AttributesComponent->GrantPoints(AttributesComponent->PointsPerLevel * LevelsGained);
 	}
 
+	if (LevelUpSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, LevelUpSFX, GetActorLocation());
+	}
 	OnLevelUpReached(NewLevel);
 }
 
@@ -200,6 +204,11 @@ void ASOCharacter::OnCharacterDied(AController* /*InstigatedBy*/, AActor* /*Dama
 	if (UCapsuleComponent* Capsule = GetCapsuleComponent())
 	{
 		Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	if (DeathSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, DeathSFX, GetActorLocation());
 	}
 
 	// The controller listens to this via the Pawn->PlayerController path in Blueprint if desired.
@@ -301,6 +310,10 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 		UGameplayStatics::ApplyDamage(HitActor, GetEffectivePrimaryAttackDamage(), InstigatorController, this, DTClass);
 	}
 
+	if (PrimaryAttackSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, PrimaryAttackSFX, GetActorLocation());
+	}
 	OnPrimaryAttackPerformed(AttackCenter, UniqueHitActors);
 
 	if (bDrawPrimaryAttackDebug)
@@ -385,6 +398,10 @@ void ASOCharacter::CastShadowBolt(FVector TargetLocation)
 	// scales with equipped weapons without touching the projectile BP.
 	Bolt->Damage = GetEffectiveShadowBoltDamage();
 
+	if (ShadowBoltCastSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ShadowBoltCastSFX, Muzzle);
+	}
 	OnShadowBoltCast(Muzzle, AimDirection, Bolt);
 
 	bShadowBoltOnCooldown = true;
@@ -503,6 +520,10 @@ void ASOCharacter::CastLifeDrain()
 		HealedAmount = HealthComponent->Heal(TotalDamage * LifeDrainHealFraction, InstigatorController, this);
 	}
 
+	if (LifeDrainCastSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, LifeDrainCastSFX, Center);
+	}
 	OnLifeDrainCast(UniqueHitActors, TotalDamage, HealedAmount);
 
 	if (bDrawLifeDrainDebug)

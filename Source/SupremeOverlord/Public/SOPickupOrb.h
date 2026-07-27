@@ -82,6 +82,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Pickup")
 	void OnPickedUp(ASOCharacter* Picker);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Pickup|Audio")
+	TObjectPtr<class USoundBase> PickupSFX;
+
 private:
 	FVector SpawnBaseLocation = FVector::ZeroVector;
 	float   TimeAlive         = 0.0f;

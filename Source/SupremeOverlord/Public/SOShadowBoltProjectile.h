@@ -58,4 +58,7 @@ public:
 	/** Blueprint hook for impact VFX/SFX. HitActor may be null if we hit level geometry with no actor. */
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|ShadowBolt")
 	void OnBoltImpact(const FHitResult& Hit, AActor* HitActor);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|ShadowBolt|Audio")
+	TObjectPtr<class USoundBase> ImpactSFX;
 };

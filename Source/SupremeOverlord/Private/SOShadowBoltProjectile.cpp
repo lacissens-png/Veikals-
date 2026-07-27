@@ -91,6 +91,11 @@ void ASOShadowBoltProjectile::HandleHit(UPrimitiveComponent* /*HitComp*/, AActor
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DTClass);
 	}
 
+	if (ImpactSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX, Hit.ImpactPoint);
+	}
+
 	OnBoltImpact(Hit, OtherActor);
 	Destroy();
 }

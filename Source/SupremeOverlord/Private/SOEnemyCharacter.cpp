@@ -81,6 +81,11 @@ bool ASOEnemyCharacter::PerformAttack(AActor* Target)
 		this,
 		DTClass);
 
+	if (AttackSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, AttackSFX, GetActorLocation());
+	}
+
 	return Applied > 0.0f;
 }
 
@@ -117,6 +122,11 @@ void ASOEnemyCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, ACo
 
 	DropLoot();
 	RollItemDrop();
+
+	if (DeathSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, DeathSFX, GetActorLocation());
+	}
 
 	if (CorpseLifetime > 0.0f)
 	{

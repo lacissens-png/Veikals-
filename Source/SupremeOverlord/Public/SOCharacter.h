@@ -276,6 +276,25 @@ public:
 	void OnLevelUpReached(int32 NewLevel);
 
 	// -----------------------------------------------------------------------
+	// SFX slots. Assigning a USoundBase in a BP subclass makes the event audible.
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> PrimaryAttackSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> ShadowBoltCastSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> LifeDrainCastSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> LevelUpSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> DeathSFX;
+
+	// -----------------------------------------------------------------------
 	// Life Drain — AoE damage that heals the caster for a portion of damage dealt.
 	// -----------------------------------------------------------------------
 

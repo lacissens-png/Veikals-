@@ -581,3 +581,113 @@ The HUD auto-detects any `ASOEnemySpawner` in the level and draws a
 3. Play. Wave 1 spawns 3 enemies; kill them → 5s rest → wave 2 spawns
    4. Repeats indefinitely (or set `bLimitTotalWaves` + `TotalWaves =
    5` for a fixed 5-wave arena).
+
+## 24. Quick save / quick load (F5 / F9)
+
+`USOSaveGame` snapshots the persistent parts of the player state:
+level, XP-in-level, gold, STR/INT/VIT + unspent points, current +
+max HP/Mana, PrimaryAttackDamage / ShadowBoltBaseDamage, and the
+equipped weapon (by asset path).
+
+- **F5** = QuickSave to `DefaultSaveSlot` (default
+  `"SupremeOverlordSlot"`).
+- **F9** = QuickLoad from that same slot.
+- Both work while paused, so you can bail out via ESC → F9.
+- `OnSaveGameCompleted(bSaved, bSuccess, Slot)` is a BP hook for
+  save/load toasts.
+
+Note: level state (dropped orbs, wave progress, corpses) is
+intentionally *not* persisted — this is a walk-out-of-town save, not a
+full world snapshot.
+
+## 25. Boss encounter (`ASOBossCharacter`)
+
+`SOBossCharacter` inherits from the base enemy and adds:
+
+- HP-driven phase transitions at **66% (Phase 2)** and **33% (Phase 3)**.
+  Each phase rescales `AttackDamage` and `MovementSpeed` from cached
+  base values, so re-entering a phase can't compound.
+- A telegraphed AoE that fires every `(AoECadence + 1)` swings —
+  draws a red debug circle at the target for `TelegraphWindup`
+  seconds, then damages every live health-carrying non-enemy in
+  `TelegraphedAoERadius`.
+- Boss defaults: 500 HP, 250 XP reward, 8 s corpse.
+
+BP hooks:
+- `OnBossPhaseChanged(OldPhase, NewPhase)` — delegate.
+- `OnPhaseEnteredBP(NewPhase)` — for phase-transition VFX/dialogue.
+- `OnTelegraphAoEStart(Center, Radius, Windup)` — decal spawn hook.
+- `OnTelegraphAoEResolve(Center, Radius, EnemiesHit)` — impact FX.
+
+The HUD auto-detects the closest live boss and draws a red HP bar
+with nameplate across the top (`BossDisplayName`, tunable per BP).
+
+**Setup**
+1. Create `BP_ArenaLord` (BP subclass of `SOBossCharacter`) — set
+   `BossDisplayName`, tweak `MaxHealth` on the health component, and
+   optionally assign `AoEDamageType` to a `BP_Damage_Shadow` subclass.
+2. Drop one into the arena. The AI (inherited from
+   `ASOEnemyAIController`) chases the player and starts swinging.
+
+## 26. Elite modifiers (`USOEliteComponent`)
+
+Attach `USOEliteComponent` to any enemy Blueprint (or add it at
+runtime) to grant one or more affixes:
+
+| Affix        | Effect                                    |
+|--------------|-------------------------------------------|
+| Fortified    | ×2.5 MaxHealth                            |
+| Vicious      | ×1.5 AttackDamage                         |
+| Swift        | ×1.4 MovementSpeed                        |
+| Enriched     | ×2.0 loot counts, ItemDropChance, XP      |
+| Far-Sighted  | ×1.5 SightRadius + LoseSightRadius        |
+
+The enum is a bitmask — pick one or several via the checkbox row in
+the editor. `bRandomizeOnBeginPlay` + `RollCount` picks unique
+random affixes at spawn (drop this component on
+`BP_MeleeGrunt_Elite`, set RollCount = 2 → every spawned instance
+gets two random affixes).
+
+`ApplyAffixesToOwner` runs in `OnRegister` so the mutated max HP /
+mana values seed the health/mana components on their first tick. All
+multipliers are `EditAnywhere` UPROPERTYs.
+
+BP hook: `OnAffixesApplied(AffixMask)` — for aura VFX / SFX.
+
+## 27. Sound hooks
+
+Every gameplay actor now exposes `USoundBase*` slots you can assign
+in a Blueprint subclass. When left null the event is silent; when
+set, it fires via `UGameplayStatics::PlaySoundAtLocation`.
+
+**`ASOCharacter`:**
+- `PrimaryAttackSFX`, `ShadowBoltCastSFX`, `LifeDrainCastSFX`,
+  `LevelUpSFX`, `DeathSFX`.
+
+**`ASOEnemyCharacter`:** `AttackSFX`, `DeathSFX`.
+
+**`ASOPickupOrb`, `ASOItemPickup`:** `PickupSFX`.
+
+**`ASOShadowBoltProjectile`:** `ImpactSFX`.
+
+Standard workflow: create a `BP_SOCharacter`, expand
+`SupremeOverlord|Audio`, and assign the engine's default cues (or
+your own imports) to hear everything without touching code.
+
+### Final input table
+
+| Input | Action              |
+|-------|---------------------|
+| LMB   | MoveTo              |
+| RMB   | PrimaryAttack       |
+| Q     | PrimaryAttack       |
+| E     | ShadowBolt          |
+| R     | LifeDrain           |
+| F1    | Allocate Strength   |
+| F2    | Allocate Intellect  |
+| F3    | Allocate Vitality   |
+| F5    | QuickSave           |
+| F9    | QuickLoad           |
+| ESC   | Toggle Pause        |
+| F10   | Quit (when paused)  |
+| K     | Debug damage        |

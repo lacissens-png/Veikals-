@@ -3,6 +3,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "SOCharacter.h"
 #include "SOItemData.h"
@@ -124,6 +125,10 @@ void ASOItemPickup::HandleOverlap(UPrimitiveComponent* /*OverlappedComp*/, AActo
 	}
 
 	bClaimed = true;
+	if (PickupSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, PickupSFX, GetActorLocation());
+	}
 	OnPickedUp(Picker);
 	Destroy();
 }
