@@ -10,6 +10,7 @@ class USOHealthComponent;
 class USOManaComponent;
 class USOExperienceComponent;
 class USOAttributesComponent;
+class USOTalentComponent;
 class USODamageType;
 class USOWeaponData;
 class ASOShadowBoltProjectile;
@@ -61,6 +62,10 @@ public:
 	/** Passive attribute pool — Strength/Intellect/Vitality with per-level allocation. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Attributes")
 	TObjectPtr<USOAttributesComponent> AttributesComponent;
+
+	/** Talent tree — banked talent points and unlocked nodes. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Talents")
+	TObjectPtr<USOTalentComponent> TalentComponent;
 
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))

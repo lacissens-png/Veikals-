@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
+#include "SOTalentComponent.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
@@ -44,6 +45,7 @@ ASOCharacter::ASOCharacter()
 	ManaComponent       = CreateDefaultSubobject<USOManaComponent>(TEXT("ManaComponent"));
 	ExperienceComponent = CreateDefaultSubobject<USOExperienceComponent>(TEXT("ExperienceComponent"));
 	AttributesComponent = CreateDefaultSubobject<USOAttributesComponent>(TEXT("AttributesComponent"));
+	TalentComponent     = CreateDefaultSubobject<USOTalentComponent>(TEXT("TalentComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -172,6 +174,11 @@ void ASOCharacter::HandleLevelUp(USOExperienceComponent* /*OwningComponent*/, in
 	if (AttributesComponent)
 	{
 		AttributesComponent->GrantPoints(AttributesComponent->PointsPerLevel * LevelsGained);
+	}
+
+	if (TalentComponent)
+	{
+		TalentComponent->GrantPoints(TalentComponent->TalentPointsPerLevel * LevelsGained);
 	}
 
 	if (LevelUpSFX)
