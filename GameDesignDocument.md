@@ -1,6 +1,6 @@
 # Design dokuments — *Kalna Kungs* (darba nosaukums)
 
-**Žanrs:** Isometrisks action RPG ar minjonu komandēšanu un klašu izvēli
+**Žanrs:** Isometrisks action RPG ar ģenerāļu komandēšanu un klašu izvēli
 **Iedvesma:** *Overlord* serialā (I, II, Raising Hell, Dark Legend, Fellowship of Evil) × *Diablo IV*
 **Engine:** Unreal Engine 5
 **Skats:** Top-down / isometrisks, ar rotējamu kameru
@@ -10,9 +10,9 @@
 
 ## 1. Koncepts vienā teikumā
 
-Tu izvēlies **vienu no trīs Kungiem** — visstiprākos varoņus visā Overlord serialā (divi bijušie kungi + arch-mage) — un komandē četru veidu **Ēnu minjonus** cauri trīs vizuāli atšķirīgām karaļvalstīm, izlaupot loot un pārbūvējot sabrukušu pasauli.
+Tu izvēlies **vienu no trīs Kungiem** — visstiprākos varoņus visā Overlord serialā (divi bijušie kungi + arch-mage) — un komandē **3 unikālus ģenerāļus** (tavas klases uzticīgais trio) cauri trīs vizuāli atšķirīgām karaļvalstīm, izlaupot loot un pārbūvējot sabrukušu pasauli.
 
-**Overlord daļa:** minjoni ir tavs galvenais ierocis; klases balstītas uz Overlord serialā ikoniskākajām figūrām.
+**Overlord daļa:** ģenerāļu trio ir tavs galvenais spēks; klases balstītas uz Overlord serialā ikoniskākajām figūrām.
 **Diablo 4 daļa:** blīvs loot, prasmju koki, dungeoni, world bosi, sezonas, endgame.
 **Gothic daļa:** viss ir tumšs, drēgns, sakrāls, ar melno humoru.
 
@@ -37,18 +37,18 @@ Tu izvēlies **vienu no trīs Kungiem** — visstiprākos varoņus visā Overlor
 
 ## 3. Klases un karaļvalstis
 
-Katra klase ir viens no trim **Kunga Zīmoglaukumiem** — reinkarnētu varoņu līnija ar savu mantojumu, prasmēm, minjonu afinitāti un dzimto karaļvalsti. Izvēle sākumā **ir pastāvīga** vienam char slotam (kā Diablo). Katra klase vizuāli atslēdz atšķirīgu **starta reģionu** un mazliet transformē **Melno Torni** (troņa telpas dekorācijas, minjonu kosmētika).
+Katra klase ir viens no trim **Kunga Zīmoglaukumiem** — reinkarnētu varoņu līnija ar savu mantojumu, prasmēm, unikālu **3 ģenerāļu trio** un dzimto karaļvalsti. Izvēle sākumā **ir pastāvīga** vienam char slotam (kā Diablo). Katra klase vizuāli atslēdz atšķirīgu **starta reģionu** un mazliet transformē **Melno Torni** (troņa telpas dekorācijas).
 
 ### 3.1. Pirmais Kungs — *Pirmā Zīmoglaukuma Mantinieks*
-> Iedvesma: **The First Overlord** (Overlord I protagonists) — pamodinātais no minjoniem, sakāva visus 7 varoņus, valdīja no Melnā Torņa.
+> Iedvesma: **The First Overlord** (Overlord I protagonists) — pamodinātais no viņa uzticīgā trio, sakāva visus 7 varoņus, valdīja no Melnā Torņa.
 
-- **Stils:** balansēts warrior ar spēcīgu minjonu komandu. Vidēja tuvcīņa + minjonu armija.
+- **Stils:** balansēts warrior ar spēcīgu 3 ģenerāļu trio (tank + DPS + support). Vidēja tuvcīņa + Rose/Kalts/Velvet backup.
 - **Vienā teikumā:** *"Es esmu pirmais un man visi kalpo."*
-- **Signāles prasmes:** Kunga Sitiens (LMB melee ar minion buff), Master's Call (AoE minion command + buff), Domination Aura (paranormāla klātbūtne, minjoni +30% dmg), Kunga Zvans (100pt ult: visi minjoni pēkšņi max buffed, tu iegūsti barjeru).
-- **Minjonu afinitāte:** **Visi 4 tipi** — Pirmais Kungs komandē tos visus vienlīdz labi. Katrs tips ap viņu iegūst +15% dmg un +10% AS.
-- **Signāles resurss:** **Dominance** — uzkrājas ar minjonu kills (3 pt / kill) un tavu personīgo kills (5 pt / kill). Izzūd 1 pt/sec ārpus cīņas.
+- **Signāles prasmes:** Kunga Sitiens (LMB melee ar ģenerāļu buff), Master's Call (AoE ģenerāļu regroup + buff), Domination Aura (paranormāla klātbūtne, ģenerāļi +30% dmg), Kunga Zvans (100pt ult: visi 3 ģenerāļi pēkšņi max buffed, tu iegūsti barjeru).
+- **Ģenerāļu trio:** **Rose** (paladin tank), **Kalts** (dual-wield DPS), **Velvet** (priestere healer/mage). Katrs +15% dmg un +10% AS ap Pirmo Kungu. Detaļas — skat. `Generals.md`.
+- **Signāles resurss:** **Dominance** — uzkrājas ar ģenerāļu kills (3 pt / kill) un tavu personīgo kills (5 pt / kill). Izzūd 1 pt/sec ārpus cīņas.
 - **Karaļvalsts: Melnais Tornis (*Melnais Tornis*)**
-  - **Vizuāli:** kolosāls gotiskais tornis melnākajā mežā. Iekšā — visu 4 minjonu bedres, kolīdes valodas, un troņa zāle ar Pirmā Kunga bijušajām relikvijām.
+  - **Vizuāli:** kolosāls gotiskais tornis melnākajā mežā. Iekšā — 3 ģenerāļu kambari (Rose, Kalts, Velvet), kolīdes valodas, un troņa zāle ar Pirmā Kunga bijušajām relikvijām.
   - **Ienaidnieki:** kritušie krustneši, sardzes, apsēsti mūki, iebrukumi no gaisajiem ordeņiem.
   - **Boss:** **Sardzes Kapteinis Bornlejs** — pēdējais gaisais paladins, kurš vēl mēģina Melno Torni "attīrīt".
 
@@ -57,8 +57,8 @@ Katra klase ir viens no trim **Kunga Zīmoglaukumiem** — reinkarnētu varoņu 
 
 - **Stils:** hibrīds tuvcīņa + tumšas maģijas prasmes. Domina lielas grupas, atslēdz karus.
 - **Vienā teikumā:** *"Mans tēvs bija pirmais. Es esmu labākais."*
-- **Signāles prasmes:** Impēriskais Sitiens (LMB, kombinē fizisko + shadow), Melnās Zibenis (Q, chain lightning ar shadow), Impērisks Zvans (E, buff apkārtējiem minjoniem +50% dmg 8s), Impērija Vaidēs (100pt ult: masveida shadow AoE + tu iegūsti maģisku formu 15s).
-- **Minjonu afinitāte:** **Sūkšņi + Zilspāri** (Overlord 2 stils — brutālais warrior + spellcaster). Sūkšņi ap viņu iegūst +25% dmg; Zilspāri iegūst +50% spell power.
+- **Signāles prasmes:** Impēriskais Sitiens (LMB, kombinē fizisko + shadow), Melnās Zibenis (Q, chain lightning ar shadow), Impērisks Zvans (E, buff apkārtējiem ģenerāļiem +50% dmg 8s), Impērija Vaidēs (100pt ult: masveida shadow AoE + tu iegūsti maģisku formu 15s).
+- **Ģenerāļu trio:** **Kaspars** (Impērijas heavy tank), **Fay** (Elfu Karaliene ranged mage), **Juno** (Nordbergas assassin). Kaspars +25% armor auras, Fay +25% party crit, Juno +20% party MS. Detaļas — skat. `Generals.md`.
 - **Signāles resurss:** **Impēriskā Dusma** — uzkrāj kad iznīcina "gaišā" ordeņa ienaidniekus (10 pt / kill) vai kad iekaro nozīmīgu vietu (piem., dungeon boss). Izzūd ārpus cīņas.
 - **Karaļvalsts: Nordberga Impērija (*Nordberga Impērija*)**
   - **Vizuāli:** sniegots ziemeļu ciems, sabrukusi cietoksnis, imperators dekorācijas (aizrautīgas krāsas), stipri kontrasti starp balts sniega un melnas Otrā Kunga bruņu.
@@ -71,7 +71,7 @@ Katra klase ir viens no trim **Kunga Zīmoglaukumiem** — reinkarnētu varoņu 
 - **Stils:** tīrs arch-mage. Distances maģija, reality manipulation, teleports, glass cannon.
 - **Vienā teikumā:** *"Realitāte ir mans nastīgs materiāls."*
 - **Signāles prasmes:** Arkānā Lauska (LMB projectile), Realitātes Plaisa (Q, teleports + AoE), Arkāns Zvans (E, dubultā tavas nākošās 3 prasmes), Reality Rift (100pt ult: 15s time slow apkārtējiem, tavas prasmes 2× dmg un 2× ātrāk).
-- **Minjonu afinitāte:** **Zilspāri** (spellcaster minjoni). Ap Vecajo Burvi Zilspāri iegūst **triple spell power** un **50% cast speed**. Var pat īslaicīgi mainīt reality (teleport uz tevi vai zibens hits).
+- **Ģenerāļu trio:** **Torins** (spellblade hybrid), **Sasla** (Ledus Māte frost mage), **Vera** (Realitātes Kalēja teleport support). Torins reset spēlētāja spell buffs, Sasla ice turrets, Vera party teleport. Detaļas — skat. `Generals.md`.
 - **Signāles resurss:** **Arkānā Enerģija** — uzkrājas caur kritiskiem uzbrukumiem (5 pt / crit) un maģisko efektu izmantošanu. Nekad neizzūd kaujā.
 - **Karaļvalsts: Vecais Tornis (*Vecais Tornis*)**
   - **Vizuāli:** peldošs arkānais tornis debesīs virs Melnā Kalna, apkārt kluss chaos — mainīgas gravitācijas telpas, mainīgi ceļi, ilūzijas.
@@ -86,7 +86,7 @@ Katra klase ir viens no trim **Kunga Zīmoglaukumiem** — reinkarnētu varoņu 
 
 1. **Starta reģions** — tu sāc savas klases karaļvalstī.
 2. **Melnais Tornis hub** — troņa telpa ir dekorēta pēc tavas klases (Pirmais Kungs — klasiskais tumšais tornis; Otrs Kungs — impēriskais dekorējums; Vecais Burvis — arkānais tornis).
-3. **Minjonu kosmētika** — tava klase iedod minjoniem klases-tematiskus lūkus.
+3. **Ģenerāļu kosmētika un skins** — tava klase atslēdz Bond 10 kosmētiskos skins.
 4. **Klases quest līnija** — īpaša stāsta arka par tavas mantojumu, kas notiek paralēli galvenajam sižetam.
 5. **Klases boss** — sava reģiona boss ir bijušais tavs zīmoglaukuma turētājs, kurš atsakās tevi atzīt.
 6. **Dialogu opcijas** — NPC reaģē citādi (imperiskais Otrs Kungs dabū saluts no ordeņa paliekas, Burvis dabū baiļu skatienus u.c.).
@@ -103,46 +103,59 @@ Kopā: **3 klašu karaļvalstis + 1 hub Melnais Kalns = 4 reģioni**.
 
 ---
 
-## 6. Galvenā mehānika — Minjonu komandēšana
+## 6. Galvenā mehānika — 3 Ģenerāļi
 
-### Četru veidu minjoni (Overlord DNS ar gotisku pieskaņu)
+**Katrs spēlētājs pastāvīgi ir ar 3 unikāliem ģenerāļiem** — nevis armija no minjoniem. Katrs ģenerālis ir stāsta figūra ar vārdu, personību, backstory, gearu, prasmju koku un Bond progresi.
 
-| Tips        | Krāsa      | Loma                    | Klase, kas viņus stiprina lielākoties |
-|-------------|------------|-------------------------|----------------------------------------|
-| **Sūkšņi**  | Brūni      | Tuvcīņa, tanks          | Pirmais Kungs (all), Otrs Kungs        |
-| **Sārtaji** | Sarkani    | Distance, uguns         | Pirmais Kungs (all)                    |
-| **Zaļči**   | Zaļi       | Zaglība, inde           | Pirmais Kungs (all)                    |
-| **Zilspāri**| Zili       | Maģija, dziedināšana    | Otrs Kungs, Vecais Burvis (kritiskā)   |
+Pilnas detalizētas specifikācijas skatīt: **`Generals.md`**.
 
-**Pirmais Kungs** ir vienīgais, kas komandē visus 4 tipus vienlīdz labi. Otrs Kungs un Vecais Burvis fokusējas uz konkrētiem tipiem.
+### 6.1. Ģenerāļu trio katrai klasei
 
-Sākumā tev pieejami tikai **Sūkšņi**. Katrus citus atklāj, atgriežot minjonu bedri no izmirušas (bedres ir Melnajā Tornī, atslēdzas ar reģiona bosu clearing).
+| Klase          | Ģenerālis 1 (Tank)     | Ģenerālis 2 (DPS)       | Ģenerālis 3 (Support/Utility)  |
+|----------------|------------------------|-------------------------|--------------------------------|
+| Pirmais Kungs  | **Rose** (paladin tank)| **Kalts** (dual-wield)  | **Velvet** (priestere/healer)  |
+| Otrs Kungs     | **Kaspars** (heavy warrior) | **Fay** (elfu ranged mage) | **Juno** (assassin)       |
+| Vecais Burvis  | **Torins** (spellblade)| **Sasla** (frost mage)  | **Vera** (teleport support)    |
 
-### Komandēšanas mehānika
-- **RMB uz vietas** — *"Ejiet tur!"* — minjoni skrien uz punktu.
-- **RMB uz mērķa** — *"Uzbrūkiet!"* — koncentrējas uz vienu ienaidnieku vai objektu.
-- **Shift + RMB** — *"Turieties tālāk"* — minjoni atkāpjas pie tevis.
-- **Q / E / R / T** — pārslēdz aktīvo minjonu tipu, kuriem sekot pavēlei.
-- **F** — *"Savāc!"* — minjoni lasa loot norādītajā vietā.
-- **G** — *"Ekipējieties!"* — minjons paceļ ieroci/bruņas no zemes un lieto pats.
+Katras klases 3 ģenerāļi ir dizainēti kā **complementary trio** — kombinē tank + DPS + support role.
 
-### Minjonu limits
-- Sākumā: **10 minjoni** kopā.
-- Uzlabojot Melno Torni: līdz **30 minjoniem** (Pirmais Kungs) vai **25** (Otrs Kungs) vai **20** (Vecais Burvis — glass cannon fokuss).
-- Minjoni mirst. Audzē jaunus par savāktu **Dvēseļu enerģiju**.
+### 6.2. Komandēšanas mehānika
+
+- **RMB uz mērķa** — visi 3 ģenerāļi (vai konkrētais, ja izvēlēts) uzbrūk tam
+- **RMB uz vietas** — ģenerāļi pārvietojas uz punkta
+- **1 / 2 / 3** — izvēlas atsevišķu ģenerāli (nākošā RMB norāda tikai viņam)
+- **F** — *Fall Back!* — visi ģenerāļi atgriežas pie tevis
+- **G** — *Hold Position!* — ģenerāļi paliek uz vietas
+- **T** — formation cycle (triangle / line / surround / default)
+- **R** (kad izvēlēts ģenerālis) — viņa Signāles Prasme
+
+### 6.3. Bond un progresija
+
+Katrs ģenerālis sāk **Bond 1** un aug līdz **Bond 10** caur kombinētu cīņu:
+- **Bond 5:** atslēdz Ultimate Ability
+- **Bond 9:** atslēdz Personal Backstory Quest
+- **Bond 10:** atslēdz Legendary Perk + kosmētisks skin
+
+### 6.4. Gear slots
+
+Katram ģenerālim ir **3 gear slots** (Ierocis, Bruņas, Aksesuārs), kur var ekipēt full retumu spektrā līdz **klases-specifiskam Uber Mistiskajam** (9 unikāli Uber Mistiskie kopā, viens per ģenerālis).
+
+### 6.5. Nāve un atgūšana
+
+Ģenerāļi **nav permanent death** — knock-out ar revive pēc 30s cīņā vai instant ārpus cīņas. Player var arī revive early (F 2s pieejot pie downed ģenerāļa).
 
 ---
 
 ## 7. Cīņas sistēma
 
 - **LMB** — tavs personiskais uzbrukums (klases specifiks).
-- **RMB** — minjonu komanda.
+- **RMB** — ģenerāļu komanda (visi 3 vai izvēlētais viens).
 - **Space** — izvairīšanās (i-frames).
 - **Q / E / R** — trīs aktīvās prasmes (klases + ekipējuma + koka).
 - **Shift** — sprints.
 - **Klases signāles** — signāles resurss aug caur cīņu, izlādē par klases-specifisku ultimātu.
 
-Cīņas ritms: ne tu, ne minjoni viens pats netiek galā ar boss. Uzvara — pareizā komandu kombinācija.
+Cīņas ritms: ne tu, ne 3 ģenerāļi viens pats netiek galā ar boss. Uzvara — pareizā trio kombu (tank agro + DPS burst + support heal/buff).
 
 ---
 
@@ -168,7 +181,7 @@ Kopsavilkumā:
 ## 9. Progresija
 
 - **Līmeņi 1–80** (max level 80), pēc tam atslēdzas **Paragon sistēma** ar max **350 Paragon punktiem**.
-- **Prasmju koks** trīs zaros: **Kungs** (personiskais), **Barvedis** (minjoni), **Melnais Māksla** (nolādēts).
+- **Prasmju koks** trīs zaros: **Kungs** (personiskais), **Ģenerāļu Sardzes** (trio buffi), **Melnais Māksla** (nolādēts).
 - Katrai klasei **savs prasmju koks** ar 6–8 unikāliem "keystone" perkiem.
 
 Detaliēzēta Paragon sistēma — skat. `ParagonBoards.md` (**needs refactor to 3 classes**).
@@ -178,7 +191,7 @@ Detaliēzēta Paragon sistēma — skat. `ParagonBoards.md` (**needs refactor to
 ## 10. Melnā Torņa cietoksnis (hub, aug)
 
 - **Tronis** (klases-tematiska dekorācija)
-- **Minjonu bedres** (4, atslēdzas ar reģionu clearing)
+- **Ģenerāļu kambari** (3, viens katram tavas klases ģenerālim)
 - **Bruņotava** / **Alķīmiķa tornis**
 - **Karte** (planē reidus)
 - **Trofeju halle**
@@ -210,11 +223,11 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 
 - **Viena klase:** Pirmais Kungs (kā vienkāršākais paradigms un balansēts).
 - **Viens reģions:** Melnais Tornis (starta klases karaļvalsts).
-- **Sūkšņu** minjoni ar pilnu komandu sistēmu.
+- **Rose** (Pirmā Kunga tank ģenerālis) ar pilnu komandu sistēmu.
 - Pamata cīņa + 3 aktīvās prasmes + Dominance signāles resurss.
 - Divi ienaidnieku tipi + viens mini-boss (Sardzes Kapteinis Bornlejs).
 - Viens dungeon (5 telpas, boss beigās).
-- Melnais Tornis kā vienkāršs hub (tronis, minjonu bedre, kalējs).
+- Melnais Tornis kā vienkāršs hub (tronis, Rose kambaris, kalējs).
 - Loot ar trim retumiem.
 - Klases prasmju koks (samazināts, 15 punkti).
 - Level up līdz 15.
@@ -230,7 +243,7 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 - **C++** kodolam: `KungsCharacterBase` (abstract, klases mantojas), `MinionBase`, `MinionAIController`, `MinionCommandComponent`, `LootManager`, `ClassOathComponent`, `SaveGameSystem`.
 - **Blueprints** UI, klašu prasmes, quest scripts.
 - **GAS** prasmēm un statiem — labi der klašu variācijām.
-- **Behavior Trees** minjonu un ienaidnieku AI.
+- **Behavior Trees** ģenerāļu un ienaidnieku AI (katram ģenerālim savs BT).
 - **Enhanced Input** vadībai.
 - **Niagara** partiklu efektiem.
 - **Metasounds** audio.
@@ -238,7 +251,8 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 ### Klašu arhitektūra kodā
 - `AKungsCharacterBase` (abstract UE C++ klase).
 - Katrai klasei: `AKungsPirmaisKungs`, `AKungsOtrsKungs`, `AKungsVecaisBurvis`.
-- **`UClassOathComponent`** apstrādā signāles resursu, klases prasmes, minjonu afinitātes bonusus.
+- **`UClassOathComponent`** apstrādā signāles resursu, klases prasmes, ģenerāļu trio bonusus.
+- **`AGeneralCharacter`** (abstract, 9 mantojas) — Rose, Kalts, Velvet, Kaspars, Fay, Juno, Torins, Sasla, Vera.
 
 ---
 
@@ -251,7 +265,7 @@ Nav "labais vs ļaunais" — ir **kāda veida ļaunais**.
 
 ### Audio
 - Klusa, minimāla mūzika ar reģionāliem instrumentiem (Melnais Tornis — ērģeles + ķēde; Nordberga — kori + akordeons; Vecais Tornis — arkānā vokāls + skanoša metallophone).
-- Minjoni murmina; Kunga balss izvēles brīžos.
+- Ģenerāļi runā (voice acted); Kunga balss izvēles brīžos. Katram no 9 ģenerāļiem savs voice actor.
 
 ---
 
