@@ -70,6 +70,12 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("AllocateStrength",  IE_Pressed, this, &ASOPlayerController::OnAllocateStrengthPressed);
 	InputComponent->BindAction("AllocateIntellect", IE_Pressed, this, &ASOPlayerController::OnAllocateIntellectPressed);
 	InputComponent->BindAction("AllocateVitality",  IE_Pressed, this, &ASOPlayerController::OnAllocateVitalityPressed);
+
+	// Save/Load - F5 quicksave, F9 quickload. Allowed while paused.
+	FInputActionBinding& SaveBind = InputComponent->BindAction("QuickSave", IE_Pressed, this, &ASOPlayerController::OnQuickSavePressed);
+	SaveBind.bExecuteWhenPaused = true;
+	FInputActionBinding& LoadBind = InputComponent->BindAction("QuickLoad", IE_Pressed, this, &ASOPlayerController::OnQuickLoadPressed);
+	LoadBind.bExecuteWhenPaused = true;
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -228,6 +234,22 @@ static void SOAllocate(APlayerController* PC, ESOAttribute Attribute)
 void ASOPlayerController::OnAllocateStrengthPressed()  { SOAllocate(this, ESOAttribute::Strength);  }
 void ASOPlayerController::OnAllocateIntellectPressed() { SOAllocate(this, ESOAttribute::Intellect); }
 void ASOPlayerController::OnAllocateVitalityPressed()  { SOAllocate(this, ESOAttribute::Vitality);  }
+
+void ASOPlayerController::OnQuickSavePressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->QuickSave();
+	}
+}
+
+void ASOPlayerController::OnQuickLoadPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->QuickLoad();
+	}
+}
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)
 {

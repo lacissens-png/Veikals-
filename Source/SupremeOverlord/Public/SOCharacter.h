@@ -310,6 +310,35 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|LifeDrain")
 	bool CanCastLifeDrain() const;
 
+	// -----------------------------------------------------------------------
+	// Save / Load.
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Save")
+	FString DefaultSaveSlot = TEXT("SupremeOverlordSlot");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Save")
+	int32 DefaultSaveUserIndex = 0;
+
+	/** Saves the current player state to Slot (falls back to DefaultSaveSlot). Returns true on success. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Save")
+	bool SaveGameToSlotName(const FString& Slot);
+
+	/** Loads Slot and applies it to the character. Returns true on success. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Save")
+	bool LoadGameFromSlotName(const FString& Slot);
+
+	/** Convenience wrapper — saves to DefaultSaveSlot. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Save")
+	bool QuickSave();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Save")
+	bool QuickLoad();
+
+	/** BP hook for save/load VFX/SFX/UI toast. bSaved = true on save, false on load. */
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Save")
+	void OnSaveGameCompleted(bool bSaved, bool bSuccess, const FString& Slot);
+
 	// Cooldown-remaining accessors used by the HUD skill bar.
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
 	float GetPrimaryAttackCooldownRemaining() const;

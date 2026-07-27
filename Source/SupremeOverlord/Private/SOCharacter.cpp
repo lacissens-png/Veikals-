@@ -13,6 +13,7 @@
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
+#include "SOSaveGame.h"
 #include "SOShadowBoltProjectile.h"
 #include "SOWeaponData.h"
 #include "TimerManager.h"
@@ -515,4 +516,153 @@ void ASOCharacter::CastLifeDrain()
 		FTimerDelegate::CreateLambda([this]() { bLifeDrainOnCooldown = false; }),
 		LifeDrainCooldown,
 		false);
+}
+
+bool ASOCharacter::SaveGameToSlotName(const FString& Slot)
+{
+	const FString UseSlot = Slot.IsEmpty() ? DefaultSaveSlot : Slot;
+
+	USOSaveGame* Save = Cast<USOSaveGame>(UGameplayStatics::CreateSaveGameObject(USOSaveGame::StaticClass()));
+	if (!Save)
+	{
+		OnSaveGameCompleted(true, false, UseSlot);
+		return false;
+	}
+
+	Save->SlotName  = UseSlot;
+	Save->UserIndex = DefaultSaveUserIndex;
+	Save->SavedAt   = FDateTime::UtcNow();
+
+	if (ExperienceComponent)
+	{
+		Save->CharacterLevel    = ExperienceComponent->GetCurrentLevel();
+		Save->XPInCurrentLevel  = ExperienceComponent->GetCurrentXPInLevel();
+	}
+
+	Save->Gold = Gold;
+
+	if (AttributesComponent)
+	{
+		Save->Strength               = AttributesComponent->GetAttribute(ESOAttribute::Strength);
+		Save->Intellect              = AttributesComponent->GetAttribute(ESOAttribute::Intellect);
+		Save->Vitality               = AttributesComponent->GetAttribute(ESOAttribute::Vitality);
+		Save->UnspentAttributePoints = AttributesComponent->GetUnspentPoints();
+	}
+
+	if (HealthComponent)
+	{
+		Save->MaxHealth     = HealthComponent->MaxHealth;
+		Save->CurrentHealth = HealthComponent->GetCurrentHealth();
+	}
+
+	if (ManaComponent)
+	{
+		Save->MaxMana     = ManaComponent->MaxMana;
+		Save->CurrentMana = ManaComponent->GetCurrentMana();
+	}
+
+	Save->PrimaryAttackDamage  = PrimaryAttackDamage;
+	Save->ShadowBoltBaseDamage = ShadowBoltBaseDamage;
+
+	if (EquippedWeapon)
+	{
+		Save->EquippedWeaponPath = EquippedWeapon->GetPathName();
+	}
+	else
+	{
+		Save->EquippedWeaponPath.Reset();
+	}
+
+	const bool bOK = UGameplayStatics::SaveGameToSlot(Save, UseSlot, DefaultSaveUserIndex);
+	OnSaveGameCompleted(true, bOK, UseSlot);
+	return bOK;
+}
+
+bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
+{
+	const FString UseSlot = Slot.IsEmpty() ? DefaultSaveSlot : Slot;
+
+	if (!UGameplayStatics::DoesSaveGameExist(UseSlot, DefaultSaveUserIndex))
+	{
+		OnSaveGameCompleted(false, false, UseSlot);
+		return false;
+	}
+
+	USOSaveGame* Save = Cast<USOSaveGame>(UGameplayStatics::LoadGameFromSlot(UseSlot, DefaultSaveUserIndex));
+	if (!Save)
+	{
+		OnSaveGameCompleted(false, false, UseSlot);
+		return false;
+	}
+
+	// Pools first, so subsequent stat adjusts write into the correct MaxHealth/MaxMana.
+	if (HealthComponent)
+	{
+		HealthComponent->MaxHealth = Save->MaxHealth;
+		HealthComponent->Revive(FMath::Clamp(Save->CurrentHealth, 0.0f, Save->MaxHealth));
+	}
+	if (ManaComponent)
+	{
+		ManaComponent->MaxMana = Save->MaxMana;
+		const float Delta = Save->CurrentMana - ManaComponent->GetCurrentMana();
+		if (Delta > 0.0f)
+		{
+			ManaComponent->Restore(Delta);
+		}
+	}
+
+	PrimaryAttackDamage  = Save->PrimaryAttackDamage;
+	ShadowBoltBaseDamage = Save->ShadowBoltBaseDamage;
+
+	if (ExperienceComponent)
+	{
+		// GainXP would trigger level-up handlers and stack duplicate scaling — instead do a raw reset via new starting level.
+		ExperienceComponent->StartingLevel = FMath::Max(1, Save->CharacterLevel);
+		// The component's internal fields aren't publicly settable to avoid save-driven abuse elsewhere,
+		// so we award the banked XPInCurrentLevel through GainXP after re-parking StartingLevel.
+		// Cleanest MVP: just call GainXP with what was banked.
+		ExperienceComponent->GainXP(Save->XPInCurrentLevel);
+	}
+
+	Gold = FMath::Max(0, Save->Gold);
+	OnGoldChanged.Broadcast(0, Gold, Gold);
+
+	if (AttributesComponent)
+	{
+		// Diff against currently-applied values so the effects apply exactly once.
+		const int32 DeltaS = Save->Strength  - AttributesComponent->GetAttribute(ESOAttribute::Strength);
+		const int32 DeltaI = Save->Intellect - AttributesComponent->GetAttribute(ESOAttribute::Intellect);
+		const int32 DeltaV = Save->Vitality  - AttributesComponent->GetAttribute(ESOAttribute::Vitality);
+
+		if (DeltaS > 0) { AttributesComponent->GrantPoints(DeltaS); for (int32 i = 0; i < DeltaS; ++i) AttributesComponent->AllocatePoint(ESOAttribute::Strength);  }
+		if (DeltaI > 0) { AttributesComponent->GrantPoints(DeltaI); for (int32 i = 0; i < DeltaI; ++i) AttributesComponent->AllocatePoint(ESOAttribute::Intellect); }
+		if (DeltaV > 0) { AttributesComponent->GrantPoints(DeltaV); for (int32 i = 0; i < DeltaV; ++i) AttributesComponent->AllocatePoint(ESOAttribute::Vitality);  }
+
+		AttributesComponent->GrantPoints(Save->UnspentAttributePoints);
+	}
+
+	if (!Save->EquippedWeaponPath.IsEmpty())
+	{
+		if (USOWeaponData* Weapon = LoadObject<USOWeaponData>(nullptr, *Save->EquippedWeaponPath))
+		{
+			EquipWeapon(Weapon);
+		}
+	}
+	else
+	{
+		UnequipWeapon();
+	}
+
+	OnSaveGameCompleted(false, true, UseSlot);
+	return true;
+}
+
+bool ASOCharacter::QuickSave()
+{
+	return SaveGameToSlotName(DefaultSaveSlot);
+}
+
+bool ASOCharacter::QuickLoad()
+{
+	return LoadGameFromSlotName(DefaultSaveSlot);
 }

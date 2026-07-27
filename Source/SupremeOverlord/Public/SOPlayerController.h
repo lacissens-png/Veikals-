@@ -91,6 +91,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Attributes")
 	void OnAllocateVitalityPressed();
 
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Save")
+	void OnQuickSavePressed();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Save")
+	void OnQuickLoadPressed();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;
