@@ -181,6 +181,55 @@ void ASOHUD::DrawHUD()
 		Canvas->DrawItem(GoldItem);
 	}
 
+	// -- Skill panel (row of three tiles centered above the XP bar) ----------
+	if (bShowSkillPanel && MediumFont)
+	{
+		const int32 NumTiles       = 3;
+		const float RowWidth       = NumTiles * SkillTileSize.X + (NumTiles - 1) * SkillTileGap;
+		const float RowY           = ScreenH - XPBarSize.Y - XPBarBottomOffset - SkillTileSize.Y - SkillPanelGap;
+		const float RowStartX      = (ScreenW - RowWidth) * 0.5f;
+		const float CurrentManaVal = SO->ManaComponent ? SO->ManaComponent->GetCurrentMana() : 0.0f;
+
+		// Primary attack: no mana cost, cooldown scales with weapon.
+		DrawSkillTile(
+			Canvas,
+			FVector2D(RowStartX + 0 * (SkillTileSize.X + SkillTileGap), RowY),
+			TEXT("RMB"),
+			TEXT("Strike"),
+			0.0f,
+			CurrentManaVal,
+			SO->GetPrimaryAttackCooldownRemaining(),
+			SO->GetEffectivePrimaryAttackCooldown(),
+			FLinearColor(0.85f, 0.10f, 0.10f, 1.0f),
+			MediumFont);
+
+		// Shadow Bolt
+		DrawSkillTile(
+			Canvas,
+			FVector2D(RowStartX + 1 * (SkillTileSize.X + SkillTileGap), RowY),
+			TEXT("E"),
+			TEXT("Shadow"),
+			SO->ShadowBoltManaCost,
+			CurrentManaVal,
+			SO->GetShadowBoltCooldownRemaining(),
+			SO->ShadowBoltCooldown,
+			FLinearColor(0.35f, 0.10f, 0.65f, 1.0f),
+			MediumFont);
+
+		// Life Drain
+		DrawSkillTile(
+			Canvas,
+			FVector2D(RowStartX + 2 * (SkillTileSize.X + SkillTileGap), RowY),
+			TEXT("R"),
+			TEXT("Drain"),
+			SO->LifeDrainManaCost,
+			CurrentManaVal,
+			SO->GetLifeDrainCooldownRemaining(),
+			SO->LifeDrainCooldown,
+			FLinearColor(0.55f, 0.05f, 0.30f, 1.0f),
+			MediumFont);
+	}
+
 	// -- XP bar (bottom-center) + level number -------------------------------
 	if (bShowXPBar)
 	{
@@ -243,5 +292,99 @@ void ASOHUD::DrawHUD()
 		DeadItem.Scale = FVector2D(DeathOverlayScale, DeathOverlayScale);
 		DeadItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(DeadItem);
+	}
+}
+
+void ASOHUD::DrawSkillTile(UCanvas* InCanvas,
+                            const FVector2D& Origin,
+                            const FString& KeyLabel,
+                            const FString& SkillName,
+                            float ManaCost,
+                            float CurrentMana,
+                            float CooldownRemaining,
+                            float CooldownTotal,
+                            const FLinearColor& TileColor,
+                            UFont* SmallFont)
+{
+	if (!InCanvas || !SmallFont)
+	{
+		return;
+	}
+
+	const float Border = 2.0f;
+
+	// Border
+	{
+		FCanvasTileItem BorderItem(FVector2D(Origin.X - Border, Origin.Y - Border),
+		                           FVector2D(SkillTileSize.X + Border * 2.0f, SkillTileSize.Y + Border * 2.0f),
+		                           SkillTileBorder);
+		BorderItem.BlendMode = SE_BLEND_Translucent;
+		InCanvas->DrawItem(BorderItem);
+	}
+
+	// If mana-locked, wash the tile with a desaturated grey to signal "not enough mana".
+	const bool bManaLocked = ManaCost > 0.0f && CurrentMana + KINDA_SMALL_NUMBER < ManaCost;
+	const FLinearColor UsedColor = bManaLocked
+		? FLinearColor(TileColor.R * 0.35f, TileColor.G * 0.35f, TileColor.B * 0.35f, TileColor.A)
+		: TileColor;
+
+	// Base tile fill
+	{
+		FCanvasTileItem Base(Origin, SkillTileSize, UsedColor);
+		Base.BlendMode = SE_BLEND_Translucent;
+		InCanvas->DrawItem(Base);
+	}
+
+	// Cooldown overlay grows top-down as the cooldown ticks.
+	if (CooldownRemaining > 0.0f && CooldownTotal > 0.0f)
+	{
+		const float Pct = FMath::Clamp(CooldownRemaining / CooldownTotal, 0.0f, 1.0f);
+		FCanvasTileItem CD(Origin, FVector2D(SkillTileSize.X, SkillTileSize.Y * Pct), SkillCooldownOverlay);
+		CD.BlendMode = SE_BLEND_Translucent;
+		InCanvas->DrawItem(CD);
+
+		const FString CDText = FString::Printf(TEXT("%.1fs"), CooldownRemaining);
+		FCanvasTextItem CDItem(FVector2D(Origin.X + SkillTileSize.X * 0.5f - 14.0f, Origin.Y + SkillTileSize.Y * 0.5f - 8.0f),
+		                       FText::FromString(CDText),
+		                       SmallFont,
+		                       FLinearColor::White);
+		CDItem.EnableShadow(FLinearColor::Black);
+		InCanvas->DrawItem(CDItem);
+	}
+
+	// Key label (top-left of tile).
+	{
+		FCanvasTextItem KeyItem(FVector2D(Origin.X + 4.0f, Origin.Y + 2.0f),
+		                        FText::FromString(KeyLabel),
+		                        SmallFont,
+		                        FLinearColor(1.0f, 1.0f, 1.0f, 0.95f));
+		KeyItem.EnableShadow(FLinearColor::Black);
+		InCanvas->DrawItem(KeyItem);
+	}
+
+	// Skill name (bottom center of tile).
+	{
+		float TW = 0.0f, TH = 0.0f;
+		InCanvas->TextSize(SmallFont, SkillName, TW, TH);
+		FCanvasTextItem NameItem(FVector2D(Origin.X + (SkillTileSize.X - TW) * 0.5f, Origin.Y + SkillTileSize.Y - TH - 3.0f),
+		                         FText::FromString(SkillName),
+		                         SmallFont,
+		                         FLinearColor(1.0f, 1.0f, 1.0f, 0.95f));
+		NameItem.EnableShadow(FLinearColor::Black);
+		InCanvas->DrawItem(NameItem);
+	}
+
+	// Mana cost just under the tile.
+	if (ManaCost > 0.0f)
+	{
+		const FString CostText = FString::Printf(TEXT("%.0f MP"), ManaCost);
+		float TW = 0.0f, TH = 0.0f;
+		InCanvas->TextSize(SmallFont, CostText, TW, TH);
+		FCanvasTextItem CostItem(FVector2D(Origin.X + (SkillTileSize.X - TW) * 0.5f, Origin.Y + SkillTileSize.Y + 3.0f),
+		                         FText::FromString(CostText),
+		                         SmallFont,
+		                         bManaLocked ? FLinearColor(1.0f, 0.35f, 0.35f, 1.0f) : FLinearColor(0.55f, 0.75f, 1.0f, 1.0f));
+		CostItem.EnableShadow(FLinearColor::Black);
+		InCanvas->DrawItem(CostItem);
 	}
 }

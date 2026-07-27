@@ -387,6 +387,33 @@ void ASOCharacter::CastShadowBolt(FVector TargetLocation)
 		false);
 }
 
+float ASOCharacter::GetPrimaryAttackCooldownRemaining() const
+{
+	if (UWorld* World = GetWorld())
+	{
+		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(PrimaryAttackCooldownHandle));
+	}
+	return 0.0f;
+}
+
+float ASOCharacter::GetShadowBoltCooldownRemaining() const
+{
+	if (UWorld* World = GetWorld())
+	{
+		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(ShadowBoltCooldownHandle));
+	}
+	return 0.0f;
+}
+
+float ASOCharacter::GetLifeDrainCooldownRemaining() const
+{
+	if (UWorld* World = GetWorld())
+	{
+		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(LifeDrainCooldownHandle));
+	}
+	return 0.0f;
+}
+
 bool ASOCharacter::CanCastLifeDrain() const
 {
 	if (!IsAlive() || bLifeDrainOnCooldown)

@@ -305,6 +305,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|LifeDrain")
 	bool CanCastLifeDrain() const;
 
+	// Cooldown-remaining accessors used by the HUD skill bar.
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
+	float GetPrimaryAttackCooldownRemaining() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
+	float GetShadowBoltCooldownRemaining() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
+	float GetLifeDrainCooldownRemaining() const;
+
 	/** AoE around the caster: damages all live enemies, then heals the caster for a fraction of total damage dealt. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat|LifeDrain")
 	void CastLifeDrain();

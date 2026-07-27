@@ -65,6 +65,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
 	float ManaTextScale = 1.0f;
 
+	/** Show a row of skill tiles above the XP bar. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Skills")
+	bool bShowSkillPanel = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Skills")
+	FVector2D SkillTileSize = FVector2D(64.0f, 64.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Skills", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "200.0"))
+	float SkillTileGap = 12.0f;
+
+	/** How high above the XP bar the skill row is drawn. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Skills", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "200.0"))
+	float SkillPanelGap = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Skills")
+	FLinearColor SkillTileBorder = FLinearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Skills")
+	FLinearColor SkillCooldownOverlay = FLinearColor(0.0f, 0.0f, 0.0f, 0.65f);
+
 	/** Show the XP bar and level number at the bottom-center of the screen. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP")
 	bool bShowXPBar = true;
@@ -129,4 +149,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "8.0"))
 	float DeathOverlayScale = 3.0f;
+
+private:
+	/** Renders one skill tile with cooldown overlay + labels. */
+	void DrawSkillTile(class UCanvas* InCanvas,
+	                   const FVector2D& Origin,
+	                   const FString& KeyLabel,
+	                   const FString& SkillName,
+	                   float ManaCost,
+	                   float CurrentMana,
+	                   float CooldownRemaining,
+	                   float CooldownTotal,
+	                   const FLinearColor& TileColor,
+	                   class UFont* SmallFont);
 };
