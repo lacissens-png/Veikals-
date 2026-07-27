@@ -48,6 +48,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|HealthBar", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
 	float HealthTextScale = 1.1f;
 
+	/** Pixel size of the mana bar (width, height). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar")
+	FVector2D ManaBarSize = FVector2D(340.0f, 18.0f);
+
+	/** Gap in pixels between the top of the HP bar and the bottom of the mana bar. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "40.0"))
+	float ManaBarGap = 6.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar")
+	FLinearColor ManaBarBackgroundColor = FLinearColor(0.0f, 0.02f, 0.06f, 0.85f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar")
+	FLinearColor ManaBarFillColor = FLinearColor(0.15f, 0.35f, 0.95f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float ManaTextScale = 1.0f;
+
 	/** Show a one-line reminder of the primary keybinds across the top of the screen. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
 	bool bShowControlHints = true;

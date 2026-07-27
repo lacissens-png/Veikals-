@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SOCharacter.h"
 #include "SOHealthComponent.h"
+#include "SOManaComponent.h"
 
 ASOHUD::ASOHUD()
 {
@@ -91,6 +92,49 @@ void ASOHUD::DrawHUD()
 		HPItem.Scale = FVector2D(HealthTextScale, HealthTextScale);
 		HPItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(HPItem);
+	}
+
+	// -- Mana bar sits directly above the HP bar ------------------------------
+	if (USOManaComponent* Mana = SO->ManaComponent)
+	{
+		const float CurrentMana = Mana->GetCurrentMana();
+		const float MaxManaVal  = FMath::Max(Mana->MaxMana, 1.0f);
+		const float ManaPct     = FMath::Clamp(Mana->GetManaPercent(), 0.0f, 1.0f);
+
+		const float ManaX = BarX;
+		const float ManaY = BarY - ManaBarSize.Y - ManaBarGap;
+
+		{
+			FCanvasTileItem ManaBorder(FVector2D(ManaX - Border, ManaY - Border),
+			                           FVector2D(ManaBarSize.X + Border * 2.0f, ManaBarSize.Y + Border * 2.0f),
+			                           HealthBarBorderColor);
+			ManaBorder.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(ManaBorder);
+		}
+		{
+			FCanvasTileItem ManaBG(FVector2D(ManaX, ManaY), ManaBarSize, ManaBarBackgroundColor);
+			ManaBG.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(ManaBG);
+		}
+		if (ManaPct > 0.0f)
+		{
+			FCanvasTileItem ManaFill(FVector2D(ManaX, ManaY),
+			                         FVector2D(ManaBarSize.X * ManaPct, ManaBarSize.Y),
+			                         ManaBarFillColor);
+			ManaFill.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(ManaFill);
+		}
+		if (MediumFont)
+		{
+			const FString ManaText = FString::Printf(TEXT("MP  %.0f / %.0f"), CurrentMana, MaxManaVal);
+			FCanvasTextItem ManaItem(FVector2D(ManaX + 10.0f, ManaY + 1.0f),
+			                         FText::FromString(ManaText),
+			                         MediumFont,
+			                         HealthTextColor);
+			ManaItem.Scale = FVector2D(ManaTextScale, ManaTextScale);
+			ManaItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(ManaItem);
+		}
 	}
 
 	// -- Death overlay --------------------------------------------------------

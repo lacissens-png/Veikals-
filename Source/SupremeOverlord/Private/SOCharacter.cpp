@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SODamageType.h"
 #include "SOHealthComponent.h"
+#include "SOManaComponent.h"
 #include "SOShadowBoltProjectile.h"
 #include "TimerManager.h"
 
@@ -36,6 +37,7 @@ ASOCharacter::ASOCharacter()
 	TopDownCamera->bUsePawnControlRotation = false;
 
 	HealthComponent = CreateDefaultSubobject<USOHealthComponent>(TEXT("HealthComponent"));
+	ManaComponent   = CreateDefaultSubobject<USOManaComponent>(TEXT("ManaComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -213,12 +215,30 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 
 bool ASOCharacter::CanCastShadowBolt() const
 {
-	return IsAlive() && !bShadowBoltOnCooldown && ShadowBoltClass != nullptr;
+	if (!IsAlive() || bShadowBoltOnCooldown || ShadowBoltClass == nullptr)
+	{
+		return false;
+	}
+
+	if (ShadowBoltManaCost > 0.0f && ManaComponent && !ManaComponent->HasEnough(ShadowBoltManaCost))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void ASOCharacter::CastShadowBolt(FVector TargetLocation)
 {
 	if (!CanCastShadowBolt())
+	{
+		return;
+	}
+
+	// Consume mana before we spawn. If the pool is missing entirely we just
+	// let the cast go through (allows enemies without a mana component to
+	// still fire this ability later without ceremony).
+	if (ShadowBoltManaCost > 0.0f && ManaComponent && !ManaComponent->Consume(ShadowBoltManaCost))
 	{
 		return;
 	}

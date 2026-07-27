@@ -7,6 +7,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class USOHealthComponent;
+class USOManaComponent;
 class USODamageType;
 class ASOShadowBoltProjectile;
 
@@ -38,6 +39,10 @@ public:
 	/** Health / damage / death tracking. Any actor can read this to query if the character is alive. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Health")
 	TObjectPtr<USOHealthComponent> HealthComponent;
+
+	/** Regenerating mana pool consumed by spells (Shadow Bolt, etc.). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Mana")
+	TObjectPtr<USOManaComponent> ManaComponent;
 
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
@@ -142,6 +147,10 @@ public:
 	/** Seconds between casts. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "0.1", UIMin = "0.1", UIMax = "10.0"))
 	float ShadowBoltCooldown = 1.5f;
+
+	/** Mana cost per cast. Set to 0 to make the spell free. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "500.0"))
+	float ShadowBoltManaCost = 25.0f;
 
 	/** Muzzle offset forward from the character root (cm). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "500.0"))
