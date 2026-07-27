@@ -9,10 +9,13 @@
 #include "SOAttributesComponent.h"
 #include "SOBossCharacter.h"
 #include "SOCharacter.h"
+#include "SOEnemyCharacter.h"
 #include "SOEnemySpawner.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
+#include "SOItemPickup.h"
+#include "SOPickupOrb.h"
 #include "SOVendorNPC.h"
 #include "SOWeaponData.h"
 
@@ -487,6 +490,99 @@ void ASOHUD::DrawHUD()
 		}
 	}
 
+	// -- Minimap (top-right radar around the player) -------------------------
+	if (bShowMinimap && MinimapWorldRange > 0.0f)
+	{
+		const float MMX = ScreenW - MinimapSize.X - MinimapOffset.X;
+		const float MMY = MinimapOffset.Y;
+		const FVector2D MMOrigin(MMX, MMY);
+
+		{
+			FCanvasTileItem BorderTile(FVector2D(MMX - Border, MMY - Border),
+			                           FVector2D(MinimapSize.X + Border * 2.0f, MinimapSize.Y + Border * 2.0f),
+			                           MinimapBorderColor);
+			BorderTile.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(BorderTile);
+		}
+		{
+			FCanvasTileItem BG(FVector2D(MMX, MMY), MinimapSize, MinimapBackgroundColor);
+			BG.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(BG);
+		}
+
+		const FVector PlayerLoc = SO->GetActorLocation();
+
+		auto WorldToMinimap = [&](const FVector& WorldLoc) -> FVector2D
+		{
+			// The minimap is a top-down view — X world -> Y screen (up = -Y), Y world -> X screen.
+			const float NormX = FMath::Clamp((WorldLoc.Y - PlayerLoc.Y) / MinimapWorldRange, -1.0f, 1.0f);
+			const float NormY = FMath::Clamp((PlayerLoc.X - WorldLoc.X) / MinimapWorldRange, -1.0f, 1.0f);
+			return FVector2D(MMX + MinimapSize.X * 0.5f + NormX * MinimapSize.X * 0.5f,
+			                 MMY + MinimapSize.Y * 0.5f + NormY * MinimapSize.Y * 0.5f);
+		};
+
+		// Player pip (a slightly larger yellow square at the center).
+		{
+			const float HalfSize = MinimapDotSize + 1.0f;
+			FCanvasTileItem PlayerPip(FVector2D(MMX + MinimapSize.X * 0.5f - HalfSize, MMY + MinimapSize.Y * 0.5f - HalfSize),
+			                          FVector2D(HalfSize * 2.0f, HalfSize * 2.0f),
+			                          MinimapPlayerColor);
+			PlayerPip.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(PlayerPip);
+		}
+
+		// Enemies (red) — bosses tinted orange.
+		{
+			TArray<AActor*> Enemies;
+			UGameplayStatics::GetAllActorsOfClass(this, ASOEnemyCharacter::StaticClass(), Enemies);
+			for (AActor* A : Enemies)
+			{
+				ASOEnemyCharacter* Enemy = Cast<ASOEnemyCharacter>(A);
+				if (!Enemy || !Enemy->IsAlive())
+				{
+					continue;
+				}
+				const FLinearColor Color = A->IsA(ASOBossCharacter::StaticClass()) ? MinimapBossColor : MinimapEnemyColor;
+				DrawMinimapDot(Canvas, MMOrigin, WorldToMinimap(Enemy->GetActorLocation()), Color);
+			}
+		}
+
+		// Vendors (blue).
+		{
+			TArray<AActor*> Vendors;
+			UGameplayStatics::GetAllActorsOfClass(this, ASOVendorNPC::StaticClass(), Vendors);
+			for (AActor* A : Vendors)
+			{
+				if (A)
+				{
+					DrawMinimapDot(Canvas, MMOrigin, WorldToMinimap(A->GetActorLocation()), MinimapVendorColor);
+				}
+			}
+		}
+
+		// Orbs (green) and item pickups (gold).
+		{
+			TArray<AActor*> Orbs;
+			UGameplayStatics::GetAllActorsOfClass(this, ASOPickupOrb::StaticClass(), Orbs);
+			for (AActor* A : Orbs)
+			{
+				if (A)
+				{
+					DrawMinimapDot(Canvas, MMOrigin, WorldToMinimap(A->GetActorLocation()), MinimapOrbColor);
+				}
+			}
+			TArray<AActor*> Items;
+			UGameplayStatics::GetAllActorsOfClass(this, ASOItemPickup::StaticClass(), Items);
+			for (AActor* A : Items)
+			{
+				if (A)
+				{
+					DrawMinimapDot(Canvas, MMOrigin, WorldToMinimap(A->GetActorLocation()), MinimapItemColor);
+				}
+			}
+		}
+	}
+
 	// -- Pause overlay (drawn last so it sits over everything) ---------------
 	if (bShowPauseOverlay && UGameplayStatics::IsGamePaused(this))
 	{
@@ -616,4 +712,28 @@ void ASOHUD::DrawSkillTile(UCanvas* InCanvas,
 		CostItem.EnableShadow(FLinearColor::Black);
 		InCanvas->DrawItem(CostItem);
 	}
+}
+
+void ASOHUD::DrawMinimapDot(UCanvas* InCanvas,
+                             const FVector2D& MinimapOriginPx,
+                             const FVector2D& OriginPx,
+                             const FLinearColor& Color) const
+{
+	if (!InCanvas)
+	{
+		return;
+	}
+	// Clip check against the minimap rect so out-of-range dots don't smear across the screen.
+	if (OriginPx.X < MinimapOriginPx.X || OriginPx.X > MinimapOriginPx.X + MinimapSize.X ||
+	    OriginPx.Y < MinimapOriginPx.Y || OriginPx.Y > MinimapOriginPx.Y + MinimapSize.Y)
+	{
+		return;
+	}
+
+	const float Half = MinimapDotSize;
+	FCanvasTileItem Dot(FVector2D(OriginPx.X - Half, OriginPx.Y - Half),
+	                    FVector2D(Half * 2.0f, Half * 2.0f),
+	                    Color);
+	Dot.BlendMode = SE_BLEND_Translucent;
+	InCanvas->DrawItem(Dot);
 }

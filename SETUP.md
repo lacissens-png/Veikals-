@@ -683,6 +683,8 @@ your own imports) to hear everything without touching code.
 | Q     | PrimaryAttack       |
 | E     | ShadowBolt          |
 | R     | LifeDrain           |
+| F     | Interact (Vendor buy) |
+| G     | Sell (main-hand)    |
 | F1    | Allocate Strength   |
 | F2    | Allocate Intellect  |
 | F3    | Allocate Vitality   |
@@ -691,3 +693,120 @@ your own imports) to hear everything without touching code.
 | ESC   | Toggle Pause        |
 | F10   | Quit (when paused)  |
 | K     | Debug damage        |
+
+## 28. Talent tree
+
+`USOTalentComponent` banks `TalentPointsPerLevel` (default 1) at every
+level-up. Nodes are `USOTalentNode` data assets with:
+
+- `PointCost`, `Prerequisites` (hard pointers to other nodes)
+- `Effects[]` — enum + magnitude:
+  `FlatMaxHealth`, `FlatMaxMana`, `FlatPrimaryDamage`,
+  `FlatShadowBoltDamage`, `FlatLifeDrainHealFrac`, `FlatManaRegen`,
+  `MultMovementSpeed`.
+
+`UnlockNode(Node)` enforces cost + prereqs and applies effects to the
+owning character; `CanUnlock(Node, OutReason)` returns a human-readable
+"why not" for a future tooltip UI. BP delegates
+`OnTalentPointsChanged`, `OnTalentUnlocked`.
+
+### Setup
+
+1. Create data assets `DA_Talent_Toughness` (+30 MaxHealth, cost 1),
+   `DA_Talent_Bloodbind` (+0.2 LifeDrainHealFrac, cost 2, prereq
+   Toughness), `DA_Talent_Overlord` (+10 ShadowBoltDamage,
+   +10 PrimaryDamage, cost 3, prereq Bloodbind).
+2. Play — level up and call `TalentComponent->UnlockNode(DA_...)`
+   from BP (a full UMG tree UI comes later).
+
+## 29. Inventory (multi-slot equipment)
+
+`USOItemData::EquipSlot` declares where an item goes:
+MainHand / OffHand / Head / Chest / Legs / Boots / Amulet / Ring1 /
+Ring2. `USOArmorData` extends the base item with `MaxHealthBonus`,
+`MaxManaBonus`, `DamageReductionPct`, `MovementSpeedMultiplier`.
+
+`USOEquipmentComponent` owns a `TMap<ESOEquipSlot, USOItemData*>`.
+`Equip(Item)` stores it in the item's declared slot and calls
+`RecomputeAggregateStats`, which sums bonuses from scratch and diffs
+against last-applied so nothing is ever double-counted. MainHand
+changes route through `ASOCharacter::EquipWeapon` so existing damage
+code keeps working.
+
+Damage reduction rides on the health component's
+`IncomingDamageMultiplier`, so all damage sources honor it
+automatically. `OnSlotChanged(Slot, OldItem, NewItem)` for BP.
+
+### Setup
+
+1. Create `DA_Armor_LeatherChest` (Rarity Common, EquipSlot Chest,
+   MaxHealthBonus 30).
+2. Create `DA_Armor_RingOfPower` (Rarity Rare, EquipSlot Ring1,
+   MovementSpeedMultiplier 1.1).
+3. Extend `BP_MeleeGrunt`'s `ItemDropPool` with these DataAssets so
+   drops feel varied.
+
+## 30. Crafting
+
+`USOMaterialData` (marker + `MaxStack`) + `USORecipeData`
+(Ingredients array + Result item + GoldCost).
+
+`USOInventoryComponent` counts materials in a
+`TMap<USOMaterialData*, int32>` respecting per-material `MaxStack`.
+`Craft(Recipe)` verifies via `CanCraft`, consumes ingredients + gold,
+and auto-equips the result via the equipment component when the
+result has an `EquipSlot`. `OnRecipeCrafted(Recipe, Result)` BP
+delegate for craft-bench animations.
+
+### Recipe recipe
+
+1. `DA_Mat_ShadowIron` (MaxStack 99).
+2. `DA_Recipe_ShadowBlade` — ingredients: `DA_Mat_ShadowIron × 3`,
+   gold 100, result: `DA_Wpn_ShadowBlade` (any weapon data asset).
+3. Hand your player some materials (BP call
+   `InventoryComponent->AddMaterial(DA_Mat_ShadowIron, 3)`), then
+   `InventoryComponent->Craft(DA_Recipe_ShadowBlade)` — the sword
+   equips itself immediately.
+
+## 31. Vendor NPC
+
+`ASOVendorNPC` is a cylinder actor with an interaction sphere. When
+the player enters `InteractionRadius` (default 220 cm), the HUD shows
+a yellow prompt `Vendor   [F] Buy Next   [G] Sell Weapon`.
+
+- **F** (Interact) — calls `TryBuyNext` on the nearest in-range
+  vendor; cycles through `Stock` from an internal cursor and buys the
+  next affordable row the player doesn't already own.
+- **G** (Sell) — calls `TrySellCurrentWeapon`; unequips the main-hand
+  weapon and pays out `SellbackFraction × ListedPrice`
+  (`SellbackFlatFallback` when the weapon isn't in the stock table).
+
+BP delegates: `OnPlayerEnteredRange`, `OnPlayerLeftRange`,
+`OnPurchase`, `OnSellback`.
+
+### Setup
+
+1. Drop `SOVendorNPC` in the arena.
+2. Fill `Stock` with `{Item = DA_Wpn_RustedSword, Price = 150}`,
+   `{Item = DA_Armor_LeatherChest, Price = 250}`,
+   `{Item = DA_Armor_RingOfPower, Price = 900}`.
+3. Play. Walk into range — the prompt appears. Press F to cycle
+   through purchases; G to dump your current weapon for coin.
+
+## 32. Minimap (radar)
+
+`ASOHUD` renders a top-right square minimap tracking everything of
+interest around the player:
+
+- Yellow center pip = player.
+- Red = enemies (bosses tinted orange).
+- Blue = vendors.
+- Green = orb pickups. Gold = item pickups.
+
+`MinimapWorldRange` (default 3500 cm) is the half-edge world width.
+All colors + sizes exposed under `SupremeOverlord|HUD|Minimap`.
+
+Dots outside the map rect are clipped so nothing smears across the
+screen. Actor queries use `UGameplayStatics::GetAllActorsOfClass` on
+render — for very large levels, replace with a spatially-partitioned
+lookup later.

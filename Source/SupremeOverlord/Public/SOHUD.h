@@ -197,6 +197,49 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Vendor")
 	FLinearColor VendorPromptColor = FLinearColor(0.95f, 0.9f, 0.55f, 1.0f);
 
+	/** Show a top-right radar minimap tracking enemies, orbs, and vendors around the player. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	bool bShowMinimap = true;
+
+	/** Pixel size of the square minimap rendered in the top-right. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FVector2D MinimapSize = FVector2D(180.0f, 180.0f);
+
+	/** Offset from the top-right corner (X = right margin, Y = top margin). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FVector2D MinimapOffset = FVector2D(24.0f, 60.0f);
+
+	/** How many cm of world one edge of the minimap covers. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap", meta = (ClampMin = "500.0", UIMin = "500.0", UIMax = "10000.0"))
+	float MinimapWorldRange = 3500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapBackgroundColor = FLinearColor(0.03f, 0.03f, 0.05f, 0.65f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapBorderColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.95f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapPlayerColor = FLinearColor(0.95f, 0.95f, 0.35f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapEnemyColor = FLinearColor(0.85f, 0.05f, 0.05f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapBossColor = FLinearColor(1.0f, 0.35f, 0.10f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapVendorColor = FLinearColor(0.35f, 0.75f, 1.0f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapOrbColor = FLinearColor(0.35f, 1.0f, 0.6f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap")
+	FLinearColor MinimapItemColor = FLinearColor(1.0f, 0.85f, 0.3f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap", meta = (ClampMin = "2.0", UIMin = "2.0", UIMax = "20.0"))
+	float MinimapDotSize = 5.0f;
+
 	/** Show "YOU DIED" overlay when the player's health component reports dead. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death")
 	bool bShowDeathOverlay = true;
@@ -234,4 +277,10 @@ private:
 	                   float CooldownTotal,
 	                   const FLinearColor& TileColor,
 	                   class UFont* SmallFont);
+
+	/** Renders one minimap dot at OriginPx (already screen-space), clipped to the map rect. */
+	void DrawMinimapDot(class UCanvas* InCanvas,
+	                    const FVector2D& MinimapOriginPx,
+	                    const FVector2D& OriginPx,
+	                    const FLinearColor& Color) const;
 };
