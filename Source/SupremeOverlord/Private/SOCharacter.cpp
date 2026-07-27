@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
 #include "SOEquipmentComponent.h"
+#include "SOInventoryComponent.h"
 #include "SOTalentComponent.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
@@ -48,6 +49,7 @@ ASOCharacter::ASOCharacter()
 	AttributesComponent = CreateDefaultSubobject<USOAttributesComponent>(TEXT("AttributesComponent"));
 	TalentComponent     = CreateDefaultSubobject<USOTalentComponent>(TEXT("TalentComponent"));
 	EquipmentComponent  = CreateDefaultSubobject<USOEquipmentComponent>(TEXT("EquipmentComponent"));
+	InventoryComponent  = CreateDefaultSubobject<USOInventoryComponent>(TEXT("InventoryComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
