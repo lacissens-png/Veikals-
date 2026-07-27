@@ -6,7 +6,9 @@
 
 class USOHealthComponent;
 class USODamageType;
+class USOItemData;
 class ASOPickupOrb;
+class ASOItemPickup;
 
 /** One row of an enemy's loot table. */
 USTRUCT(BlueprintType)
@@ -29,6 +31,21 @@ struct FSOLootDrop
 	/** Maximum number of orbs spawned if the roll succeeds. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Loot", meta = (ClampMin = "1", UIMin = "1"))
 	int32 MaxCount = 1;
+};
+
+/** One row of the enemy's item-drop pool. Weights drive the weighted-random pick. */
+USTRUCT(BlueprintType)
+struct FSOItemDrop
+{
+	GENERATED_BODY()
+
+	/** Item to drop. Usually a USOWeaponData asset. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemDrop")
+	TObjectPtr<USOItemData> Item;
+
+	/** Relative weight in the pool. 1 = baseline, 3 = 3x more likely than a weight-1 sibling. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemDrop", meta = (ClampMin = "0.01", UIMin = "0.01", UIMax = "10.0"))
+	float Weight = 1.0f;
 };
 
 UCLASS()
@@ -86,9 +103,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death", meta = (ClampMin = "0", UIMin = "0", UIMax = "10000"))
 	int32 XPReward = 25;
 
-	/** Loot rolled and spawned on death. Each row is an independent chance. */
+	/** Orb loot rolled and spawned on death. Each row is an independent chance. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot")
 	TArray<FSOLootDrop> LootTable;
+
+	/** Actor class used when this enemy drops an item. Typically a BP subclass of ASOItemPickup. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot|Items")
+	TSubclassOf<ASOItemPickup> ItemPickupClass;
+
+	/** Overall chance any item drops when this enemy dies (0..1). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot|Items", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float ItemDropChance = 0.15f;
+
+	/** Pool of items this enemy can roll for. Picked weighted-random when ItemDropChance triggers. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot|Items")
+	TArray<FSOItemDrop> ItemDropPool;
 
 	/** Horizontal spread (cm) each spawned orb is offset by from the corpse. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "500.0"))
@@ -113,4 +142,8 @@ public:
 	/** Rolls LootTable and spawns any resulting orbs around the corpse. Public so BP subclasses can chain into it. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Loot")
 	void DropLoot();
+
+	/** Rolls the item pool once and spawns an ItemPickupClass carrying the picked item if the roll succeeds. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Enemy|Loot|Items")
+	void RollItemDrop();
 };
