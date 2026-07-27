@@ -30,7 +30,7 @@ Katrs Paragon dēlis ir **21×21 režģis** ar ~80 mezgli, 1 leģendāro centrā
 | 1 | **Zvērests**         | Sākuma, klases identitāte   | Unikāls klasei  |
 | 2 | Karagājienis         | Ofensīvs                    | Kopīgs, variē   |
 | 3 | Tvirtīgums           | Defensīvs                   | Kopīgs, variē   |
-| 4 | Barvedis             | Minjonu bonusi              | Kopīgs, variē   |
+| 4 | Ģenerāļu Sardzes     | Ģenerāļu trio bonusi        | Kopīgs, variē   |
 | 5 | Nolādēts             | Riska/atlīdzības            | Kopīgs, variē   |
 | 6 | Trono Māksla         | Utility/cooldown            | Kopīgs, variē   |
 | 7 | **Melnais Kaisms**   | Endgame, klases-eksklīvs    | Unikāls klasei  |
@@ -73,9 +73,9 @@ Rūnu ligzdas: 2. Vārti: 4.
 
 | Klase           | Efekts                                                                     |
 |-----------------|----------------------------------------------------------------------------|
-| Pirmais Kungs   | +25% minjonu dmg + visu 4 tipu aurā bonuss vēl +15%                       |
-| Otrs Kungs      | +25% minjonu dmg + Sūkšņi + Zilspāri sinerģija vēl +20%                    |
-| Vecais Burvis   | +25% minjonu dmg + Zilspāri spell power vēl +50% (kopā ×4.5)               |
+| Pirmais Kungs   | +25% ģenerāļu dmg + trio (Rose/Kalts/Velvet) aura bonuss vēl +15%       |
+| Otrs Kungs      | +25% ģenerāļu dmg + Kaspars/Fay/Juno formation sinerģija vēl +20%          |
+| Vecais Burvis   | +25% ģenerāļu dmg + Torins/Sasla/Vera trio spell power vēl +50%            |
 
 Rūnu ligzdas: 2. Vārti: 4.
 

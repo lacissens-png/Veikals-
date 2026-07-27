@@ -1,8 +1,10 @@
 # Build Guide — Vecais Burvis
 
-*Torņa Zīmoglaukuma Mantinieks. Vecā Torņa valdnieks. Realitātes lauzējs.*
+*Torņa Zīmoglaukuma Mantinieks. Vecā Torņa valdnieks. Trio: Torins + Sasla + Vera.*
 
 **Iedvesma:** The Wizard (Overlord I torņa boss) — visstiprākais no 7 varoņiem, arch-mage, kritušais no lepnības.
+
+Ģenerāļu detaļas — skat. `Generals.md` §5.
 
 ---
 
@@ -10,12 +12,12 @@
 
 ### 1.1. Identitāte
 
-**Vecais Burvis ir tīrs distances arch-mage — glass cannon ar realitātes manipulāciju.**
+**Vecais Burvis ir tīrs distances arch-mage — glass cannon ar realitātes manipulāciju un arkānais trio.**
 
 - **Nekad neiet tuvcīņā** ja iespējams.
 - **Reality manipulation** — teleports, time slow, gravitācijas maiņa.
-- **Zilspāri** ap viņu iegūst triple spell power.
-- **Vienā teikumā:** *"Realitāte ir mans nastīgs materiāls. Es to lauzu ar smaidu."*
+- **Torins (spellblade), Sasla (frost mage), Vera (teleport support)** — arkānais chaos trio.
+- **Vienā teikumā:** *"Realitāte ir mans nastīgs materiāls. Mans trio to lauzu ar mani kopā."*
 
 ### 1.2. Bāzes stati (Level 1)
 
@@ -40,18 +42,17 @@
   - **80 pt** → **Realitātes Plaisa** (Q upgrade, 15m teleports + AoE 200% spell dmg).
   - **100 pt** → **Reality Rift** (100pt ult, 15s time slow apkārtējiem 50% + tavas prasmes 2× dmg un 2× ātrāk).
 
-### 1.4. Minjonu afinitāte — Zilspāri (kritiskā)
+### 1.4. Ģenerāļu trio
 
-- **Zilspāri** ap Vecu Burvi ~10m:
-  - **Spell power ×3** (unikāls Vecajam Burvim)
-  - **Cast speed +50%**
-  - **Var teleport uz tavas pozīcijas** kad tu izmanto Realitātes Plaisa
-  - **Ceļ zibens hits** no tavas nāves grupām
+Vecā Burvja ģenerāļi (skat. `Generals.md` §5):
 
-**Max minjoni:** 20 (zemākais starp klasēm — glass cannon fokuss, priekšroka jaudai vietā skaita).
-**Ideāls sadalījums:** 15× Zilspāri + 5× jebkurš cits.
+| Ģenerālis | Loma            | Bāzes efekts ap Vecu Burvi (aura, 8m)                     |
+|-----------|-----------------|-----------------------------------------------------------|
+| **Torins**| Spellblade Hybrid| Pēc viņa sitiena, tavs nākošais spell +50% dmg 5s        |
+| **Sasla** | Frost Mage      | Ienaidnieki 8m ap Saslu -20% MS + -10% dmg               |
+| **Vera**  | Teleport Support| Grupa (tu + 3 ģenerāļi) +15% dodge chance + 15% MS       |
 
-Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var izmantot.
+Trio kopīgais spēks: Torins ir melee bruiser priekšā, Sasla ir zone control lock, Vera ir mobility catalyst.
 
 ---
 
@@ -63,9 +64,10 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 - **Time Wave** (E, 8) — 20m sfērs, ienaidnieki -30% MS 4s + saņem 100% spell dmg
 - **Arkāns Karogs** (R, 12) — 10s pasīvs, tavas prasmes +25% dmg
 - **Arkāns Sirds** (pasīvs, 5) — Arkānā Enerģija uzkrāj +25%
-- **Torņa Māte** (pasīvs, 10) — max Zilspāri +3 (kopā 8 baseline)
+- **Torņa Māte** (pasīvs, 10) — Vera Realitātes Plaisa cooldown -20% (ģenerāļa buff)
 
 ### Slānis 2 (level 20–40) — Specializācija
+
 **Reality Rift zars:**
 - **Plaisas Māc** — pasīvs, Realitātes Plaisa cooldown -30%
 - **Divi Plaisi** — pasīvs, Realitātes Plaisa 2 charges
@@ -81,9 +83,14 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 - **Time Sirds** — pasīvs, Reality Rift ilgums +5s (kopā 20s)
 - **Time Karogs** — pasīvs, Reality Rift laikā tavi hiti auto-freeze mērķi 1s
 
+**Trio zars:**
+- **Torins Karogs** — pasīvs, Torins Arkānais Sitiens +50% spell dmg proc
+- **Sasla Karogs** — pasīvs, Sasala Torņa dubultā ilgums (30s)
+- **Vera Karogs** — pasīvs, Vera Realitātes Plaisa 2 charges
+
 ### Slānis 3 (level 40–60) — Meistrības
 - **Realitātes Ass** — pasīvs, tavi spell kritiski 3× dmg (nevis 2×)
-- **Torņa Kronis** — pasīvs, Zilspāri afinitāte +50% (spell power ×4.5)
+- **Torņa Kronis** — pasīvs, kad Torins + Sasla + Vera visi aktīvi, tu +25% dmg
 - **Vecākais Māc** — pasīvs, kad Arkānā Enerģija max, tavas prasmes bezmaksas 5s
 
 ### Slānis 4 (level 60–80) — Keystone (1 no 3)
@@ -91,7 +98,7 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 | Keystone            | Efekts                                                                                              |
 |---------------------|-----------------------------------------------------------------------------------------------------|
 | **Realitātes Karaļvalsts** | Reality Rift pastāvīgi aktīvs (Ark. Enerģija patēriņš 3/sec), time slow 80%                 |
-| **Arkānā Sinerģija** | Zilspāri spell power ×5 (nevis ×3), bet max Zilspāri -5 (kopā 10)                              |
+| **Arkānā Sinerģija** | Sasla + Vera signāles prasmes cooldown -50%, bet Torins deactivated                            |
 | **Torņa Ass**       | Katrs spell cast dubultā (viens skill = 2 cast automātiski), bet Arkānā Enerģija patēriņš 2×      |
 
 ---
@@ -100,7 +107,7 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 
 ### 3.1. Build A — *Realitātes Karaļvalsts* (Permanent Time Slow God)
 
-> Tu vienmēr esi maģiskā laika kluslumā. Ienaidnieki lēni, tu triple dmg. Šis ir top-tier build.
+> Tu vienmēr esi maģiskā laika kluslumā. Ienaidnieki lēni, tu triple dmg. Trio buff visu.
 
 **Keystone:** *Realitātes Karaļvalsts*.
 
@@ -122,54 +129,55 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 - **Melnais Kronis** (2. Uber slots) — prasmes +2
 
 **Cīņas plūsma:**
-1. Aktivē Reality Rift → pastāvīgi 80% slow visiem
-2. Arkānā Lauska LMB spam — visi hiti crit + freeze
-3. Realitātes Plaisa teleports uz nākošo grupu
-4. Zilspāri triple spell power apkārt, chain lightning
-5. Cikls nekad neizzūd (crit → Arkānā Enerģija → sustain)
+1. Grupā 3 ģenerāļi (Sasla 15m turret vieta, Vera aizmugurē, Torins flanks).
+2. Aktivē Reality Rift → pastāvīgi 80% slow visiem.
+3. Arkānā Lauska LMB spam — visi hiti crit + freeze.
+4. Realitātes Plaisa teleports uz nākošo grupu.
+5. Vera Bond 10 procs auto-repeat Realitātes Plaisa.
+6. Cikls nekad neizzūd (crit → Arkānā Enerģija → sustain).
 
 **Best against:** garas boss cīņas, Uber Bosi, single-target.
 **Vājākais pret:** situācijas ar zemu crit chance (Ark. Enerģija sāk nolikties).
 
 ---
 
-### 3.2. Build B — *Arkānā Sinerģija* (Zilspāri Storm)
+### 3.2. Build B — *Arkānā Sinerģija* (Sasla + Vera Storm)
 
-> 10 super-spēcīgi Zilspāri = 50 regular Zilspāri jaudā. Chain lightning caur visu grupu.
+> Torins vienmēr aizmugurē, Sasla + Vera ir čempioni. Ice turrets + teleport chaos.
 
 **Keystone:** *Arkānā Sinerģija*.
 
 **Setu bonusi:**
-- **2 daļas:** Zilspāri spell power vēl +50% (kopā ×7.5)
-- **4 daļas:** Zilspāri ap tevi šauj chain lightning 3× per hit
-- **6 daļas:** Kad Zilspāris mirst, tavs Ark. Enerģija +25 uzreiz
+- **2 daļas:** Sasala Torņa signāles prasmes cooldown -50% (22.5s vietā 45s)
+- **4 daļas:** Sasla 3 ledus torņi vienlaikus max
+- **6 daļas:** Kad Sasla ledus torni ievieto, tavs Ark. Enerģija +25 uzreiz
 
 **Prioritie stati:**
-- Minjonu Spell Power > Minion Damage > CDR > Lightning Damage
+- Spell Damage > Frost Dmg > Ģenerāļu Bojājums > CDR
 
 **Signāles Aspekti:**
-- *Torņa Sirds* — Zilspāri spell power ×2 papildu
-- *Arkānā Māte* — Zilspāri cast speed +50%
-- *Sinerģija Kronis* — Kad tu izmanto spell, Zilspāri automātiski atkārto to (mini-versija)
+- *Sasala Sirds* — Sasala Torņa dmg +50%
+- *Vera Blink Karogs* — Vera teleport party freq -30%
+- *Sinerģija Kronis* — Kad Sasla + Vera aktīvi, tu +30% spell dmg
 
 **Ideālais Uber Mistiskais:**
-- **Melnais Kronis** — spells +2, Zilspāri vēl stiprāki
+- **Melnais Kronis** — spells +2, Sasla + Vera skills stronger
 
 **Cīņas plūsma:**
-1. Grupā 10 Zilspāri (max ar keystone)
-2. Tu Arkānā Lauska - Zilspāri atkārto (setu 6-piece? Aspects)
-3. Chain lightning caur visu grupu
-4. Ienaidnieki mirst — Zilspāri triple mirst — Ark. Enerģija spike
-5. Reality Rift burst window
+1. Grupā Sasla (turret vieta) + Vera (aizmugurē).
+2. Tu Arkānā Lauska - 3× Sasala Torņa spam par 22.5s cooldown.
+3. Chain freeze caur visu grupu.
+4. Ienaidnieki mirst — trio triple mirst — Ark. Enerģija spike.
+5. Reality Rift burst window.
 
 **Best against:** mob density, dungeon runs.
-**Vājākais pret:** vietas kur Zilspāri nevar peldēt (šauri koridori).
+**Vājākais pret:** vietas kur turret nav laika ievietoties (fast-moving bosi).
 
 ---
 
 ### 3.3. Build C — *Torņa Ass* (Double Cast God)
 
-> Katrs tavs spell iet 2×. Katras 4 sekundes izsauc pilnu apocalypse.
+> Katrs tavs spell iet 2×. Katras 4 sekundes izsauc pilnu apocalypse. Trio kordinē.
 
 **Keystone:** *Torņa Ass*.
 
@@ -190,11 +198,12 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 - **Nolādētais Asinsakmens** — dubultkritis (2× crit no jau 2× cast = 4× dmg efektīvs)
 
 **Cīņas plūsma:**
-1. Uzkrāj Ark. Enerģija pirmās 20s (LMB spam)
-2. Arkāns Zvans → tavas nākošās 3 prasmes dubultā dmg
-3. Realitātes Plaisa 2 charges → 4 hits ar Torņa Ass double cast
-4. Time Wave → 2 casts caur grupu
-5. Bosos: Reality Rift ult par lielo burst
+1. Uzkrāj Ark. Enerģija pirmās 20s (LMB spam).
+2. Torins pēkšņi teleports melee - Arkānais Sitiens buff tavai spell.
+3. Arkāns Zvans → tavas nākošās 3 prasmes dubultā dmg.
+4. Realitātes Plaisa 2 charges → 4 hits ar Torņa Ass double cast.
+5. Vera auto-triger Realitātes Plaisa reset ar Bond 10.
+6. Reality Rift ult par lielo burst.
 
 **Best against:** boss burst races, spike windows.
 **Vājākais pret:** sustain cīņas ar zemu Ark. Enerģija regen.
@@ -205,14 +214,14 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 
 | Levels | Reģions            | Fokuss                                                                 |
 |--------|--------------------|------------------------------------------------------------------------|
-| 1–8    | Vecais Tornis      | Arkānā Lauska, Realitātes Plaisa, pirmie Sūkšņi                        |
-| 8–15   | Vecais Tornis dziļāk | Time Wave, first boss (Selriss)                                     |
-| 15–25  | 2. reģions         | Zilspāri unlock (kritiskā Vecajam Burvim)                             |
-| 25–35  | 3. reģions         | Arkāns Karogs, slāņa 2 specializācija                                 |
+| 1–8    | Vecais Tornis      | Arkānā Lauska, Realitātes Plaisa, Torins atslēdz                       |
+| 8–15   | Vecais Tornis dziļāk | Time Wave, Sasla atslēdz, first boss (Selriss)                      |
+| 15–25  | 2. reģions         | Vera atslēdz (visi 3 ģenerāļi complete)                                |
+| 25–35  | 3. reģions         | Arkāns Karogs, slāņa 2 specializācija                                  |
 | 35–50  | Melnais Kalns      | Slāņa 3 pasīvās; pirmie Reliktu                                        |
-| 50–65  | Endgame priekšskaitis | Paragon 50                                                          |
-| 65–75  | Reģions grinds     | Setu 4-piece                                                           |
-| 75–80  | Fināls             | Uber chase                                                             |
+| 50–65  | Endgame priekšskaitis | Paragon 50; Bond 3-5                                                |
+| 65–75  | Reģions grinds     | Setu 4-piece; Bond 5-7                                                 |
+| 75–80  | Fināls             | Uber chase; Bond 7-9                                                    |
 
 ---
 
@@ -228,15 +237,15 @@ Pārējie tipi (Sūkšņi, Sārtaji, Zaļči) nav afinitātes, bet tos vēl var 
 
 Rūnas: *Nolādētais Sirdsdedzis* (dubultē visu, cena piedodāma), *Slēgtais Vārds* (Prāts slieksnis)
 
-### 5.2. Build B (Zilspāri Storm)
+### 5.2. Build B (Sasla + Vera Storm)
 
 1. **Zvērests**
-2. **Barvedis** (0°) — Zilspāri kritiskā
-3. **Barvedis 2** (90°) vai **Karagājienis**
+2. **Ģenerāļu Sardzes** (0°) — trio bonusi (Sasla + Vera focus)
+3. **Karagājienis** (90°) — spell dmg
 4. **Trono Māksla** (270°)
 5. **Melnais Kaisms**
 
-Rūnas: *Asinssaite* (Barveža bonusi), *Zibens Solis* (chain lightning)
+Rūnas: *Asinssaite* (Ģenerāļu bonusi), *Sasala Zīme*
 
 ### 5.3. Build C (Double Cast)
 
@@ -256,18 +265,21 @@ Rūnas: *Vainaga Māc* (ult uptime), *Zvana Skaņa* (crit)
 - **Ierocis:** Sena wand ar Spell Dmg + Crit Dmg Reizinātājs
 - **Ķivere:** **Melnais Kronis**
 - **Ēnu slot:** **Nolādētais Asinsakmens**
+- **Vera gear:** Realitātes Vaids Uber (teleport spam)
 - **Gemi:** Ametists (weapons), Topāzs (jewellery), Dimants (armor)
 
-### Build B (Zilspāri Storm)
-- **Ierocis:** Sena wand ar Minion Spell Power + AS
+### Build B (Sasla + Vera Storm)
+- **Ierocis:** Sena wand ar Frost Dmg + Ģenerāļu Bojājums Reizinātājs
 - **Ķivere:** Setu daļa
-- **Amulets:** Minion Damage Reizinātājs GA
-- **Gemi:** Topāzs (weapons), Safīrs (jewellery), Rubīns (armor)
+- **Sasla gear:** Ledus Kroņis Uber (3 torņi max)
+- **Vera gear:** Realitātes Vaids Uber
+- **Gemi:** Safīrs (weapons), Safīrs (jewellery), Dimants (armor)
 
 ### Build C (Double Cast)
 - **Ierocis:** Sena wand ar Cast Speed + Crit Dmg
 - **Ķivere:** Setu daļa
 - **Ēnu slot:** **Nolādētais Asinsakmens**
+- **Torins gear:** Arkānais Glaive Uber (spell buff sync)
 - **Gemi:** Ametists (weapons), Topāzs (jewellery), Dimants (armor)
 
 ---
@@ -277,8 +289,9 @@ Rūnas: *Vainaga Māc* (ult uptime), *Zvana Skaņa* (crit)
 1. Paragon 80 → 200
 2. Setu 6 daļas — Selriss boss farm
 3. Rūnu upgrade
-4. Uber chase — Melnais Kronis + Nolādētais Asinsakmens
-5. Paragon 200 → 350
+4. Ģenerāļu Bond farmings — visi 3 uz Bond 10
+5. Ģenerāļu Uber Mistiskie chase (Arkānais Glaive + Ledus Kroņis + Realitātes Vaids)
+6. Paragon 200 → 350
 
 ---
 
@@ -287,7 +300,7 @@ Rūnas: *Vainaga Māc* (ult uptime), *Zvana Skaņa* (crit)
 | Ja tev patīk...                              | Izvēlies                       |
 |----------------------------------------------|--------------------------------|
 | Time slow, mūžīga jauda, single-target       | **A — Realitātes Karaļvalsts** |
-| Minjonu armija ar spells                     | **B — Zilspāri Storm**         |
+| Ice turrets + teleport chaos                 | **B — Sasla + Vera Storm**     |
 | Combo, double-cast, spike burst              | **C — Double Cast**            |
 | Vieglākais start                             | **B**                          |
 | Sarežģītākais bet visspēcīgākais            | **A**                          |
