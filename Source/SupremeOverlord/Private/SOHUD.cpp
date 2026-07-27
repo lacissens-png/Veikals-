@@ -6,6 +6,7 @@
 #include "Engine/Font.h"
 #include "GameFramework/PlayerController.h"
 #include "SOCharacter.h"
+#include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
 #include "SOWeaponData.h"
@@ -178,6 +179,56 @@ void ASOHUD::DrawHUD()
 		GoldItem.Scale = FVector2D(GoldCounterScale, GoldCounterScale);
 		GoldItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(GoldItem);
+	}
+
+	// -- XP bar (bottom-center) + level number -------------------------------
+	if (bShowXPBar)
+	{
+		USOExperienceComponent* XP = SO->ExperienceComponent;
+		if (XP)
+		{
+			const float XPPct = FMath::Clamp(XP->GetLevelProgressPercent(), 0.0f, 1.0f);
+
+			const float XPBarX = (ScreenW - XPBarSize.X) * 0.5f;
+			const float XPBarY = ScreenH - XPBarSize.Y - XPBarBottomOffset;
+
+			{
+				FCanvasTileItem XPBorder(FVector2D(XPBarX - Border, XPBarY - Border),
+				                         FVector2D(XPBarSize.X + Border * 2.0f, XPBarSize.Y + Border * 2.0f),
+				                         HealthBarBorderColor);
+				XPBorder.BlendMode = SE_BLEND_Translucent;
+				Canvas->DrawItem(XPBorder);
+			}
+			{
+				FCanvasTileItem XPBG(FVector2D(XPBarX, XPBarY), XPBarSize, XPBarBackgroundColor);
+				XPBG.BlendMode = SE_BLEND_Translucent;
+				Canvas->DrawItem(XPBG);
+			}
+			if (XPPct > 0.0f)
+			{
+				FCanvasTileItem XPFill(FVector2D(XPBarX, XPBarY),
+				                       FVector2D(XPBarSize.X * XPPct, XPBarSize.Y),
+				                       XPBarFillColor);
+				XPFill.BlendMode = SE_BLEND_Translucent;
+				Canvas->DrawItem(XPFill);
+			}
+
+			if (MediumFont)
+			{
+				const FString LvlText = FString::Printf(TEXT("Lv %d"), XP->GetCurrentLevel());
+				float TextW = 0.0f;
+				float TextH = 0.0f;
+				Canvas->TextSize(MediumFont, LvlText, TextW, TextH, XPLabelScale, XPLabelScale);
+
+				FCanvasTextItem LvlItem(FVector2D(ScreenW * 0.5f - TextW * 0.5f, XPBarY - TextH - 4.0f),
+				                        FText::FromString(LvlText),
+				                        MediumFont,
+				                        XPTextColor);
+				LvlItem.Scale = FVector2D(XPLabelScale, XPLabelScale);
+				LvlItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(LvlItem);
+			}
+		}
 	}
 
 	// -- Death overlay --------------------------------------------------------

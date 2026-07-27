@@ -5,8 +5,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "Kismet/GameplayStatics.h"
+#include "SOCharacter.h"
 #include "SODamageType.h"
 #include "SOEnemyAIController.h"
+#include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
 #include "SOPickupOrb.h"
 
@@ -80,12 +82,24 @@ bool ASOEnemyCharacter::PerformAttack(AActor* Target)
 	return Applied > 0.0f;
 }
 
-void ASOEnemyCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AController* /*InstigatedBy*/, AActor* /*DamageCauser*/)
+void ASOEnemyCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AController* InstigatedBy, AActor* /*DamageCauser*/)
 {
 	if (AController* MyController = GetController())
 	{
 		MyController->StopMovement();
 		MyController->UnPossess();
+	}
+
+	// Award XP to the killer's SOCharacter if they have an XP component.
+	if (XPReward > 0 && InstigatedBy)
+	{
+		if (ASOCharacter* Killer = Cast<ASOCharacter>(InstigatedBy->GetPawn()))
+		{
+			if (USOExperienceComponent* XP = Killer->FindComponentByClass<USOExperienceComponent>())
+			{
+				XP->GainXP(XPReward);
+			}
+		}
 	}
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())

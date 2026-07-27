@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SODamageType.h"
+#include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
 #include "SOShadowBoltProjectile.h"
@@ -37,8 +38,9 @@ ASOCharacter::ASOCharacter()
 	TopDownCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCamera->bUsePawnControlRotation = false;
 
-	HealthComponent = CreateDefaultSubobject<USOHealthComponent>(TEXT("HealthComponent"));
-	ManaComponent   = CreateDefaultSubobject<USOManaComponent>(TEXT("ManaComponent"));
+	HealthComponent     = CreateDefaultSubobject<USOHealthComponent>(TEXT("HealthComponent"));
+	ManaComponent       = CreateDefaultSubobject<USOManaComponent>(TEXT("ManaComponent"));
+	ExperienceComponent = CreateDefaultSubobject<USOExperienceComponent>(TEXT("ExperienceComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -66,6 +68,11 @@ void ASOCharacter::BeginPlay()
 	if (HealthComponent)
 	{
 		HealthComponent->OnDeath.AddDynamic(this, &ASOCharacter::HandleDeath);
+	}
+
+	if (ExperienceComponent)
+	{
+		ExperienceComponent->OnLevelUp.AddDynamic(this, &ASOCharacter::HandleLevelUp);
 	}
 
 	Gold = FMath::Max(0, StartingGold);
@@ -132,6 +139,34 @@ void ASOCharacter::AddGold(int32 Amount)
 void ASOCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AController* InstigatedBy, AActor* DamageCauser)
 {
 	OnCharacterDied(InstigatedBy, DamageCauser);
+}
+
+void ASOCharacter::HandleLevelUp(USOExperienceComponent* /*OwningComponent*/, int32 NewLevel, int32 PreviousLevel)
+{
+	const int32 LevelsGained = FMath::Max(0, NewLevel - PreviousLevel);
+	if (LevelsGained == 0)
+	{
+		return;
+	}
+
+	// Bump stats and top the player off - level ups feel meaningful because
+	// the pool grows *and* refills.
+	if (HealthComponent && MaxHealthPerLevel > 0.0f)
+	{
+		HealthComponent->MaxHealth += MaxHealthPerLevel * LevelsGained;
+		HealthComponent->Revive(HealthComponent->MaxHealth);
+	}
+
+	if (ManaComponent && MaxManaPerLevel > 0.0f)
+	{
+		ManaComponent->MaxMana += MaxManaPerLevel * LevelsGained;
+		ManaComponent->RefillToMax();
+	}
+
+	PrimaryAttackDamage  += PrimaryDamagePerLevel   * LevelsGained;
+	ShadowBoltBaseDamage += ShadowBoltDamagePerLevel * LevelsGained;
+
+	OnLevelUpReached(NewLevel);
 }
 
 bool ASOCharacter::IsAlive() const

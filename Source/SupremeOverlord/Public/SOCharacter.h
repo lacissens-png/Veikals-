@@ -8,6 +8,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class USOHealthComponent;
 class USOManaComponent;
+class USOExperienceComponent;
 class USODamageType;
 class USOWeaponData;
 class ASOShadowBoltProjectile;
@@ -31,6 +32,10 @@ protected:
 	UFUNCTION()
 	void HandleDeath(USOHealthComponent* OwningComponent, AController* InstigatedBy, AActor* DamageCauser);
 
+	/** Bound to ExperienceComponent->OnLevelUp — applies per-level stat bumps. */
+	UFUNCTION()
+	void HandleLevelUp(USOExperienceComponent* OwningComponent, int32 NewLevel, int32 PreviousLevel);
+
 public:
 	/** Fixed isometric spring arm - not driven by pawn rotation. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Camera")
@@ -47,6 +52,10 @@ public:
 	/** Regenerating mana pool consumed by spells (Shadow Bolt, etc.). */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Mana")
 	TObjectPtr<USOManaComponent> ManaComponent;
+
+	/** XP / level tracking. Enemies grant XP on death. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|XP")
+	TObjectPtr<USOExperienceComponent> ExperienceComponent;
 
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
@@ -240,6 +249,26 @@ public:
 	/** Configured on the character; the projectile's Damage picks this up when it spawns. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "1000.0"))
 	float ShadowBoltBaseDamage = 40.0f;
+
+	// -----------------------------------------------------------------------
+	// Per-level stat bumps applied inside HandleLevelUp.
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Leveling", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "200.0"))
+	float MaxHealthPerLevel = 15.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Leveling", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "200.0"))
+	float MaxManaPerLevel = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Leveling", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "50.0"))
+	float PrimaryDamagePerLevel = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Leveling", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "50.0"))
+	float ShadowBoltDamagePerLevel = 3.0f;
+
+	/** BP hook so subclasses / designers can react to level-ups with VFX/SFX. */
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Leveling")
+	void OnLevelUpReached(int32 NewLevel);
 
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;

@@ -65,6 +65,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
 	float ManaTextScale = 1.0f;
 
+	/** Show the XP bar and level number at the bottom-center of the screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP")
+	bool bShowXPBar = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP")
+	FVector2D XPBarSize = FVector2D(520.0f, 10.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "200.0"))
+	float XPBarBottomOffset = 24.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP")
+	FLinearColor XPBarBackgroundColor = FLinearColor(0.02f, 0.02f, 0.02f, 0.85f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP")
+	FLinearColor XPBarFillColor = FLinearColor(0.95f, 0.80f, 0.20f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP")
+	FLinearColor XPTextColor = FLinearColor::White;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|XP", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float XPLabelScale = 1.1f;
+
 	/** Show the equipped weapon name in the bottom-right of the screen. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Weapon")
 	bool bShowWeaponLabel = true;

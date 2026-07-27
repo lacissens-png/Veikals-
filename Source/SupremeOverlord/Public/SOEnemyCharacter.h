@@ -82,6 +82,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "60.0"))
 	float CorpseLifetime = 5.0f;
 
+	/** XP granted to the killer's ASOCharacter on death. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death", meta = (ClampMin = "0", UIMin = "0", UIMax = "10000"))
+	int32 XPReward = 25;
+
 	/** Loot rolled and spawned on death. Each row is an independent chance. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot")
 	TArray<FSOLootDrop> LootTable;
