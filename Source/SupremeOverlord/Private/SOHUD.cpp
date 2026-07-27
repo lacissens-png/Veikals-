@@ -8,6 +8,7 @@
 #include "SOCharacter.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
+#include "SOWeaponData.h"
 
 ASOHUD::ASOHUD()
 {
@@ -135,6 +136,30 @@ void ASOHUD::DrawHUD()
 			ManaItem.EnableShadow(FLinearColor::Black);
 			Canvas->DrawItem(ManaItem);
 		}
+	}
+
+	// -- Weapon label (bottom-right, colored by rarity) -----------------------
+	if (bShowWeaponLabel && MediumFont)
+	{
+		USOWeaponData* Weapon = SO->GetEquippedWeapon();
+
+		const FString WeaponText = Weapon
+			? FString::Printf(TEXT("%s"), *Weapon->DisplayName.ToString())
+			: FString(TEXT("Unarmed"));
+
+		const FLinearColor LabelColor = Weapon ? Weapon->GetRarityColor() : FLinearColor(0.6f, 0.6f, 0.6f, 1.0f);
+
+		float TextW = 0.0f;
+		float TextH = 0.0f;
+		Canvas->TextSize(MediumFont, WeaponText, TextW, TextH, WeaponLabelScale, WeaponLabelScale);
+
+		FCanvasTextItem WeaponItem(FVector2D(ScreenW - TextW - WeaponLabelOffset.X, ScreenH - TextH - WeaponLabelOffset.Y),
+		                           FText::FromString(WeaponText),
+		                           MediumFont,
+		                           LabelColor);
+		WeaponItem.Scale = FVector2D(WeaponLabelScale, WeaponLabelScale);
+		WeaponItem.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(WeaponItem);
 	}
 
 	// -- Gold counter (top-right) --------------------------------------------

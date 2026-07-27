@@ -9,9 +9,11 @@ class UCameraComponent;
 class USOHealthComponent;
 class USOManaComponent;
 class USODamageType;
+class USOWeaponData;
 class ASOShadowBoltProjectile;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSOOnGoldChanged, int32, OldGold, int32, NewGold, int32, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSOOnGoldChanged,     int32, OldGold, int32, NewGold, int32, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams  (FSOOnWeaponChanged,   USOWeaponData*, OldWeapon, USOWeaponData*, NewWeapon);
 
 UCLASS()
 class SUPREMEOVERLORD_API ASOCharacter : public ACharacter
@@ -198,6 +200,46 @@ public:
 	/** Starting gold. Applied on BeginPlay. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Currency", meta = (ClampMin = "0", UIMin = "0"))
 	int32 StartingGold = 0;
+
+	// -----------------------------------------------------------------------
+	// Equipment — single main-hand weapon slot for now.
+	// -----------------------------------------------------------------------
+
+	/** Weapon equipped at spawn. Assign a USOWeaponData asset (or a BP subclass). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Equipment")
+	TObjectPtr<USOWeaponData> StartingWeapon;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "SupremeOverlord|Equipment", Transient)
+	TObjectPtr<USOWeaponData> EquippedWeapon;
+
+	UPROPERTY(BlueprintAssignable, Category = "SupremeOverlord|Equipment")
+	FSOOnWeaponChanged OnWeaponChanged;
+
+	/** Equips NewWeapon (may be null to clear the slot). Broadcasts OnWeaponChanged. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Equipment")
+	void EquipWeapon(USOWeaponData* NewWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Equipment")
+	void UnequipWeapon();
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Equipment")
+	USOWeaponData* GetEquippedWeapon() const { return EquippedWeapon; }
+
+	/** Base primary damage + any equipped-weapon bonus. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Primary")
+	float GetEffectivePrimaryAttackDamage() const;
+
+	/** Base primary cooldown * equipped-weapon multiplier. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Primary")
+	float GetEffectivePrimaryAttackCooldown() const;
+
+	/** Base ShadowBolt damage + any equipped-weapon bonus, forwarded to the spawned projectile. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|ShadowBolt")
+	float GetEffectiveShadowBoltDamage() const;
+
+	/** Configured on the character; the projectile's Damage picks this up when it spawns. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "1000.0"))
+	float ShadowBoltBaseDamage = 40.0f;
 
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;

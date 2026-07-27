@@ -12,6 +12,7 @@
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
 #include "SOShadowBoltProjectile.h"
+#include "SOWeaponData.h"
 #include "TimerManager.h"
 
 ASOCharacter::ASOCharacter()
@@ -72,6 +73,44 @@ void ASOCharacter::BeginPlay()
 	{
 		OnGoldChanged.Broadcast(0, Gold, Gold);
 	}
+
+	if (StartingWeapon)
+	{
+		EquipWeapon(StartingWeapon);
+	}
+}
+
+void ASOCharacter::EquipWeapon(USOWeaponData* NewWeapon)
+{
+	if (EquippedWeapon == NewWeapon)
+	{
+		return;
+	}
+
+	USOWeaponData* OldWeapon = EquippedWeapon;
+	EquippedWeapon = NewWeapon;
+	OnWeaponChanged.Broadcast(OldWeapon, EquippedWeapon);
+}
+
+void ASOCharacter::UnequipWeapon()
+{
+	EquipWeapon(nullptr);
+}
+
+float ASOCharacter::GetEffectivePrimaryAttackDamage() const
+{
+	return PrimaryAttackDamage + (EquippedWeapon ? EquippedWeapon->PrimaryDamageBonus : 0.0f);
+}
+
+float ASOCharacter::GetEffectivePrimaryAttackCooldown() const
+{
+	const float Mult = EquippedWeapon ? FMath::Max(0.05f, EquippedWeapon->PrimaryAttackCooldownMultiplier) : 1.0f;
+	return PrimaryAttackCooldown * Mult;
+}
+
+float ASOCharacter::GetEffectiveShadowBoltDamage() const
+{
+	return ShadowBoltBaseDamage + (EquippedWeapon ? EquippedWeapon->ShadowBoltDamageBonus : 0.0f);
 }
 
 void ASOCharacter::AddGold(int32 Amount)
@@ -216,7 +255,7 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 		}
 		UniqueHitActors.Add(HitActor);
 
-		UGameplayStatics::ApplyDamage(HitActor, PrimaryAttackDamage, InstigatorController, this, DTClass);
+		UGameplayStatics::ApplyDamage(HitActor, GetEffectivePrimaryAttackDamage(), InstigatorController, this, DTClass);
 	}
 
 	OnPrimaryAttackPerformed(AttackCenter, UniqueHitActors);
@@ -231,7 +270,7 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 	World->GetTimerManager().SetTimer(
 		PrimaryAttackCooldownHandle,
 		FTimerDelegate::CreateLambda([this]() { bPrimaryAttackOnCooldown = false; }),
-		PrimaryAttackCooldown,
+		GetEffectivePrimaryAttackCooldown(),
 		false);
 }
 
@@ -298,6 +337,10 @@ void ASOCharacter::CastShadowBolt(FVector TargetLocation)
 	{
 		return;
 	}
+
+	// Push the character's effective spell damage onto the projectile so it
+	// scales with equipped weapons without touching the projectile BP.
+	Bolt->Damage = GetEffectiveShadowBoltDamage();
 
 	OnShadowBoltCast(Muzzle, AimDirection, Bolt);
 

@@ -65,6 +65,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|ManaBar", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
 	float ManaTextScale = 1.0f;
 
+	/** Show the equipped weapon name in the bottom-right of the screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Weapon")
+	bool bShowWeaponLabel = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Weapon")
+	FVector2D WeaponLabelOffset = FVector2D(24.0f, 32.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Weapon", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float WeaponLabelScale = 1.1f;
+
 	/** Show a gold counter in the top-right of the screen. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Gold")
 	bool bShowGoldCounter = true;
