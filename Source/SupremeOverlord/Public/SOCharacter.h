@@ -67,6 +67,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Talents")
 	TObjectPtr<USOTalentComponent> TalentComponent;
 
+	/** Multi-slot equipment — weapons, armor, jewelry. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Equipment")
+	TObjectPtr<class USOEquipmentComponent> EquipmentComponent;
+
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
 	float CameraDistance = 1200.0f;

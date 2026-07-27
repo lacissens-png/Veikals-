@@ -2,4 +2,5 @@
 
 USOWeaponData::USOWeaponData()
 {
+	EquipSlot = ESOEquipSlot::MainHand;
 }

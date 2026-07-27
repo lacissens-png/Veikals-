@@ -19,6 +19,22 @@ enum class ESOItemRarity : uint8
 	Set        UMETA(DisplayName = "Set")
 };
 
+/** Equipment slot an item occupies. `None` = not equippable (materials, quest items, etc.). */
+UENUM(BlueprintType)
+enum class ESOEquipSlot : uint8
+{
+	None      UMETA(DisplayName = "None"),
+	MainHand  UMETA(DisplayName = "Main Hand"),
+	OffHand   UMETA(DisplayName = "Off Hand"),
+	Head      UMETA(DisplayName = "Head"),
+	Chest     UMETA(DisplayName = "Chest"),
+	Legs      UMETA(DisplayName = "Legs"),
+	Boots     UMETA(DisplayName = "Boots"),
+	Amulet    UMETA(DisplayName = "Amulet"),
+	Ring1     UMETA(DisplayName = "Ring 1"),
+	Ring2     UMETA(DisplayName = "Ring 2")
+};
+
 /**
  * Base data asset for every item in Supreme Overlord.
  * PrimaryDataAsset so it participates in the asset registry — useful
@@ -44,6 +60,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Meta")
 	ESOItemRarity Rarity = ESOItemRarity::Common;
+
+	/** Slot this item equips into. `None` = not equippable. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Meta")
+	ESOEquipSlot EquipSlot = ESOEquipSlot::None;
 
 	/** Convenience — color hint for tooltips / labels based on Rarity. */
 	UFUNCTION(BlueprintPure, Category = "Item|Presentation")

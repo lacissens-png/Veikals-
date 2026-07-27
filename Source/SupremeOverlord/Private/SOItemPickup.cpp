@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "SOCharacter.h"
+#include "SOEquipmentComponent.h"
 #include "SOItemData.h"
 #include "SOWeaponData.h"
 #include "UObject/ConstructorHelpers.h"
@@ -140,13 +141,23 @@ bool ASOItemPickup::ApplyToCharacter(ASOCharacter* Picker)
 		return false;
 	}
 
-	// Weapon → auto-equip the main-hand slot. Other item types are just consumed for now.
-	if (USOWeaponData* Weapon = Cast<USOWeaponData>(CarriedItem))
+	// Route every equippable item through the equipment component; it in
+	// turn calls back into EquipWeapon for MainHand so existing damage code
+	// keeps scaling correctly.
+	if (CarriedItem->EquipSlot != ESOEquipSlot::None)
 	{
-		Picker->EquipWeapon(Weapon);
-		return true;
+		if (USOEquipmentComponent* Eq = Picker->EquipmentComponent)
+		{
+			return Eq->Equip(CarriedItem);
+		}
+		// Fallback: legacy path for weapons only.
+		if (USOWeaponData* Weapon = Cast<USOWeaponData>(CarriedItem))
+		{
+			Picker->EquipWeapon(Weapon);
+			return true;
+		}
 	}
 
-	// Unknown item type — leave it in the world so future systems can pick it up.
+	// Non-equippable item — leave it in the world so an inventory system can grab it later.
 	return false;
 }

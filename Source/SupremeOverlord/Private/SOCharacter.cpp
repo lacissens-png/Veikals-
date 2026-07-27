@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
+#include "SOEquipmentComponent.h"
 #include "SOTalentComponent.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
@@ -46,6 +47,7 @@ ASOCharacter::ASOCharacter()
 	ExperienceComponent = CreateDefaultSubobject<USOExperienceComponent>(TEXT("ExperienceComponent"));
 	AttributesComponent = CreateDefaultSubobject<USOAttributesComponent>(TEXT("AttributesComponent"));
 	TalentComponent     = CreateDefaultSubobject<USOTalentComponent>(TEXT("TalentComponent"));
+	EquipmentComponent  = CreateDefaultSubobject<USOEquipmentComponent>(TEXT("EquipmentComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{

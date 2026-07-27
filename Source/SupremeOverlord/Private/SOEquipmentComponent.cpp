@@ -1,0 +1,134 @@
+#include "SOEquipmentComponent.h"
+
+#include "GameFramework/CharacterMovementComponent.h"
+#include "SOArmorData.h"
+#include "SOCharacter.h"
+#include "SOHealthComponent.h"
+#include "SOManaComponent.h"
+#include "SOWeaponData.h"
+
+USOEquipmentComponent::USOEquipmentComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+}
+
+bool USOEquipmentComponent::Equip(USOItemData* Item)
+{
+	if (!Item || Item->EquipSlot == ESOEquipSlot::None)
+	{
+		return false;
+	}
+
+	const ESOEquipSlot Slot = Item->EquipSlot;
+	USOItemData* OldItem = EquippedItems.FindRef(Slot);
+	if (OldItem == Item)
+	{
+		return true;
+	}
+
+	EquippedItems.Add(Slot, Item);
+	OnSlotChanged.Broadcast(Slot, OldItem, Item);
+
+	// Delegate weapon-slot changes back to the character's existing weapon logic
+	// so effective PrimaryAttackDamage / ShadowBoltDamage picks it up unchanged.
+	if (Slot == ESOEquipSlot::MainHand)
+	{
+		if (ASOCharacter* Owner = Cast<ASOCharacter>(GetOwner()))
+		{
+			Owner->EquipWeapon(Cast<USOWeaponData>(Item));
+		}
+	}
+
+	RecomputeAggregateStats();
+	return true;
+}
+
+USOItemData* USOEquipmentComponent::Unequip(ESOEquipSlot Slot)
+{
+	if (Slot == ESOEquipSlot::None)
+	{
+		return nullptr;
+	}
+
+	USOItemData* OldItem = nullptr;
+	if (EquippedItems.RemoveAndCopyValue(Slot, OldItem))
+	{
+		OnSlotChanged.Broadcast(Slot, OldItem, nullptr);
+
+		if (Slot == ESOEquipSlot::MainHand)
+		{
+			if (ASOCharacter* Owner = Cast<ASOCharacter>(GetOwner()))
+			{
+				Owner->UnequipWeapon();
+			}
+		}
+
+		RecomputeAggregateStats();
+	}
+	return OldItem;
+}
+
+USOItemData* USOEquipmentComponent::GetItemInSlot(ESOEquipSlot Slot) const
+{
+	if (const TObjectPtr<USOItemData>* Found = EquippedItems.Find(Slot))
+	{
+		return Found->Get();
+	}
+	return nullptr;
+}
+
+void USOEquipmentComponent::RecomputeAggregateStats()
+{
+	ASOCharacter* Owner = Cast<ASOCharacter>(GetOwner());
+	if (!Owner)
+	{
+		return;
+	}
+
+	// Sum every equipped armor from scratch, then diff against last-applied so the effect is idempotent.
+	float NewHealthBonus     = 0.0f;
+	float NewManaBonus       = 0.0f;
+	float NewSpeedMultiplier = 1.0f;
+	float NewDR              = 0.0f;
+
+	for (const TPair<ESOEquipSlot, TObjectPtr<USOItemData>>& Pair : EquippedItems)
+	{
+		if (USOArmorData* Armor = Cast<USOArmorData>(Pair.Value.Get()))
+		{
+			NewHealthBonus     += Armor->MaxHealthBonus;
+			NewManaBonus       += Armor->MaxManaBonus;
+			NewSpeedMultiplier *= Armor->MovementSpeedMultiplier;
+			NewDR               = FMath::Min(0.9f, NewDR + Armor->DamageReductionPct);
+		}
+	}
+
+	if (USOHealthComponent* HP = Owner->HealthComponent)
+	{
+		HP->MaxHealth += (NewHealthBonus - AppliedMaxHealthBonus);
+	}
+	if (USOManaComponent* MP = Owner->ManaComponent)
+	{
+		MP->MaxMana += (NewManaBonus - AppliedMaxManaBonus);
+	}
+
+	if (AppliedSpeedMultiplier > KINDA_SMALL_NUMBER)
+	{
+		Owner->MovementSpeed *= (NewSpeedMultiplier / AppliedSpeedMultiplier);
+	}
+	if (UCharacterMovementComponent* Move = Owner->GetCharacterMovement())
+	{
+		Move->MaxWalkSpeed = Owner->MovementSpeed;
+	}
+
+	// Damage reduction is exposed via the health component's IncomingDamageMultiplier
+	// so all existing damage flows automatically honor it.
+	if (USOHealthComponent* HP = Owner->HealthComponent)
+	{
+		HP->IncomingDamageMultiplier = FMath::Max(0.0f, 1.0f - NewDR);
+	}
+
+	AppliedMaxHealthBonus     = NewHealthBonus;
+	AppliedMaxManaBonus       = NewManaBonus;
+	AppliedSpeedMultiplier    = NewSpeedMultiplier;
+	AppliedDamageReductionPct = NewDR;
+}
