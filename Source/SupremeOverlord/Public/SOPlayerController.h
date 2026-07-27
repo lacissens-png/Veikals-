@@ -67,6 +67,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat")
 	void OnPrimaryAttackPressed();
 
+	/** Bound to the "ShadowBolt" input action. Resolves the cursor and asks the pawn to cast. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat")
+	void OnShadowBoltPressed();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;

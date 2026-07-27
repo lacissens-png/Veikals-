@@ -50,6 +50,9 @@ void ASOPlayerController::SetupInputComponent()
 
 	// Primary attack - RMB or Q by default (see DefaultInput.ini).
 	InputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASOPlayerController::OnPrimaryAttackPressed);
+
+	// Shadow Bolt - E by default (see DefaultInput.ini).
+	InputComponent->BindAction("ShadowBolt",   IE_Pressed, this, &ASOPlayerController::OnShadowBoltPressed);
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -143,6 +146,25 @@ void ASOPlayerController::OnPrimaryAttackPressed()
 	}
 
 	SOCharacter->PerformPrimaryAttack(AttackTarget);
+}
+
+void ASOPlayerController::OnShadowBoltPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector AimTarget = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 500.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		AimTarget = Hit.ImpactPoint;
+	}
+
+	SOCharacter->CastShadowBolt(AimTarget);
 }
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)

@@ -8,6 +8,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class USOHealthComponent;
 class USODamageType;
+class ASOShadowBoltProjectile;
 
 UCLASS()
 class SUPREMEOVERLORD_API ASOCharacter : public ACharacter
@@ -130,7 +131,48 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Combat|Primary")
 	void OnPrimaryAttackPerformed(const FVector& AttackCenter, const TArray<AActor*>& ImpactActors);
 
+	// -----------------------------------------------------------------------
+	// Shadow Bolt — ranged spell projectile.
+	// -----------------------------------------------------------------------
+
+	/** Projectile class fired by CastShadowBolt. Assign a BP subclass of ASOShadowBoltProjectile in the editor. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt")
+	TSubclassOf<ASOShadowBoltProjectile> ShadowBoltClass;
+
+	/** Seconds between casts. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "0.1", UIMin = "0.1", UIMax = "10.0"))
+	float ShadowBoltCooldown = 1.5f;
+
+	/** Muzzle offset forward from the character root (cm). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "500.0"))
+	float ShadowBoltMuzzleForward = 60.0f;
+
+	/** Muzzle offset vertically from the character root (cm). Positive = higher. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt", meta = (ClampMin = "-200.0", UIMin = "-200.0", UIMax = "200.0"))
+	float ShadowBoltMuzzleHeight = 40.0f;
+
+	/** When true, snaps the character's yaw to face the cast direction. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|ShadowBolt")
+	bool bFaceCastDirection = true;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|ShadowBolt")
+	bool CanCastShadowBolt() const;
+
+	/**
+	 * Fires a ShadowBoltClass projectile from the muzzle offset toward TargetLocation.
+	 * No-op if the ability is on cooldown, the character is dead, or ShadowBoltClass is unset.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat|ShadowBolt")
+	void CastShadowBolt(FVector TargetLocation);
+
+	/** BP hook for cast VFX/SFX. Called the moment the bolt is spawned. */
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Combat|ShadowBolt")
+	void OnShadowBoltCast(const FVector& MuzzleLocation, const FVector& AimDirection, ASOShadowBoltProjectile* SpawnedBolt);
+
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;
 	bool bPrimaryAttackOnCooldown = false;
+
+	FTimerHandle ShadowBoltCooldownHandle;
+	bool bShadowBoltOnCooldown = false;
 };

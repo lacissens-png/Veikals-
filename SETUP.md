@@ -244,3 +244,67 @@ When PrimaryAttack fires:
    hitting. Press **RMB** (or Q) to swing back; the sphere overlap
    applies damage every 0.5 s. Kill it and it'll drop, unpossess, and
    despawn after `CorpseLifetime`.
+
+## 11. Shadow Bolt (ranged spell)
+
+`ASOShadowBoltProjectile` is a self-contained ranged projectile:
+`USphereComponent` + `UProjectileMovementComponent` + optional mesh. On
+overlap with a valid actor it calls `UGameplayStatics::ApplyDamage`,
+fires `OnBoltImpact` (BP hook for VFX/SFX), and destroys itself.
+
+Defaults: **40 damage**, **2200 cm/s**, **3 s** lifetime. The bolt
+auto-tries `/Engine/BasicShapes/Sphere` as its mesh so it's visible
+without any asset setup.
+
+### Wiring it in
+
+1. Compile.
+2. In the Content Browser create **Blueprint Class →
+   SOShadowBoltProjectile**, name it `BP_ShadowBolt`. (Optional: give
+   it a dark material and a translucent trail particle.)
+3. Open `BP_SOCharacter`. In *SupremeOverlord | Combat | ShadowBolt* set
+   **Shadow Bolt Class = BP_ShadowBolt**.
+4. Optional tuning on the character (all `EditAnywhere,
+   BlueprintReadWrite`):
+   - `ShadowBoltCooldown` (default 1.5 s)
+   - `ShadowBoltMuzzleForward` / `ShadowBoltMuzzleHeight` — where the
+     bolt spawns relative to the character root.
+   - `bFaceCastDirection` — snap yaw toward the cursor on cast.
+5. Play. Press **E** to cast toward the cursor. The bolt travels
+   straight, ignores the caster, and detonates on first hit.
+
+### Blueprint hooks
+
+- `OnShadowBoltCast(MuzzleLocation, AimDirection, SpawnedBolt)` fires on
+  `ASOCharacter` — hook cast VFX / SFX / camera shake.
+- `OnBoltImpact(Hit, HitActor)` fires on the projectile — hook impact
+  VFX / decals.
+
+## 12. HUD
+
+`ASOHUD` (registered via `SOGameMode::HUDClass`) draws directly with the
+Canvas so it works without any UMG widget:
+
+- Red HP bar in the bottom-left with a numeric `HP  current / max`
+  overlay.
+- One-line control hints across the top (toggleable).
+- Big red **YOU DIED** overlay when the health component reports dead.
+
+All colors, sizes, and text strings are `EditAnywhere,
+BlueprintReadWrite` UPROPERTYs under `SupremeOverlord|HUD|*`, so you
+can create a `BP_SOHUD` subclass and tweak the look.
+
+To replace the whole thing with a UMG widget later:
+1. Subclass `AHUD` (or start from `ASOHUD` and override `DrawHUD` to no-op).
+2. Create a `UUserWidget` bound to `USOHealthComponent::OnHealthChanged`.
+3. Point `SOGameMode::HUDClass` at your new HUD class.
+
+### Updated input table
+
+| Input | Action        |
+|-------|---------------|
+| LMB   | MoveTo        |
+| RMB   | PrimaryAttack |
+| Q     | PrimaryAttack |
+| E     | ShadowBolt    |
+| K     | Debug damage  |

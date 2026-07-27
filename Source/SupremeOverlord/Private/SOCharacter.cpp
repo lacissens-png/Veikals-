@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SODamageType.h"
 #include "SOHealthComponent.h"
+#include "SOShadowBoltProjectile.h"
 #include "TimerManager.h"
 
 ASOCharacter::ASOCharacter()
@@ -207,5 +208,61 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 		PrimaryAttackCooldownHandle,
 		FTimerDelegate::CreateLambda([this]() { bPrimaryAttackOnCooldown = false; }),
 		PrimaryAttackCooldown,
+		false);
+}
+
+bool ASOCharacter::CanCastShadowBolt() const
+{
+	return IsAlive() && !bShadowBoltOnCooldown && ShadowBoltClass != nullptr;
+}
+
+void ASOCharacter::CastShadowBolt(FVector TargetLocation)
+{
+	if (!CanCastShadowBolt())
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	const FVector MyLocation = GetActorLocation();
+	FVector AimDelta         = (TargetLocation - MyLocation);
+	AimDelta.Z               = 0.0f;
+	FVector AimDirection     = AimDelta.GetSafeNormal();
+	if (AimDirection.IsNearlyZero())
+	{
+		AimDirection = GetActorForwardVector();
+	}
+
+	if (bFaceCastDirection)
+	{
+		SetActorRotation(FRotator(0.0f, AimDirection.Rotation().Yaw, 0.0f));
+	}
+
+	const FVector Muzzle = MyLocation + AimDirection * ShadowBoltMuzzleForward + FVector(0.0f, 0.0f, ShadowBoltMuzzleHeight);
+	const FRotator SpawnRot = AimDirection.Rotation();
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	Params.Owner      = this;
+	Params.Instigator = this;
+
+	ASOShadowBoltProjectile* Bolt = World->SpawnActor<ASOShadowBoltProjectile>(ShadowBoltClass, Muzzle, SpawnRot, Params);
+	if (!Bolt)
+	{
+		return;
+	}
+
+	OnShadowBoltCast(Muzzle, AimDirection, Bolt);
+
+	bShadowBoltOnCooldown = true;
+	World->GetTimerManager().SetTimer(
+		ShadowBoltCooldownHandle,
+		FTimerDelegate::CreateLambda([this]() { bShadowBoltOnCooldown = false; }),
+		ShadowBoltCooldown,
 		false);
 }
