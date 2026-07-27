@@ -389,3 +389,95 @@ animations.
 2. Open `BP_MeleeGrunt` → `Loot Table` → add rows per the table above.
 3. Play. Kill the grunt with **RMB** or **E**. Orbs will spawn around
    the corpse, float toward you when close, and top up HP / Mana / Gold.
+
+## 15. Equipment (weapons)
+
+`USOItemData` is a `UPrimaryDataAsset` — the base for every item.
+`USOWeaponData` extends it with `PrimaryDamageBonus`,
+`ShadowBoltDamageBonus`, and `PrimaryAttackCooldownMultiplier`.
+
+`ASOCharacter` has a single weapon slot. On BeginPlay it auto-equips
+`StartingWeapon`. Attack code now goes through effective-stat
+getters, so weapon stats stack on top of the character base
+automatically:
+
+- `GetEffectivePrimaryAttackDamage() = PrimaryAttackDamage + Weapon->PrimaryDamageBonus`
+- `GetEffectivePrimaryAttackCooldown() = PrimaryAttackCooldown * Weapon->PrimaryAttackCooldownMultiplier`
+- `GetEffectiveShadowBoltDamage()   = ShadowBoltBaseDamage + Weapon->ShadowBoltDamageBonus`
+
+### Create a weapon
+
+1. Right-click in Content → **Miscellaneous → Data Asset** → pick
+   `SOWeaponData` → name `DA_Wpn_RustedSword`.
+2. Fill in `DisplayName`, `Rarity` (Common..Legendary), and stat
+   bonuses (e.g. `PrimaryDamageBonus = 8`).
+3. On `BP_SOCharacter`, set *SupremeOverlord | Equipment | Starting
+   Weapon = DA_Wpn_RustedSword*.
+4. Play. The bottom-right of the HUD shows the weapon name colored by
+   rarity (tan for Common, blue for Magic, gold for Rare, orange for
+   Legendary). Damage numbers scale accordingly.
+
+Blueprints can call `EquipWeapon(WeaponData)` at runtime — great for
+picking up a weapon later. Subscribe to `OnWeaponChanged(Old, New)`
+to react in UMG.
+
+## 16. Ranged caster enemy
+
+`ASOCasterEnemyCharacter` inherits from `ASOEnemyCharacter` and
+overrides `PerformAttack` to spawn a `ASOShadowBoltProjectile` at the
+target. Reuses the existing `ASOEnemyAIController` unchanged — the
+larger `AttackRange` default (1100 cm) means the AI stops just inside
+casting range instead of pressing into melee.
+
+### Setup
+
+1. Create `BP_ShadowBolt` (BP subclass of `SOShadowBoltProjectile`) if
+   you don't already have one — same asset the player uses.
+2. Create `BP_CultistCaster` (BP subclass of `SOCasterEnemyCharacter`).
+   Set *SupremeOverlord | Caster | Bolt Class = BP_ShadowBolt*.
+3. Optional: tweak `BoltDamage`, `MuzzleForward`, `MuzzleHeight`.
+4. Drop one into the arena, inside the NavMesh. Aggro range is 1800 cm
+   by default — it'll spot you from further away than a melee grunt.
+
+## 17. XP and leveling
+
+`USOExperienceComponent` (spawned on `ASOCharacter`) uses the curve
+`XPForNextLevel(L) = BaseXPForLevel2 * L^LevelCurveExponent`.
+Defaults: 100 XP to hit L2, ~283 to L3, ~520 to L4.
+
+- `ASOEnemyCharacter::XPReward` (default 25) grants XP to the killer.
+- On level-up, `ASOCharacter::HandleLevelUp` bumps
+  `MaxHealth`, `MaxMana`, `PrimaryAttackDamage`, and
+  `ShadowBoltBaseDamage` by the per-level scalars, then tops the pools
+  off. `OnLevelUpReached(NewLevel)` is a BP hook for VFX/SFX.
+- HUD draws a gold XP bar and "Lv N" number at the bottom-center of
+  the screen.
+
+Blueprints can subscribe to `OnLevelUp(Comp, NewLevel, PrevLevel)` and
+`OnExperienceChanged(Comp, NewXP, XPForNext, Level)` for animations.
+
+## 18. Life Drain — second ability (R)
+
+Vampiric AoE spell centered on the caster. All live enemies inside
+`LifeDrainRadius` (default 420 cm) take `LifeDrainDamage`, and the
+caster heals for `LifeDrainHealFraction` (default 0.5) of the total
+damage dealt.
+
+- Cost: `LifeDrainManaCost` (default 40).
+- Cooldown: `LifeDrainCooldown` (default 6 s).
+- `bDrawLifeDrainDebug` visualizes the AoE sphere on cast.
+- `OnLifeDrainCast(Hits, TotalDamage, Healed)` is a BP hook for
+  cast VFX / SFX / camera shake.
+
+Bound to **R** by default.
+
+### Full input table
+
+| Input | Action        |
+|-------|---------------|
+| LMB   | MoveTo        |
+| RMB   | PrimaryAttack |
+| Q     | PrimaryAttack |
+| E     | ShadowBolt    |
+| R     | LifeDrain     |
+| K     | Debug damage  |

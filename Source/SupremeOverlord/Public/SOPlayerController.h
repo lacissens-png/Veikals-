@@ -71,6 +71,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat")
 	void OnShadowBoltPressed();
 
+	/** Bound to the "LifeDrain" input action. AoE around the caster with self-heal. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat")
+	void OnLifeDrainPressed();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;

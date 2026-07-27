@@ -115,7 +115,7 @@ public:
 	bool bShowControlHints = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
-	FString ControlHintText = TEXT("LMB Move   |   RMB / Q Primary Attack   |   E Shadow Bolt   |   K Debug Damage");
+	FString ControlHintText = TEXT("LMB Move   |   RMB / Q Primary Attack   |   E Shadow Bolt   |   R Life Drain   |   K Debug Damage");
 
 	/** Show "YOU DIED" overlay when the player's health component reports dead. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death")

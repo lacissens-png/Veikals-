@@ -386,3 +386,99 @@ void ASOCharacter::CastShadowBolt(FVector TargetLocation)
 		ShadowBoltCooldown,
 		false);
 }
+
+bool ASOCharacter::CanCastLifeDrain() const
+{
+	if (!IsAlive() || bLifeDrainOnCooldown)
+	{
+		return false;
+	}
+	if (LifeDrainManaCost > 0.0f && ManaComponent && !ManaComponent->HasEnough(LifeDrainManaCost))
+	{
+		return false;
+	}
+	return true;
+}
+
+void ASOCharacter::CastLifeDrain()
+{
+	if (!CanCastLifeDrain())
+	{
+		return;
+	}
+
+	if (LifeDrainManaCost > 0.0f && ManaComponent && !ManaComponent->Consume(LifeDrainManaCost))
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	const FVector Center = GetActorLocation();
+
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(SOLifeDrain), /*bTraceComplex=*/ false, /*Ignore=*/ this);
+
+	TArray<FOverlapResult> Overlaps;
+	World->OverlapMultiByChannel(
+		Overlaps,
+		Center,
+		FQuat::Identity,
+		LifeDrainChannel,
+		FCollisionShape::MakeSphere(LifeDrainRadius),
+		Params);
+
+	TSubclassOf<UDamageType> DTClass = LifeDrainDamageType
+		? LifeDrainDamageType
+		: TSubclassOf<UDamageType>(USODamageType::StaticClass());
+
+	AController* InstigatorController = GetController();
+
+	TArray<AActor*> UniqueHitActors;
+	UniqueHitActors.Reserve(Overlaps.Num());
+	float TotalDamage = 0.0f;
+
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		AActor* HitActor = Result.GetActor();
+		if (!HitActor || HitActor == this)
+		{
+			continue;
+		}
+		USOHealthComponent* HitHealth = HitActor->FindComponentByClass<USOHealthComponent>();
+		if (!HitHealth || HitHealth->IsDead())
+		{
+			continue;
+		}
+		if (UniqueHitActors.Contains(HitActor))
+		{
+			continue;
+		}
+		UniqueHitActors.Add(HitActor);
+
+		TotalDamage += UGameplayStatics::ApplyDamage(HitActor, LifeDrainDamage, InstigatorController, this, DTClass);
+	}
+
+	float HealedAmount = 0.0f;
+	if (LifeDrainHealFraction > 0.0f && TotalDamage > 0.0f && HealthComponent)
+	{
+		HealedAmount = HealthComponent->Heal(TotalDamage * LifeDrainHealFraction, InstigatorController, this);
+	}
+
+	OnLifeDrainCast(UniqueHitActors, TotalDamage, HealedAmount);
+
+	if (bDrawLifeDrainDebug)
+	{
+		DrawDebugSphere(World, Center, LifeDrainRadius, 24, FColor(140, 20, 200), false, 0.8f, 0, 2.0f);
+	}
+
+	bLifeDrainOnCooldown = true;
+	World->GetTimerManager().SetTimer(
+		LifeDrainCooldownHandle,
+		FTimerDelegate::CreateLambda([this]() { bLifeDrainOnCooldown = false; }),
+		LifeDrainCooldown,
+		false);
+}

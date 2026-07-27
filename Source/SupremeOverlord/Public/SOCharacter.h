@@ -270,12 +270,58 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Leveling")
 	void OnLevelUpReached(int32 NewLevel);
 
+	// -----------------------------------------------------------------------
+	// Life Drain — AoE damage that heals the caster for a portion of damage dealt.
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|LifeDrain", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "1000.0"))
+	float LifeDrainDamage = 20.0f;
+
+	/** Sphere radius (cm) centered on the character. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|LifeDrain", meta = (ClampMin = "50.0", UIMin = "50.0", UIMax = "1500.0"))
+	float LifeDrainRadius = 420.0f;
+
+	/** Cooldown (s) between casts. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|LifeDrain", meta = (ClampMin = "0.1", UIMin = "0.1", UIMax = "60.0"))
+	float LifeDrainCooldown = 6.0f;
+
+	/** Mana cost per cast. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|LifeDrain", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "500.0"))
+	float LifeDrainManaCost = 40.0f;
+
+	/** Fraction of TOTAL damage dealt that heals the caster. 0.5 = half of the sum. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|LifeDrain", meta = (ClampMin = "0.0", ClampMax = "5.0", UIMin = "0.0", UIMax = "2.0"))
+	float LifeDrainHealFraction = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|LifeDrain")
+	TSubclassOf<USODamageType> LifeDrainDamageType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|LifeDrain")
+	TEnumAsByte<ECollisionChannel> LifeDrainChannel = ECC_Pawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Debug")
+	bool bDrawLifeDrainDebug = false;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|LifeDrain")
+	bool CanCastLifeDrain() const;
+
+	/** AoE around the caster: damages all live enemies, then heals the caster for a fraction of total damage dealt. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat|LifeDrain")
+	void CastLifeDrain();
+
+	/** BP hook: LifeDrain cast, VFX/SFX, HealedAmount is what actually landed on the caster. */
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Combat|LifeDrain")
+	void OnLifeDrainCast(const TArray<AActor*>& ImpactActors, float TotalDamageDealt, float HealedAmount);
+
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;
 	bool bPrimaryAttackOnCooldown = false;
 
 	FTimerHandle ShadowBoltCooldownHandle;
 	bool bShadowBoltOnCooldown = false;
+
+	FTimerHandle LifeDrainCooldownHandle;
+	bool bLifeDrainOnCooldown = false;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Currency", Transient)
 	int32 Gold = 0;

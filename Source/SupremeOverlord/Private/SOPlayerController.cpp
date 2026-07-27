@@ -53,6 +53,9 @@ void ASOPlayerController::SetupInputComponent()
 
 	// Shadow Bolt - E by default (see DefaultInput.ini).
 	InputComponent->BindAction("ShadowBolt",   IE_Pressed, this, &ASOPlayerController::OnShadowBoltPressed);
+
+	// Life Drain - R by default.
+	InputComponent->BindAction("LifeDrain",    IE_Pressed, this, &ASOPlayerController::OnLifeDrainPressed);
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -165,6 +168,14 @@ void ASOPlayerController::OnShadowBoltPressed()
 	}
 
 	SOCharacter->CastShadowBolt(AimTarget);
+}
+
+void ASOPlayerController::OnLifeDrainPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->CastLifeDrain();
+	}
 }
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)
