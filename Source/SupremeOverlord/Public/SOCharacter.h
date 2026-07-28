@@ -228,6 +228,38 @@ public:
 	void OnCharacterDied(AController* InstigatedBy, AActor* DamageCauser);
 
 	// -----------------------------------------------------------------------
+	// Death / Respawn — without this the game had no way to continue after
+	// dying; HandleDeath now schedules an automatic respawn at the last
+	// discovered waypoint (or in place if none has been found yet).
+	// -----------------------------------------------------------------------
+
+	/** Seconds after death before Respawn() fires automatically. 0 with bAutoRespawn disables the auto-timer (call Respawn manually, e.g. from a "Continue" prompt). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health|Respawn", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "20.0"))
+	float RespawnDelay = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health|Respawn")
+	bool bAutoRespawn = true;
+
+	/** Fraction of current gold lost on death (Diablo-style death penalty). 0 disables the penalty. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health|Respawn", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float RespawnGoldPenaltyFraction = 0.10f;
+
+	/**
+	 * Revives to full HP/mana, restores movement/collision, refills potion
+	 * charges, applies the gold penalty, and teleports to the last discovered
+	 * waypoint (or stays put if none has been found yet). No-op if not dead.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health|Respawn")
+	void Respawn();
+
+	/** Seconds until the scheduled auto-respawn fires. 0 if not dead or no auto-respawn is pending. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Health|Respawn")
+	float GetRespawnTimeRemaining() const;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Health|Respawn")
+	void OnCharacterRespawned();
+
+	// -----------------------------------------------------------------------
 	// Primary attack — melee sphere overlap in front of the character.
 	// -----------------------------------------------------------------------
 
@@ -734,6 +766,8 @@ private:
 	TArray<TWeakObjectPtr<class ASOCursedGround>> ActiveCursedGrounds;
 
 	FTimerHandle HitStopTimerHandle;
+
+	FTimerHandle RespawnTimerHandle;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Currency", Transient)
 	int32 Gold = 0;

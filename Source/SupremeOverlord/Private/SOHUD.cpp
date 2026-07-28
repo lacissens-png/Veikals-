@@ -791,6 +791,21 @@ void ASOHUD::DrawHUD()
 		DeadItem.Scale = FVector2D(DeathOverlayScale, DeathOverlayScale);
 		DeadItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(DeadItem);
+
+		if (MediumFont && SO->bAutoRespawn)
+		{
+			const FString RespawnStr = FString::Printf(TEXT("Respawning in %ds..."),
+				FMath::CeilToInt(SO->GetRespawnTimeRemaining()));
+			float RW = 0.0f, RH = 0.0f;
+			Canvas->TextSize(MediumFont, RespawnStr, RW, RH, 1.2f, 1.2f);
+			FCanvasTextItem RespawnItem(FVector2D((ScreenW - RW) * 0.5f, ScreenH * 0.45f + 70.0f),
+			                            FText::FromString(RespawnStr),
+			                            MediumFont,
+			                            FLinearColor(0.9f, 0.9f, 0.9f, 1.0f));
+			RespawnItem.Scale = FVector2D(1.2f, 1.2f);
+			RespawnItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(RespawnItem);
+		}
 	}
 
 	// -- Wave counter (top-center; sums across every spawner in the level) ---

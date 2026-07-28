@@ -1907,6 +1907,43 @@ nameplate, replaced by a bright red "ENRAGED!" tag once it triggers.
    set `EnrageTime = 0` for fights that shouldn't enrage.
 3. Set `EnrageSFX` for a roar/audio cue the moment it triggers.
 
+## 62. Death / Respawn (closing a long-standing gap)
+
+**Files**: `SOCharacter.h/.cpp`, `SOWaypointComponent.h/.cpp`, `SOHUD.cpp`
+
+Until now, dying had no way out: `OnCharacterDied` froze movement and
+showed the "YOU DIED" overlay, and its own comment said "actual
+respawn / game-over UI is intentionally left to a later system" — that
+system never arrived, so death was a dead end (pun intended) short of
+manually pressing Quick Load.
+
+`HandleDeath` now schedules `Respawn()` automatically after
+`RespawnDelay` seconds (default 3s, `bAutoRespawn` toggles this off
+for a hard "game over" feel instead). `Respawn()`:
+
+- Charges `RespawnGoldPenaltyFraction` (default 10%) of current gold —
+  a Diablo-style death penalty with actual teeth once gold matters.
+- Revives to full HP, refills mana and potion charges.
+- Restores capsule collision and movement mode.
+- Teleports to `WaypointComponent->GetLastWaypoint()` — the most
+  recently *discovered or traveled-to* waypoint, tracked by
+  `USOWaypointComponent` for exactly this purpose. Stays in place if no
+  waypoint has been found yet.
+
+### HUD changes
+
+While dead, a "Respawning in Ns..." countdown appears beneath the
+"YOU DIED" text (only shown when `bAutoRespawn` is on).
+
+### Setup
+
+1. Place at least one `ASOWaypoint` (ideally with `bStartDiscovered =
+   true`) near the start of a level so an early death has somewhere to
+   respawn to.
+2. Tune `RespawnDelay`/`RespawnGoldPenaltyFraction` on `BP_SOCharacter`,
+   or set `bAutoRespawn = false` for a stricter "no continue" mode.
+3. `OnCharacterRespawned` is a BP event for respawn VFX/SFX/UI.
+
 ### Updated input table
 
 | Key   | Action                          |

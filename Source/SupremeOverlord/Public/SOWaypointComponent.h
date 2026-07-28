@@ -33,6 +33,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Waypoint")
 	const TArray<ASOWaypoint*>& GetDiscoveredWaypoints() const { return DiscoveredWaypoints; }
 
+	/** Most recently discovered or traveled-to waypoint. Null until the first one is discovered. Used as the respawn point. */
+	UFUNCTION(BlueprintPure, Category = "Waypoint")
+	ASOWaypoint* GetLastWaypoint() const { return LastWaypoint; }
+
 	UFUNCTION(BlueprintPure, Category = "Waypoint")
 	bool IsMapOpen() const { return bMapOpen; }
 
@@ -67,6 +71,9 @@ public:
 private:
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<ASOWaypoint>> DiscoveredWaypoints;
+
+	UPROPERTY(Transient)
+	TObjectPtr<ASOWaypoint> LastWaypoint;
 
 	bool bMapOpen = false;
 };

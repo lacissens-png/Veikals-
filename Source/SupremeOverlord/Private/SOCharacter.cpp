@@ -216,6 +216,14 @@ void ASOCharacter::AddGold(int32 Amount)
 void ASOCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AController* InstigatedBy, AActor* DamageCauser)
 {
 	OnCharacterDied(InstigatedBy, DamageCauser);
+
+	if (bAutoRespawn && RespawnDelay > 0.0f)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().SetTimer(RespawnTimerHandle, this, &ASOCharacter::Respawn, RespawnDelay, false);
+		}
+	}
 }
 
 void ASOCharacter::HandleHealthChanged(USOHealthComponent* OwningComponent, float /*OldHealth*/, float /*NewHealth*/,
@@ -314,7 +322,67 @@ void ASOCharacter::OnCharacterDied(AController* /*InstigatedBy*/, AActor* /*Dama
 	}
 
 	// The controller listens to this via the Pawn->PlayerController path in Blueprint if desired.
-	// Actual respawn / game-over UI is intentionally left to a later system.
+	// See HandleDeath / Respawn() below for what happens next.
+}
+
+void ASOCharacter::Respawn()
+{
+	if (!HealthComponent || HealthComponent->IsAlive())
+	{
+		return;
+	}
+
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(RespawnTimerHandle);
+	}
+
+	if (RespawnGoldPenaltyFraction > 0.0f && Gold > 0)
+	{
+		AddGold(-FMath::RoundToInt(Gold * RespawnGoldPenaltyFraction));
+	}
+
+	HealthComponent->Revive();
+	if (ManaComponent)
+	{
+		ManaComponent->RefillToMax();
+	}
+	if (ConsumableComponent)
+	{
+		ConsumableComponent->RefillCharges();
+	}
+
+	if (UCapsuleComponent* Capsule = GetCapsuleComponent())
+	{
+		Capsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		Movement->SetMovementMode(MOVE_Walking);
+	}
+
+	if (WaypointComponent)
+	{
+		if (ASOWaypoint* Waypoint = WaypointComponent->GetLastWaypoint())
+		{
+			TeleportTo(Waypoint->GetTravelDestination(), GetActorRotation(), false, false);
+		}
+	}
+
+	OnCharacterRespawned();
+}
+
+float ASOCharacter::GetRespawnTimeRemaining() const
+{
+	if (!HealthComponent || HealthComponent->IsAlive())
+	{
+		return 0.0f;
+	}
+	if (const UWorld* World = GetWorld())
+	{
+		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(RespawnTimerHandle));
+	}
+	return 0.0f;
 }
 
 void ASOCharacter::ApplyCameraSettings()

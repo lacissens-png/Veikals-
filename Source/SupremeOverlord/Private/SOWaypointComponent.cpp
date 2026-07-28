@@ -17,6 +17,7 @@ bool USOWaypointComponent::DiscoverWaypoint(ASOWaypoint* Waypoint)
 	}
 
 	DiscoveredWaypoints.Add(Waypoint);
+	LastWaypoint = Waypoint;
 	OnWaypointDiscovered.Broadcast(Waypoint);
 	OnWaypointDiscoveredBP(Waypoint);
 	return true;
@@ -54,6 +55,7 @@ bool USOWaypointComponent::TravelToWaypoint(int32 Index)
 
 	bMapOpen = false;
 	OnWaypointMapToggled.Broadcast(false);
+	LastWaypoint = Waypoint;
 
 	// Diablo-style QoL: arriving at a waypoint tops off potion charges.
 	if (Owner->ConsumableComponent)
