@@ -1,6 +1,6 @@
 # Supreme Overlord — Core Framework Setup
 
-This branch scaffolds the initial C++ framework for an isometric ARPG in Unreal Engine 5.4:
+This branch scaffolds the initial C++ framework for an isometric ARPG in Unreal Engine 5.8:
 
 - `ASOGameMode` — top-down ARPG game mode wiring the pawn and controller.
 - `ASOCharacter` — pawn with a fixed isometric spring-arm/camera and exposed tuning knobs.
