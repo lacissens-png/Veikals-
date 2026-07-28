@@ -9,7 +9,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
+#include "SOAuraComponent.h"
+#include "SOCorruptionComponent.h"
 #include "SOEquipmentComponent.h"
+#include "SOTrap.h"
 #include "SOInventoryComponent.h"
 #include "SOQuestComponent.h"
 #include "SOStatusEffectComponent.h"
@@ -56,6 +59,8 @@ ASOCharacter::ASOCharacter()
 	QuestComponent        = CreateDefaultSubobject<USOQuestComponent>(TEXT("QuestComponent"));
 	StatusEffectComponent = CreateDefaultSubobject<USOStatusEffectComponent>(TEXT("StatusEffectComponent"));
 	SummonComponent       = CreateDefaultSubobject<USOSummonComponent>(TEXT("SummonComponent"));
+	AuraComponent         = CreateDefaultSubobject<USOAuraComponent>(TEXT("AuraComponent"));
+	CorruptionComponent   = CreateDefaultSubobject<USOCorruptionComponent>(TEXT("CorruptionComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -121,7 +126,9 @@ void ASOCharacter::UnequipWeapon()
 
 float ASOCharacter::GetEffectivePrimaryAttackDamage() const
 {
-	return PrimaryAttackDamage + (EquippedWeapon ? EquippedWeapon->PrimaryDamageBonus : 0.0f);
+	const float Base = PrimaryAttackDamage + (EquippedWeapon ? EquippedWeapon->PrimaryDamageBonus : 0.0f);
+	const float Mult = CorruptionComponent ? CorruptionComponent->GetOutgoingDamageMultiplier() : 1.0f;
+	return Base * Mult;
 }
 
 float ASOCharacter::GetEffectivePrimaryAttackCooldown() const
@@ -132,7 +139,9 @@ float ASOCharacter::GetEffectivePrimaryAttackCooldown() const
 
 float ASOCharacter::GetEffectiveShadowBoltDamage() const
 {
-	return ShadowBoltBaseDamage + (EquippedWeapon ? EquippedWeapon->ShadowBoltDamageBonus : 0.0f);
+	const float Base = ShadowBoltBaseDamage + (EquippedWeapon ? EquippedWeapon->ShadowBoltDamageBonus : 0.0f);
+	const float Mult = CorruptionComponent ? CorruptionComponent->GetOutgoingDamageMultiplier() : 1.0f;
+	return Base * Mult;
 }
 
 void ASOCharacter::AddGold(int32 Amount)
@@ -736,4 +745,122 @@ bool ASOCharacter::QuickSave()
 bool ASOCharacter::QuickLoad()
 {
 	return LoadGameFromSlotName(DefaultSaveSlot);
+}
+
+// ---------------------------------------------------------------------------
+// Trap System
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::PlaceTrap(FVector TargetLocation)
+{
+	if (!IsAlive() || !TrapClass || bTrapPlaceOnCooldown)
+	{
+		return;
+	}
+
+	// Prune destroyed traps before checking the limit.
+	ActiveTraps.RemoveAll([](const TWeakObjectPtr<ASOTrap>& W) { return !W.IsValid(); });
+	if (ActiveTraps.Num() >= MaxActiveTrapCount)
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	Params.Owner      = this;
+	Params.Instigator = this;
+
+	ASOTrap* Trap = World->SpawnActor<ASOTrap>(TrapClass, TargetLocation, FRotator::ZeroRotator, Params);
+	if (!Trap)
+	{
+		return;
+	}
+
+	Trap->TrapType       = SelectedTrapType;
+	Trap->OwnerCharacter = this;
+	ActiveTraps.Add(Trap);
+
+	if (TrapPlaceSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, TrapPlaceSFX, TargetLocation);
+	}
+
+	bTrapPlaceOnCooldown = true;
+	World->GetTimerManager().SetTimer(
+		TrapPlaceCooldownHandle,
+		FTimerDelegate::CreateLambda([this]() { bTrapPlaceOnCooldown = false; }),
+		TrapPlaceCooldown,
+		false);
+}
+
+void ASOCharacter::CycleTrap()
+{
+	switch (SelectedTrapType)
+	{
+	case ESOTrapType::ShadowSnare:   SelectedTrapType = ESOTrapType::ArcaneMine;    break;
+	case ESOTrapType::ArcaneMine:    SelectedTrapType = ESOTrapType::NecroticSpore; break;
+	case ESOTrapType::NecroticSpore: SelectedTrapType = ESOTrapType::ShadowSnare;   break;
+	default:                         SelectedTrapType = ESOTrapType::ShadowSnare;   break;
+	}
+}
+
+float ASOCharacter::GetTrapPlaceCooldownRemaining() const
+{
+	if (const UWorld* World = GetWorld())
+	{
+		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(TrapPlaceCooldownHandle));
+	}
+	return 0.0f;
+}
+
+// ---------------------------------------------------------------------------
+// Corruption / Overlord Mode
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::ActivateOverlordMode()
+{
+	if (!IsAlive() || !CorruptionComponent)
+	{
+		return;
+	}
+	CorruptionComponent->ActivateOverlordMode();
+	if (OverlordModeActivateSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, OverlordModeActivateSFX, GetActorLocation());
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Necromantic Resurrection
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::CastNecroticResurrect(FVector TargetLocation)
+{
+	if (!IsAlive() || !SummonComponent)
+	{
+		return;
+	}
+	if (SummonComponent->ResurrectAtLocation(TargetLocation, this))
+	{
+		if (NecroResurrectSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, NecroResurrectSFX, TargetLocation);
+		}
+	}
+}
+
+float ASOCharacter::GetNecromancyCooldownRemaining() const
+{
+	return SummonComponent ? SummonComponent->GetNecromancyCooldownRemaining() : 0.0f;
+}
+
+float ASOCharacter::GetNecromancyCooldown() const
+{
+	return SummonComponent ? SummonComponent->NecromancyCooldown : 1.0f;
 }

@@ -88,6 +88,12 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("SummonMinion",   IE_Pressed, this, &ASOPlayerController::OnSummonMinionPressed);
 	InputComponent->BindAction("DismissMinions", IE_Pressed, this, &ASOPlayerController::OnDismissMinionsPressed);
 
+	// Trap (C) / cycle type (V) / Overlord Mode (Z) / Necromantic Resurrect (U).
+	InputComponent->BindAction("PlaceTrap",            IE_Pressed, this, &ASOPlayerController::OnPlaceTrapPressed);
+	InputComponent->BindAction("CycleTrap",            IE_Pressed, this, &ASOPlayerController::OnCycleTrapPressed);
+	InputComponent->BindAction("ActivateOverlordMode", IE_Pressed, this, &ASOPlayerController::OnActivateOverlordModePressed);
+	InputComponent->BindAction("NecroticResurrect",    IE_Pressed, this, &ASOPlayerController::OnNecroticResurrectPressed);
+
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
 	InputComponent->BindAction("DialogueChoice2", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice2);
@@ -430,6 +436,60 @@ void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)
 
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, WorldLocation);
 	SpawnClickIndicator(WorldLocation);
+}
+
+void ASOPlayerController::OnPlaceTrapPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector TrapTarget = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		TrapTarget = Hit.ImpactPoint;
+	}
+
+	SOCharacter->PlaceTrap(TrapTarget);
+}
+
+void ASOPlayerController::OnCycleTrapPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->CycleTrap();
+	}
+}
+
+void ASOPlayerController::OnActivateOverlordModePressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->ActivateOverlordMode();
+	}
+}
+
+void ASOPlayerController::OnNecroticResurrectPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector Target = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		Target = Hit.ImpactPoint;
+	}
+
+	SOCharacter->CastNecroticResurrect(Target);
 }
 
 void ASOPlayerController::SpawnClickIndicator(const FVector& WorldLocation)

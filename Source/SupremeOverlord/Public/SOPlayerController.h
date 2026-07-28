@@ -111,6 +111,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
 	void OnDismissMinionsPressed();
 
+	/** Bound to "PlaceTrap" (C). Resolves the cursor and places the selected trap type there. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Traps")
+	void OnPlaceTrapPressed();
+
+	/** Bound to "CycleTrap" (V). Advances the selected trap type to the next variant. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Traps")
+	void OnCycleTrapPressed();
+
+	/** Bound to "ActivateOverlordMode" (Z). Triggers Overlord Mode when the corruption meter is full. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Corruption")
+	void OnActivateOverlordModePressed();
+
+	/** Bound to "NecroticResurrect" (U). Raises the nearest dead enemy at the cursor position as a temporary minion. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
+	void OnNecroticResurrectPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

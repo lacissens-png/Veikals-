@@ -135,7 +135,7 @@ public:
 	bool bShowControlHints = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
-	FString ControlHintText = TEXT("LMB Move   |   RMB / Q Primary   |   E Shadow Bolt   |   R Life Drain   |   T Summon   |   Y Dismiss   |   F1/F2/F3 Allocate   |   ESC Pause");
+	FString ControlHintText = TEXT("LMB Move   |   RMB/Q Strike   |   E Shadow   |   R Drain   |   T Summon   |   Y Dismiss   |   C Trap   |   V Cycle   |   Z Overlord   |   U Resurrect   |   F1/2/3 Attrs   |   ESC Pause");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
 	bool bShowAttributesPanel = true;
@@ -239,6 +239,51 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Minimap", meta = (ClampMin = "2.0", UIMin = "2.0", UIMax = "20.0"))
 	float MinimapDotSize = 5.0f;
+
+	// -----------------------------------------------------------------------
+	// Corruption bar (sits between skill panel and XP bar)
+	// -----------------------------------------------------------------------
+
+	/** Show a thin corruption meter centered at the bottom above the XP bar. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption")
+	bool bShowCorruptionBar = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption")
+	FVector2D CorruptionBarSize = FVector2D(520.0f, 8.0f);
+
+	/** Gap (pixels) between the top of the XP bar and the bottom of the corruption bar. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "40.0"))
+	float CorruptionBarGap = 4.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption")
+	FLinearColor CorruptionBarBackgroundColor = FLinearColor(0.04f, 0.0f, 0.06f, 0.85f);
+
+	/** Bar fill color when corruption is below maximum. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption")
+	FLinearColor CorruptionBarFillColor = FLinearColor(0.45f, 0.05f, 0.75f, 1.0f);
+
+	/** Bar fill color when the meter is full (Overlord Mode available). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption")
+	FLinearColor CorruptionBarFullColor = FLinearColor(0.80f, 0.25f, 1.00f, 1.0f);
+
+	/** Text scale for the "OVERLORD MODE!" flash drawn while mode is active. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "6.0"))
+	float OverlordModeFlashScale = 2.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Corruption")
+	FLinearColor OverlordModeFlashColor = FLinearColor(0.95f, 0.60f, 1.00f, 1.0f);
+
+	// -----------------------------------------------------------------------
+	// Trap indicator
+	// -----------------------------------------------------------------------
+
+	/** Show the currently selected trap type label below the PlaceTrap skill tile. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Traps")
+	bool bShowTrapIndicator = true;
+
+	/** Color of the trap-type name label. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Traps")
+	FLinearColor TrapIndicatorColor = FLinearColor(1.0f, 0.80f, 0.20f, 1.0f);
 
 	/** Show "YOU DIED" overlay when the player's health component reports dead. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Death")

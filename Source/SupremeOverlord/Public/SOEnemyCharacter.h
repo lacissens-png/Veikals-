@@ -157,4 +157,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Audio")
 	TObjectPtr<class USoundBase> DeathSFX;
+
+	/** Corruption added to the killer's CorruptionComponent on death. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death", meta = (ClampMin = "0.0"))
+	float CorruptionValue = 8.0f;
+
+	/** Whether this corpse can be targeted by Necromantic Resurrection. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death")
+	bool bCanBeResurrected = true;
 };

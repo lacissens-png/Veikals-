@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "SOTrap.h"
 #include "SOCharacter.generated.h"
 
 class USpringArmComponent;
@@ -86,6 +87,14 @@ public:
 	/** Minion summoning — spawns and tracks the player's undead army. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Summoning")
 	TObjectPtr<class USOSummonComponent> SummonComponent;
+
+	/** Dark Presence Aura — periodically slows and optionally damages nearby enemies. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Aura")
+	TObjectPtr<class USOAuraComponent> AuraComponent;
+
+	/** Corruption meter — fills from enemy kills; activates Overlord Mode when full. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Corruption")
+	TObjectPtr<class USOCorruptionComponent> CorruptionComponent;
 
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
@@ -401,6 +410,58 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Summoning")
 	void OnMinionSummoned(class ASOMinion* Minion);
 
+	// -----------------------------------------------------------------------
+	// Trap System — place hazard traps at the cursor (C key), cycle type (V).
+	// -----------------------------------------------------------------------
+
+	/** Trap actor class to spawn. Assign a BP_Trap subclass in the editor. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Traps")
+	TSubclassOf<ASOTrap> TrapClass;
+
+	/** Maximum number of traps allowed active simultaneously. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Traps", meta = (ClampMin = "1", UIMin = "1", UIMax = "20"))
+	int32 MaxActiveTrapCount = 10;
+
+	/** Currently selected trap variant placed by PlaceTrap. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Traps")
+	ESOTrapType SelectedTrapType = ESOTrapType::ShadowSnare;
+
+	/** Spawns the selected trap type at TargetLocation. Respects MaxActiveTrapCount and cooldown. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Traps")
+	void PlaceTrap(FVector TargetLocation);
+
+	/** Advances SelectedTrapType to the next variant in the cycle. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Traps")
+	void CycleTrap();
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Traps")
+	float GetTrapPlaceCooldownRemaining() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Traps")
+	float GetTrapPlaceCooldown() const { return TrapPlaceCooldown; }
+
+	// -----------------------------------------------------------------------
+	// Corruption / Overlord Mode — Z key, requires full corruption meter.
+	// -----------------------------------------------------------------------
+
+	/** Activates Overlord Mode via CorruptionComponent if corruption is full. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Corruption")
+	void ActivateOverlordMode();
+
+	// -----------------------------------------------------------------------
+	// Necromantic Resurrection — U key; raises a nearby corpse as a temp minion.
+	// -----------------------------------------------------------------------
+
+	/** Finds the nearest dead enemy within range of TargetLocation and spawns it as a limited-life minion. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
+	void CastNecroticResurrect(FVector TargetLocation);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Summoning")
+	float GetNecromancyCooldownRemaining() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Summoning")
+	float GetNecromancyCooldown() const;
+
 	// Cooldown-remaining accessors used by the HUD skill bar.
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
 	float GetPrimaryAttackCooldownRemaining() const;
@@ -421,6 +482,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
 	TObjectPtr<class USoundBase> SummonCastSFX;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> TrapPlaceSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> OverlordModeActivateSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> NecroResurrectSFX;
+
 	/** AoE around the caster: damages all live enemies, then heals the caster for a fraction of total damage dealt. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat|LifeDrain")
 	void CastLifeDrain();
@@ -438,6 +508,12 @@ private:
 
 	FTimerHandle LifeDrainCooldownHandle;
 	bool bLifeDrainOnCooldown = false;
+
+	FTimerHandle TrapPlaceCooldownHandle;
+	bool  bTrapPlaceOnCooldown = false;
+	float TrapPlaceCooldown    = 0.5f;
+
+	TArray<TWeakObjectPtr<ASOTrap>> ActiveTraps;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Currency", Transient)
 	int32 Gold = 0;

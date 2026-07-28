@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SOCharacter.h"
 #include "SODamageType.h"
+#include "SOCorruptionComponent.h"
 #include "SOEnemyAIController.h"
 #include "SOExperienceComponent.h"
 #include "SOQuestComponent.h"
@@ -116,6 +117,11 @@ void ASOEnemyCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, ACo
 			if (Killer->QuestComponent)
 			{
 				Killer->QuestComponent->NotifyEnemyKilled(this);
+			}
+
+			if (CorruptionValue > 0.0f && Killer->CorruptionComponent)
+			{
+				Killer->CorruptionComponent->AddCorruption(CorruptionValue);
 			}
 		}
 	}

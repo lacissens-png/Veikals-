@@ -22,7 +22,10 @@
 #include "SOQuestComponent.h"
 #include "SOQuestData.h"
 #include "SOStatusEffectComponent.h"
+#include "SOAuraComponent.h"
+#include "SOCorruptionComponent.h"
 #include "SOSummonComponent.h"
+#include "SOTrap.h"
 #include "SOVendorNPC.h"
 #include "SOWeaponData.h"
 
@@ -366,10 +369,10 @@ void ASOHUD::DrawHUD()
 		Canvas->DrawItem(GoldItem);
 	}
 
-	// -- Skill panel (row of four tiles centered above the XP bar) ----------
+	// -- Skill panel (row of seven tiles centered above the XP bar) ---------
 	if (bShowSkillPanel && MediumFont)
 	{
-		const int32 NumTiles       = 4;
+		const int32 NumTiles       = 7;
 		const float RowWidth       = NumTiles * SkillTileSize.X + (NumTiles - 1) * SkillTileGap;
 		const float RowY           = ScreenH - XPBarSize.Y - XPBarBottomOffset - SkillTileSize.Y - SkillPanelGap;
 		const float RowStartX      = (ScreenW - RowWidth) * 0.5f;
@@ -450,6 +453,91 @@ void ASOHUD::DrawHUD()
 				Canvas->DrawItem(CountItem);
 			}
 		}
+
+		// Trap placement (C key) - golden tile
+		{
+			const FVector2D TileOrigin(RowStartX + 4 * (SkillTileSize.X + SkillTileGap), RowY);
+			DrawSkillTile(
+				Canvas,
+				TileOrigin,
+				TEXT("C"),
+				TEXT("Trap"),
+				0.0f,
+				CurrentManaVal,
+				SO->GetTrapPlaceCooldownRemaining(),
+				SO->GetTrapPlaceCooldown(),
+				FLinearColor(0.70f, 0.55f, 0.05f, 1.0f),
+				MediumFont);
+
+			// Trap type label below the tile
+			if (bShowTrapIndicator)
+			{
+				FString TrapName;
+				switch (SO->SelectedTrapType)
+				{
+				case ESOTrapType::ShadowSnare:   TrapName = TEXT("Snare");  break;
+				case ESOTrapType::ArcaneMine:    TrapName = TEXT("Mine");   break;
+				case ESOTrapType::NecroticSpore: TrapName = TEXT("Spore");  break;
+				default:                         TrapName = TEXT("???");    break;
+				}
+				float TW = 0.0f, TH = 0.0f;
+				Canvas->TextSize(MediumFont, TrapName, TW, TH);
+				FCanvasTextItem TrapItem(
+					FVector2D(TileOrigin.X + (SkillTileSize.X - TW) * 0.5f,
+					          TileOrigin.Y + SkillTileSize.Y + 22.0f),
+					FText::FromString(TrapName),
+					MediumFont,
+					TrapIndicatorColor);
+				TrapItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(TrapItem);
+			}
+		}
+
+		// Overlord Mode (Z key) - purple tile that brightens when corruption is full
+		if (SO->CorruptionComponent)
+		{
+			const float CorFrac      = SO->CorruptionComponent->GetCorruptionFraction();
+			const bool  bFull        = CorFrac >= 1.0f;
+			const bool  bModeActive  = SO->CorruptionComponent->IsOverlordModeActive();
+			const float MaxCor       = SO->CorruptionComponent->MaxCorruption;
+			const float CurCor       = SO->CorruptionComponent->GetCorruption();
+
+			FLinearColor OverlordColor = bModeActive
+				? FLinearColor(0.90f, 0.40f, 1.00f, 1.0f)
+				: (bFull ? FLinearColor(0.65f, 0.10f, 0.95f, 1.0f)
+				         : FLinearColor(0.30f, 0.02f, 0.50f, 1.0f));
+
+			DrawSkillTile(
+				Canvas,
+				FVector2D(RowStartX + 5 * (SkillTileSize.X + SkillTileGap), RowY),
+				TEXT("Z"),
+				TEXT("Overlord"),
+				bModeActive ? 0.0f : MaxCor,
+				bModeActive ? MaxCor : CurCor,
+				0.0f,
+				1.0f,
+				OverlordColor,
+				MediumFont);
+		}
+
+		// Necromantic Resurrect (U key) - sickly green tile
+		{
+			const float NecroMana    = SO->SummonComponent ? SO->SummonComponent->ManaCostPerResurrect : 0.0f;
+			const float NecroCDLeft  = SO->GetNecromancyCooldownRemaining();
+			const float NecroCDTotal = SO->GetNecromancyCooldown();
+
+			DrawSkillTile(
+				Canvas,
+				FVector2D(RowStartX + 6 * (SkillTileSize.X + SkillTileGap), RowY),
+				TEXT("U"),
+				TEXT("Resurrect"),
+				NecroMana,
+				CurrentManaVal,
+				NecroCDLeft,
+				NecroCDTotal,
+				FLinearColor(0.15f, 0.55f, 0.20f, 1.0f),
+				MediumFont);
+		}
 	}
 
 	// -- XP bar (bottom-center) + level number -------------------------------
@@ -500,6 +588,56 @@ void ASOHUD::DrawHUD()
 				Canvas->DrawItem(LvlItem);
 			}
 		}
+	}
+
+	// -- Corruption bar (sits just above the XP bar, same width) -------------
+	if (bShowCorruptionBar && SO->CorruptionComponent)
+	{
+		USOCorruptionComponent* Cor = SO->CorruptionComponent;
+		const float CorFrac = FMath::Clamp(Cor->GetCorruptionFraction(), 0.0f, 1.0f);
+
+		const float CorBarX = (ScreenW - CorruptionBarSize.X) * 0.5f;
+		const float XPBarY  = ScreenH - XPBarSize.Y - XPBarBottomOffset;
+		const float CorBarY = XPBarY - CorruptionBarSize.Y - CorruptionBarGap;
+
+		{
+			FCanvasTileItem CorBorder(
+				FVector2D(CorBarX - Border, CorBarY - Border),
+				FVector2D(CorruptionBarSize.X + Border * 2.0f, CorruptionBarSize.Y + Border * 2.0f),
+				HealthBarBorderColor);
+			CorBorder.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(CorBorder);
+		}
+		{
+			FCanvasTileItem CorBG(FVector2D(CorBarX, CorBarY), CorruptionBarSize, CorruptionBarBackgroundColor);
+			CorBG.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(CorBG);
+		}
+		if (CorFrac > 0.0f)
+		{
+			const FLinearColor FillCol = (CorFrac >= 1.0f) ? CorruptionBarFullColor : CorruptionBarFillColor;
+			FCanvasTileItem CorFill(
+				FVector2D(CorBarX, CorBarY),
+				FVector2D(CorruptionBarSize.X * CorFrac, CorruptionBarSize.Y),
+				FillCol);
+			CorFill.BlendMode = SE_BLEND_Translucent;
+			Canvas->DrawItem(CorFill);
+		}
+	}
+
+	// -- "OVERLORD MODE!" flash (centered, shown while Overlord Mode is active) --
+	if (SO->CorruptionComponent && SO->CorruptionComponent->IsOverlordModeActive() && LargeFont)
+	{
+		const FString FlashText = TEXT("OVERLORD MODE!");
+		const float   ApproxHW  = FlashText.Len() * 6.0f * OverlordModeFlashScale;
+		FCanvasTextItem FlashItem(
+			FVector2D(ScreenW * 0.5f - ApproxHW, ScreenH * 0.38f),
+			FText::FromString(FlashText),
+			LargeFont,
+			OverlordModeFlashColor);
+		FlashItem.Scale = FVector2D(OverlordModeFlashScale, OverlordModeFlashScale);
+		FlashItem.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(FlashItem);
 	}
 
 	// -- Death overlay --------------------------------------------------------
@@ -711,6 +849,24 @@ void ASOHUD::DrawHUD()
 			                          MinimapPlayerColor);
 			PlayerPip.BlendMode = SE_BLEND_Translucent;
 			Canvas->DrawItem(PlayerPip);
+		}
+
+		// Aura ring — 16 translucent dots forming a circle around the player pip.
+		if (SO->AuraComponent && SO->AuraComponent->bAuraActive)
+		{
+			const float AuraPxRadius =
+				(SO->AuraComponent->AuraRadius / MinimapWorldRange) * MinimapSize.X * 0.5f;
+			const float PipCX = MMX + MinimapSize.X * 0.5f;
+			const float PipCY = MMY + MinimapSize.Y * 0.5f;
+			const FLinearColor AuraDotColor(0.45f, 0.05f, 0.75f, 0.45f);
+			for (int32 a = 0; a < 16; ++a)
+			{
+				const float Angle = (static_cast<float>(a) / 16.0f) * 2.0f * PI;
+				const FVector2D DotPos(
+					PipCX + FMath::Cos(Angle) * AuraPxRadius,
+					PipCY + FMath::Sin(Angle) * AuraPxRadius);
+				DrawMinimapDot(Canvas, MMOrigin, DotPos, AuraDotColor);
+			}
 		}
 
 		// Enemies (red) — bosses tinted orange.

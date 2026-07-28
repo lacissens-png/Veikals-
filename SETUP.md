@@ -1060,3 +1060,151 @@ shows:
 3. Optionally set `SummonCastSFX` for an audio cue.
 4. Play — press **T** near enemies to summon, **Y** to recall the
    army. The HUD fourth tile shows live count `2 / 3`.
+
+## 38. Dark Presence Aura
+
+**Files**: `SOAuraComponent.h/.cpp`
+
+Passive necrotic aura radiating from the player every `PulseInterval`
+(default 0.5 s).  All live `ASOEnemyCharacter` actors within `AuraRadius`
+(default 600 cm) are:
+1. Slowed for `SlowDuration` (default 0.65 s — slightly longer than the
+   pulse so slow is continuous while inside the ring).
+2. Dealt `DamagePerPulse` necrotic damage (default 0, designer-set).
+
+Toggle with `bAuraActive`.  Delegates: `OnAuraPulse(EnemiesAffected)`
+and the BP event `OnAuraPulseBP`.
+
+### HUD
+
+A translucent purple aura ring (16 dots) is drawn on the minimap
+centered on the player pip, scaled to `AuraRadius / MinimapWorldRange`.
+
+### Setup
+
+1. `USOAuraComponent` is already added to `ASOCharacter` in the
+   constructor.
+2. On `BP_SOCharacter` → *Aura* category set `AuraRadius` and optionally
+   `DamagePerPulse`.
+3. To toggle at runtime: `AuraComponent→bAuraActive = false`.
+
+## 39. Trap System
+
+**Files**: `SOTrap.h/.cpp`
+
+Three selectable trap types placed at the cursor with **C**, cycled with
+**V**:
+
+| Key | Trap          | Effect                             |
+|-----|---------------|------------------------------------|
+| —   | ShadowSnare   | Slows + necrotic damage            |
+| —   | ArcaneMine    | Burst damage + Shocked status      |
+| —   | NecroticSpore | Poison DoT (5 s, 8 dmg/tick)       |
+
+`ASOTrap` arms after `ArmDelay` (default 0.8 s), then triggers on the
+first `ASOEnemyCharacter` to enter its `TriggerRadius` (default 150 cm).
+`ASOCharacter::MaxActiveTrapCount` (default 10) caps simultaneous traps;
+the oldest is destroyed when the cap is exceeded.
+
+### HUD changes
+
+Skill panel now has 7 tiles (was 4).  Tile 5 (golden, **C** key):
+- Shows selected trap type ("Snare" / "Mine" / "Spore") as a label below
+  the tile.
+- Cooldown overlay: 0.5 s between placements.
+
+### Setup
+
+1. Create `BP_Trap` (BP subclass of `ASOTrap`).  Tweak stats per type.
+2. On `BP_SOCharacter` set `TrapClass = BP_Trap` and optionally
+   `TrapPlaceSFX`.
+3. Press **C** in-game — the trap appears at the cursor, flashes while
+   arming, then detonates on enemy contact.
+
+## 40. Corruption / Overlord Mode
+
+**Files**: `SOCorruptionComponent.h/.cpp`
+
+Every enemy killed adds `CorruptionValue` (default 8) to a corruption
+meter that decays at `DecayRate` (default 3 / s) when idle.  When the
+meter reaches `MaxCorruption` (default 100) the player may press **Z** to
+activate Overlord Mode:
+
+- All outgoing damage multiplied by `OverlordDamageMultiplier` (default
+  1.5×) for `OverlordModeDuration` (default 10 s).
+- On expiry, corruption resets to 0.
+- `OnOverlordModeStarted` / `OnOverlordModeEnded` delegates; matching BP
+  events for VFX/SFX hooks.
+
+### HUD changes
+
+- **Corruption bar**: thin purple strip centered above the XP bar.
+  Color shifts to bright purple when full; overlaps with the Overlord
+  Mode tile.
+- **Skill tile 6** (purple, **Z** key): dims when not full, glows when
+  active.
+- **"OVERLORD MODE!"** centered flash text while the mode is running.
+
+### Setup
+
+1. Set `ASOEnemyCharacter::CorruptionValue` per enemy type (higher for
+   bosses).
+2. Set `OverlordModeActivateSFX` on `BP_SOCharacter`.
+3. Fill the corruption bar by killing enemies, then press **Z**.
+
+## 41. Necromantic Resurrection
+
+**Files**: `SOSummonComponent.h/.cpp` (added `ResurrectAtLocation`)
+
+Press **U** to raise the nearest dead `ASOEnemyCharacter` within
+`ResurrectRange` (default 500 cm of the cursor) as a temporary minion.
+Shares the minion cap with normal summons.
+
+Key config on `SummonComponent`:
+
+| Property                  | Default | Notes                              |
+|---------------------------|---------|------------------------------------|
+| `ManaCostPerResurrect`    | 20      | Deducted from mana on use          |
+| `NecromancyCooldown`      | 6 s     | Separate cooldown from T-summon    |
+| `ResurrectedMinionLifetime` | 30 s  | Auto-dissipates; 0 = permanent     |
+| `ResurrectRange`          | 500 cm  | Radius around cursor               |
+
+Only enemies with `bCanBeResurrected = true` (default) are eligible.
+Elite / boss enemies may set this to `false` in their BP subclass.
+
+### HUD changes
+
+Skill tile 7 (green, **U** key): shows mana cost, necromancy cooldown
+overlay, and dims when mana is insufficient.
+
+### Setup
+
+1. `SummonComponent` already exists on `ASOCharacter`.  Set `MinionClass`
+   to your minion Blueprint (same as T-summon).
+2. Set `NecroResurrectSFX` for audio feedback.
+3. Kill an enemy, walk to the corpse, press **U**.
+
+### Updated input table
+
+| Key   | Action                          |
+|-------|---------------------------------|
+| LMB   | MoveTo                          |
+| RMB/Q | Primary Attack                  |
+| E     | Shadow Bolt                     |
+| R     | Life Drain                      |
+| T     | Summon Minion (at cursor)       |
+| Y     | Dismiss All Minions             |
+| C     | Place Trap (selected type)      |
+| V     | Cycle Trap Type                 |
+| Z     | Activate Overlord Mode          |
+| U     | Necromantic Resurrect           |
+| F1    | Allocate Strength               |
+| F2    | Allocate Intellect              |
+| F3    | Allocate Vitality               |
+| F5    | Quick Save                      |
+| F9    | Quick Load                      |
+| F     | Interact / Buy                  |
+| G     | Sell Weapon                     |
+| ESC   | Toggle Pause                    |
+| F10   | Quit (while paused)             |
+| K     | Debug Damage Self               |

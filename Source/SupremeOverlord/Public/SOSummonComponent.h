@@ -69,6 +69,36 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Summoning")
 	float GetSummonCooldownRemaining() const { return SummonCooldownRemaining; }
 
+	// ---------- Necromantic Resurrection ----------
+
+	/** Mana drained per resurrection. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Summoning|Necromancy", meta = (ClampMin = "0.0"))
+	float ManaCostPerResurrect = 20.0f;
+
+	/** Cooldown (s) between resurrection casts. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Summoning|Necromancy", meta = (ClampMin = "0.0"))
+	float NecromancyCooldown = 6.0f;
+
+	/** How long a resurrected minion lasts before expiring (seconds). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Summoning|Necromancy", meta = (ClampMin = "1.0"))
+	float ResurrectedMinionLifetime = 30.0f;
+
+	/** Radius (cm) around the cursor within which a corpse can be targeted. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Summoning|Necromancy", meta = (ClampMin = "50.0"))
+	float ResurrectRange = 500.0f;
+
+	/**
+	 * Finds the nearest dead ASOEnemyCharacter within ResurrectRange of CursorLocation
+	 * and spawns a MinionClass there with a limited lifetime.
+	 * Returns false if cooldown is active, mana is insufficient, no valid corpse found,
+	 * or the active minion cap is reached.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Summoning|Necromancy")
+	bool ResurrectAtLocation(FVector CursorLocation, ASOCharacter* Caster);
+
+	UFUNCTION(BlueprintPure, Category = "Summoning|Necromancy")
+	float GetNecromancyCooldownRemaining() const { return NecromancyCooldownRemaining; }
+
 	// ---------- Delegates ----------
 
 	UPROPERTY(BlueprintAssignable, Category = "Summoning")
@@ -79,5 +109,6 @@ public:
 
 private:
 	TArray<TWeakObjectPtr<ASOMinion>> ActiveMinions;
-	float SummonCooldownRemaining = 0.0f;
+	float SummonCooldownRemaining      = 0.0f;
+	float NecromancyCooldownRemaining  = 0.0f;
 };
