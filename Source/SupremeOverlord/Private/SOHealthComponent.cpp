@@ -45,6 +45,11 @@ void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage,
 		return;
 	}
 
+	if (SODamageType)
+	{
+		LastHitReactStrength = SODamageType->HitReactStrength;
+	}
+
 	ApplyHealthDelta(-ScaledDamage, InstigatedBy, DamageCauser);
 }
 

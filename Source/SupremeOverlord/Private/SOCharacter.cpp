@@ -218,12 +218,14 @@ void ASOCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AControl
 	OnCharacterDied(InstigatedBy, DamageCauser);
 }
 
-void ASOCharacter::HandleHealthChanged(USOHealthComponent* /*OwningComponent*/, float /*OldHealth*/, float /*NewHealth*/,
+void ASOCharacter::HandleHealthChanged(USOHealthComponent* OwningComponent, float /*OldHealth*/, float /*NewHealth*/,
                                        float Delta, AController* /*InstigatedBy*/, AActor* /*DamageCauser*/)
 {
 	if (Delta < 0.0f && IsAlive())
 	{
-		TriggerHitImpact(1.0f);
+		// A heavy boss slam (HitReactStrength near 1) shakes the camera harder than a chip DOT tick.
+		const float ShakeScale = OwningComponent ? OwningComponent->GetLastHitReactStrength() : 1.0f;
+		TriggerHitImpact(ShakeScale);
 	}
 }
 

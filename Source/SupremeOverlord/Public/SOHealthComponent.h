@@ -100,6 +100,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Health")
 	bool IsAlive() const { return !bIsDead; }
 
+	/**
+	 * USODamageType::HitReactStrength from the most recent damage instance
+	 * that actually landed (defaults to 0.5 if none has landed, or the last
+	 * hit used a plain UDamageType). Intended for hit-react animation/VFX
+	 * intensity — ASOCharacter::HandleHealthChanged already scales its
+	 * hit-stop camera shake by this.
+	 */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Health")
+	float GetLastHitReactStrength() const { return LastHitReactStrength; }
+
 	/** Applies healing (clamped to MaxHealth). Ignored when dead. Returns the actual amount healed. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health")
 	float Heal(float HealAmount, AController* Instigator = nullptr, AActor* Healer = nullptr);
@@ -121,4 +131,6 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Health", Transient)
 	bool bIsDead = false;
+
+	float LastHitReactStrength = 0.5f;
 };

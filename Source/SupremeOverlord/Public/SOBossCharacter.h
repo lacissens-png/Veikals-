@@ -47,6 +47,7 @@ protected:
 	void EnterPhase(ESOBossPhase NewPhase);
 	void PerformTelegraphedAoE(AActor* Target);
 	void TelegraphedAoEResolve(TWeakObjectPtr<AActor> Target, FVector Center);
+	void TriggerEnrage();
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "SupremeOverlord|Boss")
@@ -91,6 +92,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Debug")
 	bool bDrawTelegraphDebug = true;
 
+	// -----------------------------------------------------------------------
+	// Enrage — anti-turtling: after EnrageTime seconds of the fight running,
+	// the boss permanently hits harder and moves faster, forced into Phase3
+	// if it wasn't already there (the fight is meant to be ending soon).
+	// -----------------------------------------------------------------------
+
+	/** Seconds after BeginPlay before the boss enrages. 0 disables enrage entirely. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Enrage", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "600.0"))
+	float EnrageTime = 180.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Enrage", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "5.0"))
+	float EnrageDamageMult = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Enrage", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "3.0"))
+	float EnrageSpeedMult = 1.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Audio")
+	TObjectPtr<class USoundBase> EnrageSFX;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Boss|Enrage")
+	bool IsEnraged() const { return bEnraged; }
+
+	/** Seconds until enrage triggers. 0 once enraged (or if EnrageTime is 0). */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Boss|Enrage")
+	float GetEnrageTimeRemaining() const;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Boss|Enrage")
+	void OnBossEnraged();
+
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Boss")
 	ESOBossPhase GetCurrentPhase() const { return CurrentPhase; }
 
@@ -112,4 +142,7 @@ private:
 	// Cached base values so we can re-scale relative to them on each phase change.
 	float BaseAttackDamage = 0.0f;
 	float BaseMovementSpeed = 0.0f;
+
+	bool bEnraged = false;
+	FTimerHandle EnrageTimerHandle;
 };

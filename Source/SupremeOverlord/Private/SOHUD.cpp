@@ -946,6 +946,34 @@ void ASOHUD::DrawHUD()
 			NameItem.Scale = FVector2D(BossNameScale, BossNameScale);
 			NameItem.EnableShadow(FLinearColor::Black);
 			Canvas->DrawItem(NameItem);
+
+			// Enrage tag/countdown beneath the boss bar.
+			if (Closest->IsEnraged())
+			{
+				const FString EnrageStr = TEXT("ENRAGED!");
+				float EW = 0.0f, EH = 0.0f;
+				Canvas->TextSize(MediumFont, EnrageStr, EW, EH, 1.1f, 1.1f);
+				FCanvasTextItem EnrageItem(FVector2D((ScreenW - EW) * 0.5f, BY + BossBarSize.Y + 4.0f),
+				                           FText::FromString(EnrageStr),
+				                           MediumFont,
+				                           FLinearColor(1.0f, 0.15f, 0.10f, 1.0f));
+				EnrageItem.Scale = FVector2D(1.1f, 1.1f);
+				EnrageItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(EnrageItem);
+			}
+			else if (Closest->EnrageTime > 0.0f)
+			{
+				const FString CountdownStr = FString::Printf(TEXT("Enrage in %ds"), FMath::CeilToInt(Closest->GetEnrageTimeRemaining()));
+				float CW = 0.0f, CH = 0.0f;
+				Canvas->TextSize(MediumFont, CountdownStr, CW, CH, 0.85f, 0.85f);
+				FCanvasTextItem CountdownItem(FVector2D((ScreenW - CW) * 0.5f, BY + BossBarSize.Y + 4.0f),
+				                              FText::FromString(CountdownStr),
+				                              MediumFont,
+				                              FLinearColor(0.7f, 0.7f, 0.7f, 1.0f));
+				CountdownItem.Scale = FVector2D(0.85f, 0.85f);
+				CountdownItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(CountdownItem);
+			}
 		}
 	}
 

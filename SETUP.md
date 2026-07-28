@@ -1871,6 +1871,42 @@ existing delegate handlers already on `ASOCharacter`:
 3. Set `UnlockSFX` on `BP_SOCharacter`'s `AchievementComponent` for
    audio feedback.
 
+## 61. Hit-React Strength (completing another dormant field) + Boss Enrage
+
+**Files**: `SOHealthComponent.h/.cpp`, `SOCharacter.cpp`,
+`SOBossCharacter.h/.cpp`, `SOHUD.cpp`
+
+Same story as the elemental-resistance fix (§58): `USODamageType` has
+carried `HitReactStrength` (doc'd as "hit-react animation/VFX
+intensity") since an early pass, but nothing ever read it.
+`USOHealthComponent` now caches `LastHitReactStrength` from whichever
+`USODamageType` last actually landed damage, and
+`ASOCharacter::HandleHealthChanged` scales its hit-stop camera shake by
+it — a heavy boss slam now visibly shakes the screen harder than a
+weak poison tick, using the exact same field a future hit-react
+animation system would also read.
+
+**Boss Enrage** is a new, standard anti-turtling mechanic: after
+`EnrageTime` seconds (default 180s) the boss permanently gets
+`EnrageDamageMult`/`EnrageSpeedMult` (default 2.0x/1.5x) stronger and
+is forced into Phase 3 if it wasn't already there — `EnterPhase`
+always rescales from the cached base stats, so forcing Phase 3 first
+and multiplying after keeps the two effects additive instead of one
+clobbering the other. `EnrageTime = 0` disables it entirely.
+
+### HUD changes
+
+The boss bar now shows a countdown ("Enrage in 42s") beneath the
+nameplate, replaced by a bright red "ENRAGED!" tag once it triggers.
+
+### Setup
+
+1. No setup needed for hit-react — it's automatic wherever
+   `USODamageType::HitReactStrength` is already authored.
+2. Tune `EnrageTime`/`EnrageDamageMult`/`EnrageSpeedMult` per boss, or
+   set `EnrageTime = 0` for fights that shouldn't enrage.
+3. Set `EnrageSFX` for a roar/audio cue the moment it triggers.
+
 ### Updated input table
 
 | Key   | Action                          |

@@ -42,6 +42,11 @@ void ASOBossCharacter::BeginPlay()
 	}
 
 	CurrentPhase = ESOBossPhase::Phase1;
+
+	if (EnrageTime > 0.0f)
+	{
+		GetWorld()->GetTimerManager().SetTimer(EnrageTimerHandle, this, &ASOBossCharacter::TriggerEnrage, EnrageTime, false);
+	}
 }
 
 void ASOBossCharacter::HandleHealthChanged(USOHealthComponent* Comp, float /*Old*/, float NewHealth, float /*Delta*/,
@@ -210,4 +215,49 @@ void ASOBossCharacter::TelegraphedAoEResolve(TWeakObjectPtr<AActor> /*Target*/, 
 	}
 
 	OnTelegraphAoEResolve(Center, TelegraphedAoERadius, HitCount);
+}
+
+void ASOBossCharacter::TriggerEnrage()
+{
+	if (bEnraged || !IsAlive())
+	{
+		return;
+	}
+	bEnraged = true;
+
+	// Enrage means the fight is meant to be ending soon — force the hardest phase first
+	// (EnterPhase always rescales from Base* values, so doing this before the multiply
+	// below keeps the two effects additive instead of one clobbering the other).
+	if (CurrentPhase != ESOBossPhase::Phase3)
+	{
+		EnterPhase(ESOBossPhase::Phase3);
+	}
+
+	AttackDamage  *= EnrageDamageMult;
+	MovementSpeed *= EnrageSpeedMult;
+
+	if (UCharacterMovementComponent* Move = GetCharacterMovement())
+	{
+		Move->MaxWalkSpeed = MovementSpeed;
+	}
+
+	if (EnrageSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, EnrageSFX, GetActorLocation());
+	}
+
+	OnBossEnraged();
+}
+
+float ASOBossCharacter::GetEnrageTimeRemaining() const
+{
+	if (bEnraged)
+	{
+		return 0.0f;
+	}
+	if (const UWorld* World = GetWorld())
+	{
+		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(EnrageTimerHandle));
+	}
+	return 0.0f;
 }
