@@ -96,6 +96,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Corruption")
 	TObjectPtr<class USOCorruptionComponent> CorruptionComponent;
 
+	/** Corpse Explosion — consumes a nearby corpse for a percent-HP AoE detonation. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|CorpseExplosion")
+	TObjectPtr<class USOCorpseExplosionComponent> CorpseExplosionComponent;
+
+	/** Shadow Step — short-range teleport toward the cursor with a brief i-frame. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Blink")
+	TObjectPtr<class USOBlinkComponent> BlinkComponent;
+
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
 	float CameraDistance = 1200.0f;
@@ -499,6 +507,67 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Combat|LifeDrain")
 	void OnLifeDrainCast(const TArray<AActor*>& ImpactActors, float TotalDamageDealt, float HealedAmount);
 
+	// -----------------------------------------------------------------------
+	// Corpse Explosion — X key; consumes the nearest corpse for a percent-HP AoE.
+	// -----------------------------------------------------------------------
+
+	/** Detonates the nearest corpse to TargetLocation via CorpseExplosionComponent. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|CorpseExplosion")
+	void CastCorpseExplosion(FVector TargetLocation);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|CorpseExplosion")
+	float GetCorpseExplosionCooldownRemaining() const;
+
+	// -----------------------------------------------------------------------
+	// Shadow Step / Blink — B key; short teleport with a brief i-frame.
+	// -----------------------------------------------------------------------
+
+	/** Teleports the character toward TargetLocation via BlinkComponent. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Blink")
+	void CastBlink(FVector TargetLocation);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Blink")
+	float GetBlinkCooldownRemaining() const;
+
+	// -----------------------------------------------------------------------
+	// Cursed Ground — H key; persistent AoE hazard zone at the cursor.
+	// -----------------------------------------------------------------------
+
+	/** Hazard zone actor class to spawn. Assign a BP_CursedGround subclass in the editor. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|CursedGround")
+	TSubclassOf<class ASOCursedGround> CursedGroundClass;
+
+	/** Mana cost per placement. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|CursedGround", meta = (ClampMin = "0.0"))
+	float CursedGroundManaCost = 30.0f;
+
+	/** Maximum number of Cursed Ground zones allowed active at once. Oldest is removed when exceeded. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|CursedGround", meta = (ClampMin = "1", UIMin = "1", UIMax = "10"))
+	int32 MaxCursedGrounds = 5;
+
+	/** Spawns a CursedGroundClass zone at TargetLocation. Respects MaxCursedGrounds and cooldown. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|CursedGround")
+	void PlaceCursedGround(FVector TargetLocation);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|CursedGround")
+	float GetCursedGroundCooldownRemaining() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|CursedGround")
+	float GetCursedGroundCooldown() const { return CursedGroundCooldown; }
+
+	// -----------------------------------------------------------------------
+	// SFX slots for the new abilities.
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> BlinkSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> CorpseExplosionSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> CursedGroundSFX;
+
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;
 	bool bPrimaryAttackOnCooldown = false;
@@ -514,6 +583,12 @@ private:
 	float TrapPlaceCooldown    = 0.5f;
 
 	TArray<TWeakObjectPtr<ASOTrap>> ActiveTraps;
+
+	FTimerHandle CursedGroundCooldownHandle;
+	bool  bCursedGroundOnCooldown = false;
+	float CursedGroundCooldown    = 1.0f;
+
+	TArray<TWeakObjectPtr<class ASOCursedGround>> ActiveCursedGrounds;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Currency", Transient)
 	int32 Gold = 0;

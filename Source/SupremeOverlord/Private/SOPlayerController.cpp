@@ -94,6 +94,11 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("ActivateOverlordMode", IE_Pressed, this, &ASOPlayerController::OnActivateOverlordModePressed);
 	InputComponent->BindAction("NecroticResurrect",    IE_Pressed, this, &ASOPlayerController::OnNecroticResurrectPressed);
 
+	// Corpse Explosion (X) / Blink (B) / Cursed Ground (H).
+	InputComponent->BindAction("CorpseExplosion", IE_Pressed, this, &ASOPlayerController::OnCorpseExplosionPressed);
+	InputComponent->BindAction("Blink",           IE_Pressed, this, &ASOPlayerController::OnBlinkPressed);
+	InputComponent->BindAction("CursedGround",    IE_Pressed, this, &ASOPlayerController::OnCursedGroundPressed);
+
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
 	InputComponent->BindAction("DialogueChoice2", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice2);
@@ -490,6 +495,63 @@ void ASOPlayerController::OnNecroticResurrectPressed()
 	}
 
 	SOCharacter->CastNecroticResurrect(Target);
+}
+
+void ASOPlayerController::OnCorpseExplosionPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector Target = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		Target = Hit.ImpactPoint;
+	}
+
+	SOCharacter->CastCorpseExplosion(Target);
+}
+
+void ASOPlayerController::OnBlinkPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector Target = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		Target = Hit.ImpactPoint;
+	}
+
+	SOCharacter->CastBlink(Target);
+}
+
+void ASOPlayerController::OnCursedGroundPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector Target = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		Target = Hit.ImpactPoint;
+	}
+
+	SOCharacter->PlaceCursedGround(Target);
 }
 
 void ASOPlayerController::SpawnClickIndicator(const FVector& WorldLocation)

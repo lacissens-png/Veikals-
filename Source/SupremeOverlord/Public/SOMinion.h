@@ -16,6 +16,17 @@ enum class ESOMinMinionType : uint8
 	ShadowWraith UMETA(DisplayName = "ShadowWraith"),
 };
 
+/** Power rank a minion climbs by landing killing blows. */
+UENUM(BlueprintType)
+enum class ESOMinionTier : uint8
+{
+	Base     UMETA(DisplayName = "Base"),
+	Elite    UMETA(DisplayName = "Elite"),
+	Champion UMETA(DisplayName = "Champion"),
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSOOnMinionEvolved, class ASOMinion*, Minion, ESOMinionTier, NewTier);
+
 /**
  * AI-driven minion spawned by the player's SummonComponent.
  * Ticks at 10 Hz to find the nearest live ASOEnemyCharacter within AggroRange
@@ -76,12 +87,65 @@ public:
 	UPROPERTY(Transient)
 	TWeakObjectPtr<USOSummonComponent> OwnerSummonComponent;
 
+	// -----------------------------------------------------------------------
+	// Tiers / Evolution — minions grow stronger by landing killing blows.
+	// -----------------------------------------------------------------------
+
+	/** Current power rank. Starts at Base and climbs every KillsToEvolve kills. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Minion|Tier", Transient)
+	ESOMinionTier CurrentTier = ESOMinionTier::Base;
+
+	/** Killing blows required to advance one tier. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|Tier", meta = (ClampMin = "1", UIMin = "1", UIMax = "50"))
+	int32 KillsToEvolve = 5;
+
+	/** Health / damage multiplier applied on every tier-up. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|Tier", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "3.0"))
+	float TierStatMultiplier = 1.35f;
+
+	/** Movement-speed multiplier applied on every tier-up. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|Tier", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "2.0"))
+	float TierSpeedMultiplier = 1.10f;
+
+	/** Actor scale multiplier applied on every tier-up, so ranks read at a glance. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|Tier", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "2.0"))
+	float TierScaleMultiplier = 1.15f;
+
+	/** Kills this minion has landed since it was summoned. */
+	UFUNCTION(BlueprintPure, Category = "Minion|Tier")
+	int32 GetKillCount() const { return KillCount; }
+
+	/** Kills still needed for the next tier. Returns 0 once Champion is reached. */
+	UFUNCTION(BlueprintPure, Category = "Minion|Tier")
+	int32 GetKillsUntilEvolve() const;
+
+	/**
+	 * Records a killing blow. Evolves the minion once the tier threshold is met.
+	 * Called automatically when a melee swing drops its target.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Minion|Tier")
+	void NotifyKill();
+
+	UPROPERTY(BlueprintAssignable, Category = "Minion|Tier")
+	FSOOnMinionEvolved OnMinionEvolved;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Minion|Tier")
+	void OnMinionEvolvedBP(ESOMinionTier NewTier);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|Audio")
+	TObjectPtr<class USoundBase> EvolveSFX;
+
 private:
 	float AttackCooldownRemaining = 0.0f;
 	float LifetimeRemaining       = 0.0f;
+
+	int32 KillCount = 0;
 
 	UPROPERTY(Transient)
 	TObjectPtr<AActor> CurrentTarget;
 
 	AActor* FindBestTarget() const;
+
+	/** Advances CurrentTier one step and applies the stat/scale bumps. */
+	void Evolve();
 };

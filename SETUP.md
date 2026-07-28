@@ -1184,6 +1184,142 @@ overlay, and dims when mana is insufficient.
 2. Set `NecroResurrectSFX` for audio feedback.
 3. Kill an enemy, walk to the corpse, press **U**.
 
+## 42. Corpse Explosion
+
+**Files**: `SOCorpseExplosionComponent.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`
+
+Press **X** to consume the nearest dead `ASOEnemyCharacter` within
+`SearchRange` (default 400 cm) of the cursor. The corpse detonates,
+dealing `MaxHealth * HPFraction` damage to every live enemy inside
+`ExplosionRadius` (default 350 cm), then the corpse is destroyed.
+
+Key config on `CorpseExplosionComponent` (added to `ASOCharacter`):
+
+| Property        | Default | Notes                                   |
+|-----------------|---------|------------------------------------------|
+| `SearchRange`   | 400 cm  | Max distance from cursor to find a corpse |
+| `ExplosionRadius` | 350 cm | Blast radius centered on the corpse      |
+| `HPFraction`    | 0.40    | Fraction of each victim's MaxHealth dealt |
+| `ManaCost`      | 35      | Deducted on a successful cast             |
+| `Cooldown`      | 3 s     | Time between casts                        |
+
+`OnCorpseExploded` (C++) / `OnCorpseExplodedBP` (BP) fire with
+`(EnemiesHit, TotalDamage)` for VFX/SFX hookup.
+
+### Setup
+
+1. `CorpseExplosionComponent` already exists on `ASOCharacter` — tune
+   values in the editor or leave defaults.
+2. Set `CorpseExplosionSFX` on `BP_SOCharacter` for audio feedback.
+3. Kill an enemy, aim near its corpse, press **X**.
+
+## 43. Shadow Step / Blink
+
+**Files**: `SOBlinkComponent.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`
+
+Press **B** to teleport toward the cursor, up to `BlinkRange` (default
+650 cm). The destination is snapped to the navmesh when one is present
+and validated with `TeleportTo` so the character never lands inside
+geometry. On landing, `HealthComponent->bInvulnerable` is set for
+`InvulnerabilityDuration` (default 0.18 s), making Blink a viable dodge
+as well as a gap-closer.
+
+Key config on `BlinkComponent`:
+
+| Property                  | Default | Notes                                |
+|----------------------------|--------|----------------------------------------|
+| `BlinkRange`               | 650 cm | Cursor targets beyond this are clamped |
+| `ManaCost`                 | 22     | Deducted on a successful blink         |
+| `Cooldown`                 | 5 s    | Time between casts                     |
+| `InvulnerabilityDuration`  | 0.18 s | I-frame window after landing; 0 disables |
+| `NavProjectionExtent`      | 200 cm | Search extent for navmesh snapping     |
+
+`OnBlinked` (C++) / `OnBlinkedBP` (BP) fire with `(FromLocation, ToLocation)`.
+
+### Setup
+
+1. `BlinkComponent` already exists on `ASOCharacter`.
+2. Set `BlinkSFX` on `BP_SOCharacter`.
+3. Press **B** near a wall or a gap in a monster pack to test the dash.
+
+## 44. Minion Tiers / Evolution
+
+**Files**: `SOMinion.h/.cpp` (added `ESOMinionTier`, `NotifyKill`, `Evolve`)
+
+Every minion tracks its own kill count. After landing `KillsToEvolve`
+(default 5) killing blows, a minion evolves from **Base** to **Elite**,
+then after the same number of kills again, to **Champion** — the
+strongest rank. Each evolution:
+
+- Multiplies `AttackDamage` and `MaxHealth` by `TierStatMultiplier`
+  (default 1.35×), and heals to the new max.
+- Multiplies `MaxWalkSpeed` by `TierSpeedMultiplier` (default 1.10×).
+- Scales the actor by `TierScaleMultiplier` (default 1.15×) so evolved
+  minions read as visibly bigger on sight.
+
+Kill detection happens inside `ASOMinion::Tick` — after a melee swing
+lands, the minion checks whether its target was alive before the hit
+and dead after, crediting the kill without needing extra wiring on
+`ASOEnemyCharacter`.
+
+`OnMinionEvolved` (C++) / `OnMinionEvolvedBP` (BP) fire with the new
+`ESOMinionTier` for VFX/SFX (recommended: a burst effect + `EvolveSFX`).
+
+### Setup
+
+1. Tune `KillsToEvolve` / `TierStatMultiplier` / `TierSpeedMultiplier` /
+   `TierScaleMultiplier` on `BP_SOMinion` (or per minion type).
+2. Set `EvolveSFX` for audio feedback.
+3. Summon a minion, let it rack up kills, watch it grow.
+
+## 45. Cursed Ground
+
+**Files**: `SOCursedGround.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`
+
+Press **H** to place a persistent hazard zone at the cursor. Unlike
+`ASOTrap` (which triggers once), `ASOCursedGround` pulses every
+`TickInterval` (default 0.75 s) for its full `Duration` (default 8 s),
+damaging and debuffing every live `ASOEnemyCharacter` standing inside
+`AreaRadius` (default 300 cm) — a zoning tool for denying ground to
+packs your minions are wading into.
+
+Key config on `ASOCursedGround`:
+
+| Property        | Default | Notes                                    |
+|-----------------|---------|--------------------------------------------|
+| `AreaRadius`    | 300 cm  | Hazard zone radius                         |
+| `Duration`      | 8 s     | Total lifetime before the zone expires     |
+| `TickInterval`  | 0.75 s  | Seconds between damage pulses              |
+| `DamagePerTick` | 10      | Damage applied to each enemy per pulse     |
+| `bAppliesSlow`  | true    | Refreshes Slowed on every pulse            |
+| `bAppliesCurse` | true    | Refreshes Cursed (-25% outgoing dmg) too   |
+
+Key config on `ASOCharacter`:
+
+| Property              | Default | Notes                                  |
+|-----------------------|---------|-------------------------------------------|
+| `CursedGroundManaCost`| 30      | Deducted on placement                     |
+| `MaxCursedGrounds`    | 5       | Oldest zone is destroyed past this cap    |
+
+`OnCursedGroundTick` (C++) / `OnCursedGroundTickBP` (BP) fire with
+`(EnemiesAffected, DamageDealt)` on every pulse.
+
+### Setup
+
+1. Assign a `BP_CursedGround` subclass of `ASOCursedGround` to
+   `CursedGroundClass` on `BP_SOCharacter`.
+2. Set `CursedGroundSFX` for audio feedback.
+3. Press **H** ahead of an approaching pack to zone them out.
+
+### HUD changes (Corpse Explosion / Blink / Cursed Ground)
+
+Skill tiles 8-10 (bone-white **X**, shadow-blue **B**, violet **H**)
+show mana cost and cooldown overlay using the same tile pattern as the
+rest of the skill bar.
+
 ### Updated input table
 
 | Key   | Action                          |
@@ -1198,6 +1334,9 @@ overlay, and dims when mana is insufficient.
 | V     | Cycle Trap Type                 |
 | Z     | Activate Overlord Mode          |
 | U     | Necromantic Resurrect           |
+| X     | Corpse Explosion                |
+| B     | Shadow Step / Blink             |
+| H     | Place Cursed Ground              |
 | F1    | Allocate Strength               |
 | F2    | Allocate Intellect              |
 | F3    | Allocate Vitality               |

@@ -127,6 +127,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
 	void OnNecroticResurrectPressed();
 
+	/** Bound to "CorpseExplosion" (X). Resolves the cursor and detonates the nearest corpse there. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|CorpseExplosion")
+	void OnCorpseExplosionPressed();
+
+	/** Bound to "Blink" (B). Resolves the cursor and teleports the pawn toward it. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Blink")
+	void OnBlinkPressed();
+
+	/** Bound to "CursedGround" (H). Resolves the cursor and places a hazard zone there. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|CursedGround")
+	void OnCursedGroundPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

@@ -10,7 +10,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
 #include "SOAuraComponent.h"
+#include "SOBlinkComponent.h"
+#include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
+#include "SOCursedGround.h"
 #include "SOEquipmentComponent.h"
 #include "SOTrap.h"
 #include "SOInventoryComponent.h"
@@ -61,6 +64,8 @@ ASOCharacter::ASOCharacter()
 	SummonComponent       = CreateDefaultSubobject<USOSummonComponent>(TEXT("SummonComponent"));
 	AuraComponent         = CreateDefaultSubobject<USOAuraComponent>(TEXT("AuraComponent"));
 	CorruptionComponent   = CreateDefaultSubobject<USOCorruptionComponent>(TEXT("CorruptionComponent"));
+	CorpseExplosionComponent = CreateDefaultSubobject<USOCorpseExplosionComponent>(TEXT("CorpseExplosionComponent"));
+	BlinkComponent           = CreateDefaultSubobject<USOBlinkComponent>(TEXT("BlinkComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -863,4 +868,126 @@ float ASOCharacter::GetNecromancyCooldownRemaining() const
 float ASOCharacter::GetNecromancyCooldown() const
 {
 	return SummonComponent ? SummonComponent->NecromancyCooldown : 1.0f;
+}
+
+// ---------------------------------------------------------------------------
+// Corpse Explosion
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::CastCorpseExplosion(FVector TargetLocation)
+{
+	if (!IsAlive() || !CorpseExplosionComponent)
+	{
+		return;
+	}
+	if (CorpseExplosionComponent->Cast(TargetLocation, this))
+	{
+		if (CorpseExplosionSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, CorpseExplosionSFX, TargetLocation);
+		}
+	}
+}
+
+float ASOCharacter::GetCorpseExplosionCooldownRemaining() const
+{
+	return CorpseExplosionComponent ? CorpseExplosionComponent->GetCooldownRemaining() : 0.0f;
+}
+
+// ---------------------------------------------------------------------------
+// Shadow Step / Blink
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::CastBlink(FVector TargetLocation)
+{
+	if (!IsAlive() || !BlinkComponent)
+	{
+		return;
+	}
+	if (BlinkComponent->Blink(TargetLocation, this))
+	{
+		if (BlinkSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, BlinkSFX, GetActorLocation());
+		}
+	}
+}
+
+float ASOCharacter::GetBlinkCooldownRemaining() const
+{
+	return BlinkComponent ? BlinkComponent->GetCooldownRemaining() : 0.0f;
+}
+
+// ---------------------------------------------------------------------------
+// Cursed Ground
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::PlaceCursedGround(FVector TargetLocation)
+{
+	if (!IsAlive() || !CursedGroundClass || bCursedGroundOnCooldown)
+	{
+		return;
+	}
+
+	if (CursedGroundManaCost > 0.0f && (!ManaComponent || !ManaComponent->HasEnough(CursedGroundManaCost)))
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	// Prune expired zones before checking the limit.
+	ActiveCursedGrounds.RemoveAll([](const TWeakObjectPtr<ASOCursedGround>& W) { return !W.IsValid(); });
+	if (ActiveCursedGrounds.Num() >= MaxCursedGrounds)
+	{
+		if (ASOCursedGround* Oldest = ActiveCursedGrounds[0].Get())
+		{
+			Oldest->Destroy();
+		}
+		ActiveCursedGrounds.RemoveAt(0);
+	}
+
+	if (CursedGroundManaCost > 0.0f)
+	{
+		ManaComponent->Consume(CursedGroundManaCost);
+	}
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	Params.Owner      = this;
+	Params.Instigator = this;
+
+	ASOCursedGround* Ground = World->SpawnActor<ASOCursedGround>(CursedGroundClass, TargetLocation, FRotator::ZeroRotator, Params);
+	if (!Ground)
+	{
+		return;
+	}
+
+	Ground->OwnerCharacter = this;
+	ActiveCursedGrounds.Add(Ground);
+
+	if (CursedGroundSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, CursedGroundSFX, TargetLocation);
+	}
+
+	bCursedGroundOnCooldown = true;
+	World->GetTimerManager().SetTimer(
+		CursedGroundCooldownHandle,
+		FTimerDelegate::CreateLambda([this]() { bCursedGroundOnCooldown = false; }),
+		CursedGroundCooldown,
+		false);
+}
+
+float ASOCharacter::GetCursedGroundCooldownRemaining() const
+{
+	if (const UWorld* World = GetWorld())
+	{
+		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(CursedGroundCooldownHandle));
+	}
+	return 0.0f;
 }

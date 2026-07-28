@@ -372,7 +372,7 @@ void ASOHUD::DrawHUD()
 	// -- Skill panel (row of seven tiles centered above the XP bar) ---------
 	if (bShowSkillPanel && MediumFont)
 	{
-		const int32 NumTiles       = 7;
+		const int32 NumTiles       = 10;
 		const float RowWidth       = NumTiles * SkillTileSize.X + (NumTiles - 1) * SkillTileGap;
 		const float RowY           = ScreenH - XPBarSize.Y - XPBarBottomOffset - SkillTileSize.Y - SkillPanelGap;
 		const float RowStartX      = (ScreenW - RowWidth) * 0.5f;
@@ -536,6 +536,53 @@ void ASOHUD::DrawHUD()
 				NecroCDLeft,
 				NecroCDTotal,
 				FLinearColor(0.15f, 0.55f, 0.20f, 1.0f),
+				MediumFont);
+		}
+
+		// Corpse Explosion (X key) - sickly bone-white tile
+		if (SO->CorpseExplosionComponent)
+		{
+			DrawSkillTile(
+				Canvas,
+				FVector2D(RowStartX + 7 * (SkillTileSize.X + SkillTileGap), RowY),
+				TEXT("X"),
+				TEXT("Corpse"),
+				SO->CorpseExplosionComponent->ManaCost,
+				CurrentManaVal,
+				SO->GetCorpseExplosionCooldownRemaining(),
+				SO->CorpseExplosionComponent->Cooldown,
+				FLinearColor(0.55f, 0.50f, 0.42f, 1.0f),
+				MediumFont);
+		}
+
+		// Shadow Step / Blink (B key) - deep shadow-blue tile
+		if (SO->BlinkComponent)
+		{
+			DrawSkillTile(
+				Canvas,
+				FVector2D(RowStartX + 8 * (SkillTileSize.X + SkillTileGap), RowY),
+				TEXT("B"),
+				TEXT("Blink"),
+				SO->BlinkComponent->ManaCost,
+				CurrentManaVal,
+				SO->GetBlinkCooldownRemaining(),
+				SO->BlinkComponent->Cooldown,
+				FLinearColor(0.10f, 0.20f, 0.55f, 1.0f),
+				MediumFont);
+		}
+
+		// Cursed Ground (H key) - sickly violet tile
+		{
+			DrawSkillTile(
+				Canvas,
+				FVector2D(RowStartX + 9 * (SkillTileSize.X + SkillTileGap), RowY),
+				TEXT("H"),
+				TEXT("Curse"),
+				SO->CursedGroundManaCost,
+				CurrentManaVal,
+				SO->GetCursedGroundCooldownRemaining(),
+				SO->GetCursedGroundCooldown(),
+				FLinearColor(0.40f, 0.10f, 0.45f, 1.0f),
 				MediumFont);
 		}
 	}

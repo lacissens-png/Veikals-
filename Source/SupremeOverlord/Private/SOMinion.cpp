@@ -93,6 +93,9 @@ void ASOMinion::Tick(float DeltaTime)
 		// In melee range — attack if off cooldown
 		if (AttackCooldownRemaining <= 0.0f)
 		{
+			ASOEnemyCharacter* TargetEnemy = Cast<ASOEnemyCharacter>(CurrentTarget.Get());
+			const bool bWasAlive = TargetEnemy && TargetEnemy->IsAlive();
+
 			UGameplayStatics::ApplyDamage(
 				CurrentTarget.Get(),
 				AttackDamage,
@@ -103,6 +106,12 @@ void ASOMinion::Tick(float DeltaTime)
 			if (AttackSFX)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, AttackSFX, GetActorLocation());
+			}
+
+			// This swing was the killing blow — credit it toward the next tier.
+			if (bWasAlive && !TargetEnemy->IsAlive())
+			{
+				NotifyKill();
 			}
 
 			AttackCooldownRemaining = AttackCooldown;
@@ -144,6 +153,55 @@ AActor* ASOMinion::FindBestTarget() const
 		}
 	}
 	return Best;
+}
+
+int32 ASOMinion::GetKillsUntilEvolve() const
+{
+	if (CurrentTier == ESOMinionTier::Champion)
+	{
+		return 0;
+	}
+	const int32 NextThreshold = KillsToEvolve * (static_cast<int32>(CurrentTier) + 1);
+	return FMath::Max(0, NextThreshold - KillCount);
+}
+
+void ASOMinion::NotifyKill()
+{
+	++KillCount;
+
+	if (CurrentTier != ESOMinionTier::Champion && GetKillsUntilEvolve() <= 0)
+	{
+		Evolve();
+	}
+}
+
+void ASOMinion::Evolve()
+{
+	CurrentTier = static_cast<ESOMinionTier>(static_cast<uint8>(CurrentTier) + 1);
+
+	AttackDamage *= TierStatMultiplier;
+
+	if (HealthComponent)
+	{
+		HealthComponent->MaxHealth *= TierStatMultiplier;
+		// Evolving is a reward — top the minion back up at its new ceiling.
+		HealthComponent->Heal(HealthComponent->MaxHealth, GetController(), this);
+	}
+
+	if (UCharacterMovementComponent* Move = GetCharacterMovement())
+	{
+		Move->MaxWalkSpeed *= TierSpeedMultiplier;
+	}
+
+	SetActorScale3D(GetActorScale3D() * TierScaleMultiplier);
+
+	if (EvolveSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, EvolveSFX, GetActorLocation());
+	}
+
+	OnMinionEvolved.Broadcast(this, CurrentTier);
+	OnMinionEvolvedBP(CurrentTier);
 }
 
 void ASOMinion::HandleDeath(USOHealthComponent*, AController*, AActor*)
