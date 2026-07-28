@@ -14,6 +14,7 @@
 #include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
 #include "SOCursedGround.h"
+#include "SODodgeRollComponent.h"
 #include "SOEquipmentComponent.h"
 #include "SOTrap.h"
 #include "SOInventoryComponent.h"
@@ -66,6 +67,7 @@ ASOCharacter::ASOCharacter()
 	CorruptionComponent   = CreateDefaultSubobject<USOCorruptionComponent>(TEXT("CorruptionComponent"));
 	CorpseExplosionComponent = CreateDefaultSubobject<USOCorpseExplosionComponent>(TEXT("CorpseExplosionComponent"));
 	BlinkComponent           = CreateDefaultSubobject<USOBlinkComponent>(TEXT("BlinkComponent"));
+	DodgeRollComponent       = CreateDefaultSubobject<USODodgeRollComponent>(TEXT("DodgeRollComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -990,4 +992,28 @@ float ASOCharacter::GetCursedGroundCooldownRemaining() const
 		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(CursedGroundCooldownHandle));
 	}
 	return 0.0f;
+}
+
+// ---------------------------------------------------------------------------
+// Dodge Roll
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::CastDodgeRoll(FVector TargetLocation)
+{
+	if (!IsAlive() || !DodgeRollComponent)
+	{
+		return;
+	}
+	if (DodgeRollComponent->Roll(TargetLocation, this))
+	{
+		if (DodgeRollSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, DodgeRollSFX, GetActorLocation());
+		}
+	}
+}
+
+float ASOCharacter::GetDodgeRollCooldownRemaining() const
+{
+	return DodgeRollComponent ? DodgeRollComponent->GetCooldownRemaining() : 0.0f;
 }

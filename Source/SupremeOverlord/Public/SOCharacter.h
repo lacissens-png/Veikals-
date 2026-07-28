@@ -104,6 +104,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Blink")
 	TObjectPtr<class USOBlinkComponent> BlinkComponent;
 
+	/** Dodge Roll — free, cooldown-gated evade with a full-duration i-frame. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|DodgeRoll")
+	TObjectPtr<class USODodgeRollComponent> DodgeRollComponent;
+
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
 	float CameraDistance = 1200.0f;
@@ -556,6 +560,17 @@ public:
 	float GetCursedGroundCooldown() const { return CursedGroundCooldown; }
 
 	// -----------------------------------------------------------------------
+	// Dodge Roll — Space key; free, cooldown-gated evade with a full i-frame.
+	// -----------------------------------------------------------------------
+
+	/** Rolls away using current movement direction, or toward TargetLocation when standing still. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|DodgeRoll")
+	void CastDodgeRoll(FVector TargetLocation);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|DodgeRoll")
+	float GetDodgeRollCooldownRemaining() const;
+
+	// -----------------------------------------------------------------------
 	// SFX slots for the new abilities.
 	// -----------------------------------------------------------------------
 
@@ -567,6 +582,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
 	TObjectPtr<class USoundBase> CursedGroundSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> DodgeRollSFX;
 
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;

@@ -139,6 +139,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|CursedGround")
 	void OnCursedGroundPressed();
 
+	/** Bound to "DodgeRoll" (Space). Rolls in the current movement direction, or toward the cursor if standing still. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|DodgeRoll")
+	void OnDodgeRollPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

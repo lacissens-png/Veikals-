@@ -94,10 +94,11 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("ActivateOverlordMode", IE_Pressed, this, &ASOPlayerController::OnActivateOverlordModePressed);
 	InputComponent->BindAction("NecroticResurrect",    IE_Pressed, this, &ASOPlayerController::OnNecroticResurrectPressed);
 
-	// Corpse Explosion (X) / Blink (B) / Cursed Ground (H).
+	// Corpse Explosion (X) / Blink (B) / Cursed Ground (H) / Dodge Roll (Space).
 	InputComponent->BindAction("CorpseExplosion", IE_Pressed, this, &ASOPlayerController::OnCorpseExplosionPressed);
 	InputComponent->BindAction("Blink",           IE_Pressed, this, &ASOPlayerController::OnBlinkPressed);
 	InputComponent->BindAction("CursedGround",    IE_Pressed, this, &ASOPlayerController::OnCursedGroundPressed);
+	InputComponent->BindAction("DodgeRoll",       IE_Pressed, this, &ASOPlayerController::OnDodgeRollPressed);
 
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
@@ -552,6 +553,25 @@ void ASOPlayerController::OnCursedGroundPressed()
 	}
 
 	SOCharacter->PlaceCursedGround(Target);
+}
+
+void ASOPlayerController::OnDodgeRollPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector Target = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		Target = Hit.ImpactPoint;
+	}
+
+	SOCharacter->CastDodgeRoll(Target);
 }
 
 void ASOPlayerController::SpawnClickIndicator(const FVector& WorldLocation)

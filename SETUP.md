@@ -1320,6 +1320,44 @@ Skill tiles 8-10 (bone-white **X**, shadow-blue **B**, violet **H**)
 show mana cost and cooldown overlay using the same tile pattern as the
 rest of the skill bar.
 
+## 46. Dodge Roll
+
+**Files**: `SODodgeRollComponent.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`
+
+Press **Space** for a free, cooldown-gated evade — the ARPG staple
+"get me out of here" button, distinct from Blink (mana-cost teleport
+toward the cursor). The roll direction is the character's current
+movement direction when moving (so a click-to-move flee reads
+naturally), falling back to the direction toward the cursor when
+standing still. The roll covers `RollDistance` over `RollDuration` at a
+constant speed by directly driving `CharacterMovementComponent::Velocity`
+each tick, and the whole duration is invulnerable
+(`HealthComponent->bInvulnerable`).
+
+Key config on `DodgeRollComponent`:
+
+| Property       | Default | Notes                                       |
+|----------------|---------|-----------------------------------------------|
+| `RollDistance` | 450 cm  | Total ground distance covered by one roll      |
+| `RollDuration` | 0.28 s  | Time to cover RollDistance (sets roll speed)   |
+| `ManaCost`     | 0       | Free by default; exposed in case designers want a cost |
+| `Cooldown`     | 1.2 s   | Time between rolls                             |
+
+`OnDodgeRoll` (C++) / `OnDodgeRollBP` (BP) fire with
+`(FromLocation, RollDirection)` for VFX/SFX (dust trail, blur, etc.).
+
+### HUD changes
+
+Skill tile 11 (steel-grey, **Space** key) shows the cooldown overlay
+using the same tile pattern as the rest of the skill bar.
+
+### Setup
+
+1. `DodgeRollComponent` already exists on `ASOCharacter`.
+2. Set `DodgeRollSFX` on `BP_SOCharacter`.
+3. Click to move, then tap **Space** mid-flight to dash through danger.
+
 ### Updated input table
 
 | Key   | Action                          |
@@ -1337,6 +1375,7 @@ rest of the skill bar.
 | X     | Corpse Explosion                |
 | B     | Shadow Step / Blink             |
 | H     | Place Cursed Ground              |
+| Space | Dodge Roll                       |
 | F1    | Allocate Strength               |
 | F2    | Allocate Intellect              |
 | F3    | Allocate Vitality               |

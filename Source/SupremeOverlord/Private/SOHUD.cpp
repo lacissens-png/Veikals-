@@ -23,7 +23,10 @@
 #include "SOQuestData.h"
 #include "SOStatusEffectComponent.h"
 #include "SOAuraComponent.h"
+#include "SOBlinkComponent.h"
+#include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
+#include "SODodgeRollComponent.h"
 #include "SOSummonComponent.h"
 #include "SOTrap.h"
 #include "SOVendorNPC.h"
@@ -372,7 +375,7 @@ void ASOHUD::DrawHUD()
 	// -- Skill panel (row of seven tiles centered above the XP bar) ---------
 	if (bShowSkillPanel && MediumFont)
 	{
-		const int32 NumTiles       = 10;
+		const int32 NumTiles       = 11;
 		const float RowWidth       = NumTiles * SkillTileSize.X + (NumTiles - 1) * SkillTileGap;
 		const float RowY           = ScreenH - XPBarSize.Y - XPBarBottomOffset - SkillTileSize.Y - SkillPanelGap;
 		const float RowStartX      = (ScreenW - RowWidth) * 0.5f;
@@ -583,6 +586,22 @@ void ASOHUD::DrawHUD()
 				SO->GetCursedGroundCooldownRemaining(),
 				SO->GetCursedGroundCooldown(),
 				FLinearColor(0.40f, 0.10f, 0.45f, 1.0f),
+				MediumFont);
+		}
+
+		// Dodge Roll (Space key) - neutral steel-grey tile, free but cooldown-gated
+		if (SO->DodgeRollComponent)
+		{
+			DrawSkillTile(
+				Canvas,
+				FVector2D(RowStartX + 10 * (SkillTileSize.X + SkillTileGap), RowY),
+				TEXT("Space"),
+				TEXT("Roll"),
+				SO->DodgeRollComponent->ManaCost,
+				CurrentManaVal,
+				SO->GetDodgeRollCooldownRemaining(),
+				SO->DodgeRollComponent->Cooldown,
+				FLinearColor(0.35f, 0.38f, 0.42f, 1.0f),
 				MediumFont);
 		}
 	}
