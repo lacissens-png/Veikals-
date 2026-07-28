@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "Styling/SlateColor.h"
+#include "SOItemAffix.h"
 #include "SOItemData.generated.h"
 
 class UTexture2D;
@@ -68,4 +69,32 @@ public:
 	/** Convenience — color hint for tooltips / labels based on Rarity. */
 	UFUNCTION(BlueprintPure, Category = "Item|Presentation")
 	FLinearColor GetRarityColor() const;
+
+	// -----------------------------------------------------------------------
+	// Random affixes — populated on drop-time instances by USOLootRoller.
+	// Empty on hand-authored editor templates.
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Item|Affixes", Transient)
+	TArray<FSOItemAffix> RolledAffixes;
+
+	/** Pre-formatted tooltip lines, one per rolled affix. Empty for un-rolled templates. */
+	UFUNCTION(BlueprintPure, Category = "Item|Affixes")
+	TArray<FString> GetAffixDescriptions() const;
+
+	// -----------------------------------------------------------------------
+	// Legendary Uniques — hand-authored items with a fixed special effect.
+	// -----------------------------------------------------------------------
+
+	/** Marks this as a hand-authored legendary/unique. USOLootRoller passes these through without rerolling rarity or affixes. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Legendary")
+	bool bIsLegendaryUnique = false;
+
+	/** Flavor text shown beneath the name on legendary/unique tooltips. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Legendary", meta = (MultiLine = "true"))
+	FText LegendaryFlavorText;
+
+	/** Fixed special ability this item grants while equipped. Checked via ASOCharacter::HasLegendaryEffect. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Legendary")
+	ESOLegendaryEffect LegendaryEffect = ESOLegendaryEffect::None;
 };

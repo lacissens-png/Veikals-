@@ -55,10 +55,12 @@ public:
 
 	/**
 	 * Finds the nearest corpse within SearchRange of CursorLocation, detonates it,
-	 * and destroys the corpse.  Returns true when a cast was performed.
+	 * and destroys the corpse. Returns true when a cast was performed.
+	 * bFreeCast (set when the caster has the CorpseExplosionFree legendary effect)
+	 * skips the mana cost and halves the cooldown applied afterward.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "CorpseExplosion")
-	bool Cast(FVector CursorLocation, ASOCharacter* Caster);
+	bool Cast(FVector CursorLocation, ASOCharacter* Caster, bool bFreeCast = false);
 
 	UFUNCTION(BlueprintPure, Category = "CorpseExplosion")
 	float GetCooldownRemaining() const { return CooldownRemaining; }

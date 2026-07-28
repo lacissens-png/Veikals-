@@ -99,6 +99,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Summoning|Necromancy")
 	float GetNecromancyCooldownRemaining() const { return NecromancyCooldownRemaining; }
 
+	/** The minion spawned by the most recent successful SummonMinion/ResurrectAtLocation call. */
+	UFUNCTION(BlueprintPure, Category = "Summoning")
+	ASOMinion* GetLastSpawnedMinion() const { return LastSpawnedMinion.Get(); }
+
 	// ---------- Delegates ----------
 
 	UPROPERTY(BlueprintAssignable, Category = "Summoning")
@@ -111,4 +115,6 @@ private:
 	TArray<TWeakObjectPtr<ASOMinion>> ActiveMinions;
 	float SummonCooldownRemaining      = 0.0f;
 	float NecromancyCooldownRemaining  = 0.0f;
+
+	TWeakObjectPtr<ASOMinion> LastSpawnedMinion;
 };

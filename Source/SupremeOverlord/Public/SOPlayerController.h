@@ -143,6 +143,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|DodgeRoll")
 	void OnDodgeRollPressed();
 
+	/** Bound to "ToggleWaypointMap" (M). Opens/closes the waypoint fast-travel overlay. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	void OnToggleWaypointMapPressed();
+
+	/** Bound to "WaypointSelect1".."WaypointSelect5" (Five-Nine). Travels to the Nth discovered waypoint while the map is open. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	void OnWaypointSelect1();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	void OnWaypointSelect2();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	void OnWaypointSelect3();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	void OnWaypointSelect4();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	void OnWaypointSelect5();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();
@@ -159,6 +179,9 @@ public:
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;
+
+	/** Shared implementation for OnWaypointSelect1..5 — travels to discovered waypoint Index (0-based). */
+	void SelectWaypoint(int32 Index);
 
 	bool bMoveToHeld = false;
 };

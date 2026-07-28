@@ -18,6 +18,8 @@
 #include "SOEquipmentComponent.h"
 #include "SOTrap.h"
 #include "SOInventoryComponent.h"
+#include "SOItemData.h"
+#include "SOMinion.h"
 #include "SOQuestComponent.h"
 #include "SOStatusEffectComponent.h"
 #include "SOSummonComponent.h"
@@ -28,6 +30,7 @@
 #include "SOManaComponent.h"
 #include "SOSaveGame.h"
 #include "SOShadowBoltProjectile.h"
+#include "SOWaypointComponent.h"
 #include "SOWeaponData.h"
 #include "TimerManager.h"
 
@@ -68,6 +71,7 @@ ASOCharacter::ASOCharacter()
 	CorpseExplosionComponent = CreateDefaultSubobject<USOCorpseExplosionComponent>(TEXT("CorpseExplosionComponent"));
 	BlinkComponent           = CreateDefaultSubobject<USOBlinkComponent>(TEXT("BlinkComponent"));
 	DodgeRollComponent       = CreateDefaultSubobject<USODodgeRollComponent>(TEXT("DodgeRollComponent"));
+	WaypointComponent        = CreateDefaultSubobject<USOWaypointComponent>(TEXT("WaypointComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -318,6 +322,8 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 
 	AController* InstigatorController = GetController();
 
+	float TotalDamageDealt = 0.0f;
+
 	for (const FOverlapResult& Result : Overlaps)
 	{
 		AActor* HitActor = Result.GetActor();
@@ -340,7 +346,15 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 		}
 		UniqueHitActors.Add(HitActor);
 
-		UGameplayStatics::ApplyDamage(HitActor, GetEffectivePrimaryAttackDamage(), InstigatorController, this, DTClass);
+		const float SwingDamage = GetEffectivePrimaryAttackDamage();
+		UGameplayStatics::ApplyDamage(HitActor, SwingDamage, InstigatorController, this, DTClass);
+		TotalDamageDealt += SwingDamage;
+	}
+
+	// Vampiric Strikes legendary — heal back a fraction of everything this swing dealt.
+	if (TotalDamageDealt > 0.0f && HealthComponent && HasLegendaryEffect(ESOLegendaryEffect::VampiricStrikes))
+	{
+		HealthComponent->Heal(TotalDamageDealt * VampiricStrikesHealFraction, InstigatorController, this);
 	}
 
 	if (PrimaryAttackSFX)
@@ -429,7 +443,8 @@ void ASOCharacter::CastShadowBolt(FVector TargetLocation)
 
 	// Push the character's effective spell damage onto the projectile so it
 	// scales with equipped weapons without touching the projectile BP.
-	Bolt->Damage = GetEffectiveShadowBoltDamage();
+	Bolt->Damage      = GetEffectiveShadowBoltDamage();
+	Bolt->bChainOnHit = HasLegendaryEffect(ESOLegendaryEffect::ShadowBoltChain);
 
 	if (ShadowBoltCastSFX)
 	{
@@ -490,6 +505,14 @@ void ASOCharacter::CastSummonMinion(FVector TargetLocation)
 	}
 	if (SummonComponent->SummonMinion(TargetLocation, this))
 	{
+		if (HasLegendaryEffect(ESOLegendaryEffect::EndlessMinions))
+		{
+			if (ASOMinion* Minion = SummonComponent->GetLastSpawnedMinion())
+			{
+				Minion->SetLifeSpan(0.0f);
+			}
+		}
+
 		if (SummonCastSFX)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, SummonCastSFX, GetActorLocation());
@@ -855,6 +878,14 @@ void ASOCharacter::CastNecroticResurrect(FVector TargetLocation)
 	}
 	if (SummonComponent->ResurrectAtLocation(TargetLocation, this))
 	{
+		if (HasLegendaryEffect(ESOLegendaryEffect::EndlessMinions))
+		{
+			if (ASOMinion* Minion = SummonComponent->GetLastSpawnedMinion())
+			{
+				Minion->SetLifeSpan(0.0f);
+			}
+		}
+
 		if (NecroResurrectSFX)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, NecroResurrectSFX, TargetLocation);
@@ -882,7 +913,8 @@ void ASOCharacter::CastCorpseExplosion(FVector TargetLocation)
 	{
 		return;
 	}
-	if (CorpseExplosionComponent->Cast(TargetLocation, this))
+	const bool bFreeCast = HasLegendaryEffect(ESOLegendaryEffect::CorpseExplosionFree);
+	if (CorpseExplosionComponent->Cast(TargetLocation, this, bFreeCast))
 	{
 		if (CorpseExplosionSFX)
 		{
@@ -1016,4 +1048,42 @@ void ASOCharacter::CastDodgeRoll(FVector TargetLocation)
 float ASOCharacter::GetDodgeRollCooldownRemaining() const
 {
 	return DodgeRollComponent ? DodgeRollComponent->GetCooldownRemaining() : 0.0f;
+}
+
+// ---------------------------------------------------------------------------
+// Legendary Uniques
+// ---------------------------------------------------------------------------
+
+bool ASOCharacter::HasLegendaryEffect(ESOLegendaryEffect Effect) const
+{
+	if (Effect == ESOLegendaryEffect::None || !EquipmentComponent)
+	{
+		return false;
+	}
+
+	for (const TPair<ESOEquipSlot, TObjectPtr<USOItemData>>& Pair : EquipmentComponent->GetAllEquipped())
+	{
+		if (Pair.Value && Pair.Value->LegendaryEffect == Effect)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+// ---------------------------------------------------------------------------
+// Waypoint Fast Travel
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::ToggleWaypointMap()
+{
+	if (WaypointComponent)
+	{
+		WaypointComponent->ToggleMap();
+	}
+}
+
+bool ASOCharacter::TravelToWaypoint(int32 Index)
+{
+	return WaypointComponent ? WaypointComponent->TravelToWaypoint(Index) : false;
 }

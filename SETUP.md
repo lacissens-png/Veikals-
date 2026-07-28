@@ -1358,6 +1358,114 @@ using the same tile pattern as the rest of the skill bar.
 2. Set `DodgeRollSFX` on `BP_SOCharacter`.
 3. Click to move, then tap **Space** mid-flight to dash through danger.
 
+## 47. Item Rarity + Affixes
+
+**Files**: `SOItemAffix.h` (new), `SOItemData.h/.cpp`, `SOLootRoller.h/.cpp`
+(new), `SOEnemyCharacter.cpp`
+
+Every enemy loot drop is now rolled into a distinct instance instead of
+handing out the shared editor template directly. `USOLootRoller::RollItemInstance`
+duplicates the picked `USOItemData` (or `USOWeaponData`/`USOArmorData`
+subclass), rolls a rarity tier, and applies a matching number of random
+affixes straight onto the instance's existing stat fields
+(`PrimaryDamageBonus`, `MaxHealthBonus`, etc.) — nothing downstream
+(equipment, inventory, vendor) needed to change since it still just sees
+a `USOItemData*` with different numbers.
+
+Rarity odds and affix counts:
+
+| Rarity    | Odds | Affixes |
+|-----------|------|---------|
+| Common    | 55%  | 0       |
+| Magic     | 30%  | 1       |
+| Rare      | 12%  | 2       |
+| Legendary | 3%   | 4       |
+
+Affix pool is chosen by item type — weapons roll from Primary Damage /
+Shadow Bolt Damage / Attack Speed; armor rolls from Max Health / Max
+Mana / Movement Speed / Damage Reduction. Magnitude scales with the
+template's `ItemLevel`. Each rolled item exposes
+`GetAffixDescriptions()` (e.g. `"+18 Primary Damage"`) for tooltip use.
+
+Note: a random roll of Legendary *rarity* just means great stats — it
+is distinct from a hand-authored Legendary *Unique* (see below), which
+always carries a fixed special effect.
+
+### Setup
+
+1. No changes needed — `ASOEnemyCharacter::RollItemDrop()` already
+   calls the roller before spawning the pickup.
+2. Tune odds/affix pools in `SOLootRoller.cpp` if you want a different
+   drop feel.
+
+## 48. Legendary Uniques
+
+**Files**: `SOItemAffix.h` (new), `SOItemData.h`, `SOCharacter.h/.cpp`,
+`SOShadowBoltProjectile.h/.cpp`, `SOCorpseExplosionComponent.h/.cpp`,
+`SOSummonComponent.h/.cpp`
+
+Any `USOItemData` (weapon or armor) can be hand-authored as a legendary
+unique: set `bIsLegendaryUnique = true`, write a `LegendaryFlavorText`,
+and pick a `LegendaryEffect`. `USOLootRoller` detects the flag and
+passes such items through unmodified — no rarity reroll, no random
+affixes; the designer's numbers are final.
+
+`ASOCharacter::HasLegendaryEffect(Effect)` scans every equipped slot
+and returns true if any item carries it. Four effects are wired in:
+
+| Effect                | Hook                                              |
+|------------------------|---------------------------------------------------|
+| `ShadowBoltChain`      | The bolt chains once to a second nearby enemy for `ChainDamageFraction` (default 50%) of its damage. |
+| `CorpseExplosionFree`  | Corpse Explosion costs no mana and its cooldown is halved. |
+| `EndlessMinions`       | Summoned/resurrected minions never expire (`SetLifeSpan(0)`). |
+| `VampiricStrikes`      | Primary Attack heals the caster for `VampiricStrikesHealFraction` (default 25%) of the swing's total damage. |
+
+### Setup
+
+1. Create a `USOWeaponData`/`USOArmorData` asset, check
+   `bIsLegendaryUnique`, and set `LegendaryEffect`.
+2. Place it in a loot table or vendor stock like any other item.
+3. Equip it — the relevant cast function picks up the effect
+   automatically via `HasLegendaryEffect`.
+
+## 49. Waypoint Fast Travel
+
+**Files**: `SOWaypoint.h/.cpp` (new), `SOWaypointComponent.h/.cpp` (new),
+`SOCharacter.h/.cpp`, `SOPlayerController.h/.cpp`, `DefaultInput.ini`,
+`SOHUD.h/.cpp`
+
+Place `ASOWaypoint` actors around the level. Walking into one's
+`DiscoveryRadius` (default 250 cm) registers it with the player's
+`USOWaypointComponent`. Press **M** to open the waypoint map — a
+Canvas list of every discovered waypoint — then press **5**-**9** to
+instantly teleport to the corresponding entry (list is 1-indexed on
+screen, 0-indexed internally). Traveling closes the map automatically.
+
+Key config on `ASOWaypoint`:
+
+| Property          | Default | Notes                                          |
+|-------------------|---------|---------------------------------------------------|
+| `WaypointName`    | —       | Shown in the map list                              |
+| `DiscoveryRadius` | 250 cm  | Overlap radius that registers the waypoint         |
+| `bStartDiscovered`| false   | Set true for a "home base" waypoint known from the start |
+| `TravelOffset`    | (150,0,0) | Landing offset from the marker so travelers don't spawn inside the mesh |
+
+`OnWaypointDiscovered` / `OnWaypointMapToggled` / `OnWaypointTravel`
+(C++) and their BP equivalents fire for VFX/SFX/UI hookup.
+
+### HUD changes
+
+A centered panel lists discovered waypoints while the map is open,
+with a `"5-9 Travel | M Close"` footer; the control hint bar mentions
+**M** for waypoints.
+
+### Setup
+
+1. Drag `ASOWaypoint` (or a BP subclass) into the level at each fast
+   travel point; set `WaypointName`.
+2. Set `DiscoverSFX` on the waypoint for discovery feedback.
+3. Walk near a waypoint, press **M**, then **5** to travel back to it.
+
 ### Updated input table
 
 | Key   | Action                          |
@@ -1376,6 +1484,8 @@ using the same tile pattern as the rest of the skill bar.
 | B     | Shadow Step / Blink             |
 | H     | Place Cursed Ground              |
 | Space | Dodge Roll                       |
+| M     | Toggle Waypoint Map              |
+| 5-9   | Travel to Waypoint 1-5 (map open) |
 | F1    | Allocate Strength               |
 | F2    | Allocate Intellect              |
 | F3    | Allocate Vitality               |

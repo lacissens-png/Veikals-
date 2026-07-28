@@ -73,6 +73,7 @@ bool USOSummonComponent::SummonMinion(FVector TargetLocation, ASOCharacter* Cast
 
 	Minion->OwnerSummonComponent = this;
 	ActiveMinions.Add(Minion);
+	LastSpawnedMinion = Minion;
 	SummonCooldownRemaining = SummonCooldown;
 
 	OnMinionSummoned.Broadcast(Minion);
@@ -155,6 +156,7 @@ bool USOSummonComponent::ResurrectAtLocation(FVector CursorLocation, ASOCharacte
 
 	Minion->OwnerSummonComponent = this;
 	ActiveMinions.Add(Minion);
+	LastSpawnedMinion = Minion;
 	NecromancyCooldownRemaining = NecromancyCooldown;
 
 	OnMinionSummoned.Broadcast(Minion);

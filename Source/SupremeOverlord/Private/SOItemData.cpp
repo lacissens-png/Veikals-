@@ -13,3 +13,14 @@ FLinearColor USOItemData::GetRarityColor() const
 	default:                       return FLinearColor(0.85f, 0.85f, 0.85f, 1.0f);
 	}
 }
+
+TArray<FString> USOItemData::GetAffixDescriptions() const
+{
+	TArray<FString> Lines;
+	Lines.Reserve(RolledAffixes.Num());
+	for (const FSOItemAffix& Affix : RolledAffixes)
+	{
+		Lines.Add(Affix.Description);
+	}
+	return Lines;
+}

@@ -55,6 +55,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|ShadowBolt")
 	TSubclassOf<USODamageType> DamageType;
 
+	/** Set by ASOCharacter::CastShadowBolt when the caster has the ShadowBoltChain legendary effect equipped. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|ShadowBolt|Legendary")
+	bool bChainOnHit = false;
+
+	/** Radius (cm) around the impact point searched for a second target to chain to. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|ShadowBolt|Legendary", meta = (ClampMin = "50.0", UIMin = "50.0", UIMax = "2000.0"))
+	float ChainRange = 600.0f;
+
+	/** Fraction of Damage dealt to the chained target. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|ShadowBolt|Legendary", meta = (ClampMin = "0.0", ClampMax = "2.0"))
+	float ChainDamageFraction = 0.5f;
+
 	/** Blueprint hook for impact VFX/SFX. HitActor may be null if we hit level geometry with no actor. */
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|ShadowBolt")
 	void OnBoltImpact(const FHitResult& Hit, AActor* HitActor);

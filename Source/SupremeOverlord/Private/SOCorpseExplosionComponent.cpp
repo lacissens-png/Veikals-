@@ -32,14 +32,14 @@ bool USOCorpseExplosionComponent::CanCast() const
 	return CooldownRemaining <= 0.0f;
 }
 
-bool USOCorpseExplosionComponent::Cast(FVector CursorLocation, ASOCharacter* Caster)
+bool USOCorpseExplosionComponent::Cast(FVector CursorLocation, ASOCharacter* Caster, bool bFreeCast)
 {
 	if (!CanCast() || !Caster || !Caster->IsAlive())
 	{
 		return false;
 	}
 
-	if (ManaCost > 0.0f && (!Caster->ManaComponent || !Caster->ManaComponent->HasEnough(ManaCost)))
+	if (!bFreeCast && ManaCost > 0.0f && (!Caster->ManaComponent || !Caster->ManaComponent->HasEnough(ManaCost)))
 	{
 		return false;
 	}
@@ -72,7 +72,7 @@ bool USOCorpseExplosionComponent::Cast(FVector CursorLocation, ASOCharacter* Cas
 		return false;
 	}
 
-	if (ManaCost > 0.0f && !Caster->ManaComponent->Consume(ManaCost))
+	if (!bFreeCast && ManaCost > 0.0f && !Caster->ManaComponent->Consume(ManaCost))
 	{
 		return false;
 	}
@@ -106,7 +106,7 @@ bool USOCorpseExplosionComponent::Cast(FVector CursorLocation, ASOCharacter* Cas
 
 	Corpse->Destroy();
 
-	CooldownRemaining = Cooldown;
+	CooldownRemaining = bFreeCast ? Cooldown * 0.5f : Cooldown;
 
 	OnCorpseExploded.Broadcast(EnemiesHit, TotalDamage);
 	OnCorpseExplodedBP(EnemiesHit, TotalDamage);

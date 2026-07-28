@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInterface.h"
 #include "SODamageType.h"
+#include "SOEnemyCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASOShadowBoltProjectile::ASOShadowBoltProjectile()
@@ -82,13 +83,42 @@ void ASOShadowBoltProjectile::HandleHit(UPrimitiveComponent* /*HitComp*/, AActor
 		return;
 	}
 
+	TSubclassOf<UDamageType> DTClass = DamageType
+		? DamageType
+		: TSubclassOf<UDamageType>(USODamageType::StaticClass());
+
 	if (OtherActor)
 	{
-		TSubclassOf<UDamageType> DTClass = DamageType
-			? DamageType
-			: TSubclassOf<UDamageType>(USODamageType::StaticClass());
-
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DTClass);
+	}
+
+	if (bChainOnHit)
+	{
+		TArray<AActor*> All;
+		UGameplayStatics::GetAllActorsOfClass(this, ASOEnemyCharacter::StaticClass(), All);
+
+		ASOEnemyCharacter* ChainTarget = nullptr;
+		float BestDistSq = ChainRange * ChainRange;
+
+		for (AActor* A : All)
+		{
+			ASOEnemyCharacter* Enemy = Cast<ASOEnemyCharacter>(A);
+			if (!Enemy || Enemy == OtherActor || !Enemy->IsAlive())
+			{
+				continue;
+			}
+			const float DistSq = FVector::DistSquared(Hit.ImpactPoint, Enemy->GetActorLocation());
+			if (DistSq <= BestDistSq)
+			{
+				BestDistSq  = DistSq;
+				ChainTarget = Enemy;
+			}
+		}
+
+		if (ChainTarget)
+		{
+			UGameplayStatics::ApplyDamage(ChainTarget, Damage * ChainDamageFraction, GetInstigatorController(), this, DTClass);
+		}
 	}
 
 	if (ImpactSFX)

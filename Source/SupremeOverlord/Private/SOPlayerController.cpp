@@ -100,6 +100,14 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("CursedGround",    IE_Pressed, this, &ASOPlayerController::OnCursedGroundPressed);
 	InputComponent->BindAction("DodgeRoll",       IE_Pressed, this, &ASOPlayerController::OnDodgeRollPressed);
 
+	// Waypoint map (M) / travel to discovered waypoint 1-5 (Five..Nine).
+	InputComponent->BindAction("ToggleWaypointMap", IE_Pressed, this, &ASOPlayerController::OnToggleWaypointMapPressed);
+	InputComponent->BindAction("WaypointSelect1",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect1);
+	InputComponent->BindAction("WaypointSelect2",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect2);
+	InputComponent->BindAction("WaypointSelect3",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect3);
+	InputComponent->BindAction("WaypointSelect4",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect4);
+	InputComponent->BindAction("WaypointSelect5",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect5);
+
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
 	InputComponent->BindAction("DialogueChoice2", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice2);
@@ -602,3 +610,25 @@ void ASOPlayerController::SpawnClickIndicator(const FVector& WorldLocation)
 		UGameplayStatics::SpawnEmitterAtLocation(World, ClickParticleFX, WorldLocation, FRotator::ZeroRotator, true);
 	}
 }
+
+void ASOPlayerController::OnToggleWaypointMapPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->ToggleWaypointMap();
+	}
+}
+
+void ASOPlayerController::SelectWaypoint(int32 Index)
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->TravelToWaypoint(Index);
+	}
+}
+
+void ASOPlayerController::OnWaypointSelect1() { SelectWaypoint(0); }
+void ASOPlayerController::OnWaypointSelect2() { SelectWaypoint(1); }
+void ASOPlayerController::OnWaypointSelect3() { SelectWaypoint(2); }
+void ASOPlayerController::OnWaypointSelect4() { SelectWaypoint(3); }
+void ASOPlayerController::OnWaypointSelect5() { SelectWaypoint(4); }

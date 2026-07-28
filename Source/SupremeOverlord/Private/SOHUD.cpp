@@ -28,6 +28,8 @@
 #include "SOCorruptionComponent.h"
 #include "SODodgeRollComponent.h"
 #include "SOSummonComponent.h"
+#include "SOWaypoint.h"
+#include "SOWaypointComponent.h"
 #include "SOTrap.h"
 #include "SOVendorNPC.h"
 #include "SOWeaponData.h"
@@ -1099,6 +1101,68 @@ void ASOHUD::DrawHUD()
 				}
 			}
 		}
+	}
+
+	// -- Waypoint map overlay --------------------------------------------------
+	if (SO->WaypointComponent && SO->WaypointComponent->IsMapOpen() && MediumFont)
+	{
+		const TArray<ASOWaypoint*>& Waypoints = SO->WaypointComponent->GetDiscoveredWaypoints();
+
+		const float PanelWidth  = 420.0f;
+		const float RowHeight   = 30.0f;
+		const float PanelHeight = 90.0f + FMath::Max(1, Waypoints.Num()) * RowHeight;
+		const float PanelX      = (ScreenW - PanelWidth) * 0.5f;
+		const float PanelY      = (ScreenH - PanelHeight) * 0.5f;
+
+		FCanvasTileItem Panel(FVector2D(PanelX, PanelY), FVector2D(PanelWidth, PanelHeight),
+		                      FLinearColor(0.03f, 0.03f, 0.07f, 0.92f));
+		Panel.BlendMode = SE_BLEND_Translucent;
+		Canvas->DrawItem(Panel);
+
+		if (LargeFont)
+		{
+			FCanvasTextItem Title(FVector2D(PanelX + 24.0f, PanelY + 16.0f),
+			                      FText::FromString(TEXT("WAYPOINTS")),
+			                      LargeFont,
+			                      FLinearColor(0.85f, 0.75f, 1.0f, 1.0f));
+			Title.Scale = FVector2D(1.3f, 1.3f);
+			Title.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(Title);
+		}
+
+		if (Waypoints.Num() == 0)
+		{
+			FCanvasTextItem Empty(FVector2D(PanelX + 24.0f, PanelY + 60.0f),
+			                      FText::FromString(TEXT("No waypoints discovered yet.")),
+			                      MediumFont,
+			                      FLinearColor(0.7f, 0.7f, 0.7f, 1.0f));
+			Empty.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(Empty);
+		}
+		else
+		{
+			for (int32 i = 0; i < Waypoints.Num() && i < 5; ++i)
+			{
+				const ASOWaypoint* WP = Waypoints[i];
+				const FString Name = WP ? WP->WaypointName.ToString() : TEXT("Unknown");
+				const FString Line = FString::Printf(TEXT("%d. %s"), i + 1, *Name);
+
+				FCanvasTextItem RowItem(FVector2D(PanelX + 24.0f, PanelY + 60.0f + i * RowHeight),
+				                        FText::FromString(Line),
+				                        MediumFont,
+				                        FLinearColor(0.92f, 0.92f, 0.92f, 1.0f));
+				RowItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(RowItem);
+			}
+		}
+
+		FCanvasTextItem CloseHint(FVector2D(PanelX + 24.0f, PanelY + PanelHeight - 26.0f),
+		                          FText::FromString(TEXT("5-9 Travel   |   M Close")),
+		                          MediumFont,
+		                          FLinearColor(0.6f, 0.6f, 0.6f, 1.0f));
+		CloseHint.Scale = FVector2D(0.85f, 0.85f);
+		CloseHint.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(CloseHint);
 	}
 
 	// -- Pause overlay (drawn last so it sits over everything) ---------------

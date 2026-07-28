@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "SOItemAffix.h"
 #include "SOTrap.h"
 #include "SOCharacter.generated.h"
 
@@ -107,6 +108,10 @@ public:
 	/** Dodge Roll — free, cooldown-gated evade with a full-duration i-frame. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|DodgeRoll")
 	TObjectPtr<class USODodgeRollComponent> DodgeRollComponent;
+
+	/** Waypoint travel — tracks discovered waypoints and handles fast-travel teleports. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Waypoint")
+	TObjectPtr<class USOWaypointComponent> WaypointComponent;
 
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
@@ -569,6 +574,30 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|DodgeRoll")
 	float GetDodgeRollCooldownRemaining() const;
+
+	// -----------------------------------------------------------------------
+	// Legendary Uniques — fixed special effects carried by hand-authored items.
+	// -----------------------------------------------------------------------
+
+	/** True while any currently-equipped item carries the given LegendaryEffect. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Legendary")
+	bool HasLegendaryEffect(ESOLegendaryEffect Effect) const;
+
+	/** Fraction of total Primary Attack damage healed back when VampiricStrikes is equipped. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Legendary", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float VampiricStrikesHealFraction = 0.25f;
+
+	// -----------------------------------------------------------------------
+	// Waypoint Fast Travel — M toggles the map, number keys travel.
+	// -----------------------------------------------------------------------
+
+	/** Opens/closes the waypoint map overlay. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	void ToggleWaypointMap();
+
+	/** Teleports to the Index'th discovered waypoint (0-based). Returns false if the index is out of range. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
+	bool TravelToWaypoint(int32 Index);
 
 	// -----------------------------------------------------------------------
 	// SFX slots for the new abilities.

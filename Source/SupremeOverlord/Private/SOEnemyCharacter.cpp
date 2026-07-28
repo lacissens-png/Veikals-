@@ -15,6 +15,7 @@
 #include "SOStatusEffectComponent.h"
 #include "SOItemData.h"
 #include "SOItemPickup.h"
+#include "SOLootRoller.h"
 #include "SOPickupOrb.h"
 
 ASOEnemyCharacter::ASOEnemyCharacter()
@@ -265,6 +266,8 @@ void ASOEnemyCharacter::RollItemDrop()
 
 	if (ASOItemPickup* Pickup = World->SpawnActor<ASOItemPickup>(ItemPickupClass, CorpseLocation + Offset, FRotator::ZeroRotator, Params))
 	{
-		Pickup->SetItem(PickedItem);
+		// Roll a distinct, rarity-affixed instance so drops of the same template still vary.
+		USOItemData* RolledItem = USOLootRoller::RollItemInstance(PickedItem, GetTransientPackage(), PickedItem->ItemLevel);
+		Pickup->SetItem(RolledItem ? RolledItem : PickedItem);
 	}
 }
