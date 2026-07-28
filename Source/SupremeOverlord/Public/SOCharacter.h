@@ -44,6 +44,14 @@ protected:
 	UFUNCTION()
 	void HandleHealthChanged(USOHealthComponent* OwningComponent, float OldHealth, float NewHealth, float Delta, AController* InstigatedBy, AActor* DamageCauser);
 
+	/** Bound to BestiaryComponent->OnBestiaryEntryUpdated — checks kill-count achievement milestones. */
+	UFUNCTION()
+	void HandleBestiaryEntryUpdated(TSubclassOf<class ASOEnemyCharacter> EnemyClass, int32 NewCount);
+
+	/** Bound to WaypointComponent->OnWaypointDiscovered — checks exploration achievement milestones. */
+	UFUNCTION()
+	void HandleWaypointDiscovered(class ASOWaypoint* Waypoint);
+
 public:
 	/** Fixed isometric spring arm - not driven by pawn rotation. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Camera")
@@ -132,6 +140,26 @@ public:
 	/** Tracks kills per enemy species for the bestiary/codex (L key). */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Bestiary")
 	TObjectPtr<class USOBestiaryComponent> BestiaryComponent;
+
+	/** Quick-use health/mana potion charges (I key). Refills automatically on waypoint travel. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Consumable")
+	TObjectPtr<class USOConsumableComponent> ConsumableComponent;
+
+	/** Consumes one potion charge, healing/restoring mana. See USOConsumableComponent::UsePotion. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Consumable")
+	bool UsePotion();
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Consumable")
+	float GetPotionCooldownRemaining() const;
+
+	/**
+	 * Generic unlock-by-ID milestone tracker with a HUD toast. A handful of
+	 * concrete milestones (level/kills/gold/waypoints) are wired up in
+	 * BeginPlay as examples — add more by calling
+	 * AchievementComponent->UnlockAchievement(...) from anywhere.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Achievements")
+	TObjectPtr<class USOAchievementComponent> AchievementComponent;
 
 	/** Opens/closes the bestiary/codex overlay. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Bestiary")

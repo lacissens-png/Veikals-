@@ -175,6 +175,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Bestiary")
 	void OnToggleBestiaryPressed();
 
+	/** Bound to "UsePotion" (I). Consumes one potion charge for a heal/mana burst. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Consumable")
+	void OnUsePotionPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

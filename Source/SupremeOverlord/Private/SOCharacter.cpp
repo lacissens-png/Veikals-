@@ -9,14 +9,17 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SOAchievementComponent.h"
 #include "SOAttributesComponent.h"
 #include "SOAuraComponent.h"
 #include "SOBestiaryComponent.h"
 #include "SOBlinkComponent.h"
+#include "SOConsumableComponent.h"
 #include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
 #include "SOCursedGround.h"
 #include "SODodgeRollComponent.h"
+#include "SOEnemyCharacter.h"
 #include "SOEquipmentComponent.h"
 #include "SOFamiliarActor.h"
 #include "SOTrap.h"
@@ -33,6 +36,7 @@
 #include "SOManaComponent.h"
 #include "SOSaveGame.h"
 #include "SOShadowBoltProjectile.h"
+#include "SOWaypoint.h"
 #include "SOWaypointComponent.h"
 #include "SOWeaponData.h"
 #include "TimerManager.h"
@@ -76,6 +80,8 @@ ASOCharacter::ASOCharacter()
 	DodgeRollComponent       = CreateDefaultSubobject<USODodgeRollComponent>(TEXT("DodgeRollComponent"));
 	WaypointComponent        = CreateDefaultSubobject<USOWaypointComponent>(TEXT("WaypointComponent"));
 	BestiaryComponent        = CreateDefaultSubobject<USOBestiaryComponent>(TEXT("BestiaryComponent"));
+	ConsumableComponent      = CreateDefaultSubobject<USOConsumableComponent>(TEXT("ConsumableComponent"));
+	AchievementComponent     = CreateDefaultSubobject<USOAchievementComponent>(TEXT("AchievementComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -104,6 +110,16 @@ void ASOCharacter::BeginPlay()
 	{
 		HealthComponent->OnDeath.AddDynamic(this, &ASOCharacter::HandleDeath);
 		HealthComponent->OnHealthChanged.AddDynamic(this, &ASOCharacter::HandleHealthChanged);
+	}
+
+	if (BestiaryComponent)
+	{
+		BestiaryComponent->OnBestiaryEntryUpdated.AddDynamic(this, &ASOCharacter::HandleBestiaryEntryUpdated);
+	}
+
+	if (WaypointComponent)
+	{
+		WaypointComponent->OnWaypointDiscovered.AddDynamic(this, &ASOCharacter::HandleWaypointDiscovered);
 	}
 
 	if (ExperienceComponent)
@@ -190,6 +206,11 @@ void ASOCharacter::AddGold(int32 Amount)
 	{
 		OnGoldChanged.Broadcast(OldGold, Gold, Delta);
 	}
+
+	if (Gold >= 1000 && AchievementComponent)
+	{
+		AchievementComponent->UnlockAchievement(TEXT("rich"), FText::FromString(TEXT("Ill-Gotten Gains: Amass 1000 gold")));
+	}
 }
 
 void ASOCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AController* InstigatedBy, AActor* DamageCauser)
@@ -246,6 +267,18 @@ void ASOCharacter::HandleLevelUp(USOExperienceComponent* /*OwningComponent*/, in
 		UGameplayStatics::PlaySoundAtLocation(this, LevelUpSFX, GetActorLocation());
 	}
 	OnLevelUpReached(NewLevel);
+
+	if (AchievementComponent)
+	{
+		if (NewLevel >= 10)
+		{
+			AchievementComponent->UnlockAchievement(TEXT("level_10"), FText::FromString(TEXT("Rising Power: Reach level 10")));
+		}
+		if (NewLevel >= 25)
+		{
+			AchievementComponent->UnlockAchievement(TEXT("level_25"), FText::FromString(TEXT("Overlord in Training: Reach level 25")));
+		}
+	}
 }
 
 bool ASOCharacter::IsAlive() const
@@ -1162,6 +1195,55 @@ void ASOCharacter::ToggleBestiary()
 	if (BestiaryComponent)
 	{
 		BestiaryComponent->ToggleCodex();
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Consumables
+// ---------------------------------------------------------------------------
+
+bool ASOCharacter::UsePotion()
+{
+	return ConsumableComponent ? ConsumableComponent->UsePotion(this) : false;
+}
+
+float ASOCharacter::GetPotionCooldownRemaining() const
+{
+	return ConsumableComponent ? ConsumableComponent->GetCooldownRemaining() : 0.0f;
+}
+
+// ---------------------------------------------------------------------------
+// Achievements
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::HandleBestiaryEntryUpdated(TSubclassOf<ASOEnemyCharacter> /*EnemyClass*/, int32 /*NewCount*/)
+{
+	if (!BestiaryComponent || !AchievementComponent)
+	{
+		return;
+	}
+
+	const int32 TotalKills = BestiaryComponent->GetTotalKills();
+	if (TotalKills >= 1)
+	{
+		AchievementComponent->UnlockAchievement(TEXT("first_blood"), FText::FromString(TEXT("First Blood: Land your first kill")));
+	}
+	if (TotalKills >= 100)
+	{
+		AchievementComponent->UnlockAchievement(TEXT("centurion"), FText::FromString(TEXT("Centurion: Land 100 kills")));
+	}
+}
+
+void ASOCharacter::HandleWaypointDiscovered(ASOWaypoint* /*Waypoint*/)
+{
+	if (!WaypointComponent || !AchievementComponent)
+	{
+		return;
+	}
+
+	if (WaypointComponent->GetDiscoveredWaypoints().Num() >= 5)
+	{
+		AchievementComponent->UnlockAchievement(TEXT("explorer"), FText::FromString(TEXT("Explorer: Discover 5 waypoints")));
 	}
 }
 

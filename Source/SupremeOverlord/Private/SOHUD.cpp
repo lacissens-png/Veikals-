@@ -22,9 +22,11 @@
 #include "SOQuestComponent.h"
 #include "SOQuestData.h"
 #include "SOStatusEffectComponent.h"
+#include "SOAchievementComponent.h"
 #include "SOAuraComponent.h"
 #include "SOBestiaryComponent.h"
 #include "SOBlinkComponent.h"
+#include "SOConsumableComponent.h"
 #include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
 #include "SODifficultySubsystem.h"
@@ -417,7 +419,7 @@ void ASOHUD::DrawHUD()
 	// -- Skill panel (row of seven tiles centered above the XP bar) ---------
 	if (bShowSkillPanel && MediumFont)
 	{
-		const int32 NumTiles       = 11;
+		const int32 NumTiles       = 12;
 		const float RowWidth       = NumTiles * SkillTileSize.X + (NumTiles - 1) * SkillTileGap;
 		const float RowY           = ScreenH - XPBarSize.Y - XPBarBottomOffset - SkillTileSize.Y - SkillPanelGap;
 		const float RowStartX      = (ScreenW - RowWidth) * 0.5f;
@@ -645,6 +647,35 @@ void ASOHUD::DrawHUD()
 				SO->DodgeRollComponent->Cooldown,
 				FLinearColor(0.35f, 0.38f, 0.42f, 1.0f),
 				MediumFont);
+		}
+
+		// Potion (I key) - deep red tile; ManaCost slot repurposed to show charge count via the label below
+		if (SO->ConsumableComponent)
+		{
+			const FVector2D TileOrigin(RowStartX + 11 * (SkillTileSize.X + SkillTileGap), RowY);
+			DrawSkillTile(
+				Canvas,
+				TileOrigin,
+				TEXT("I"),
+				TEXT("Potion"),
+				0.0f,
+				CurrentManaVal,
+				SO->GetPotionCooldownRemaining(),
+				SO->ConsumableComponent->UseCooldown,
+				FLinearColor(0.55f, 0.08f, 0.10f, 1.0f),
+				MediumFont);
+
+			const FString ChargeStr = FString::Printf(TEXT("%d / %d"),
+				SO->ConsumableComponent->GetCurrentCharges(), SO->ConsumableComponent->MaxCharges);
+			float CW = 0.0f, CH = 0.0f;
+			Canvas->TextSize(MediumFont, ChargeStr, CW, CH);
+			FCanvasTextItem ChargeItem(
+				FVector2D(TileOrigin.X + (SkillTileSize.X - CW) * 0.5f, TileOrigin.Y + SkillTileSize.Y + 22.0f),
+				FText::FromString(ChargeStr),
+				MediumFont,
+				FLinearColor(1.0f, 0.6f, 0.6f, 1.0f));
+			ChargeItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(ChargeItem);
 		}
 	}
 
@@ -1264,6 +1295,24 @@ void ASOHUD::DrawHUD()
 		CloseHint.Scale = FVector2D(0.85f, 0.85f);
 		CloseHint.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(CloseHint);
+	}
+
+	// -- Achievement toast (top-center, brief) --------------------------------
+	if (SO->AchievementComponent && SO->AchievementComponent->IsToastActive() && LargeFont)
+	{
+		const FString ToastText = FString::Printf(TEXT("ACHIEVEMENT UNLOCKED: %s"),
+			*SO->AchievementComponent->GetToastText().ToString());
+
+		float TW = 0.0f, TH = 0.0f;
+		Canvas->TextSize(LargeFont, ToastText, TW, TH, 1.1f, 1.1f);
+
+		FCanvasTextItem Toast(FVector2D((ScreenW - TW) * 0.5f, 70.0f),
+		                      FText::FromString(ToastText),
+		                      LargeFont,
+		                      FLinearColor(1.0f, 0.85f, 0.35f, 1.0f));
+		Toast.Scale = FVector2D(1.1f, 1.1f);
+		Toast.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(Toast);
 	}
 
 	// -- Pause overlay (drawn last so it sits over everything) ---------------

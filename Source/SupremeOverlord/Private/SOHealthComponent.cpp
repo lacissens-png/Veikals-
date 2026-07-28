@@ -23,20 +23,43 @@ void USOHealthComponent::BeginPlay()
 	}
 }
 
-void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage, const UDamageType* /*DamageType*/, AController* InstigatedBy, AActor* DamageCauser)
+void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	if (bIsDead || bInvulnerable || Damage <= 0.0f)
 	{
 		return;
 	}
 
-	const float ScaledDamage = Damage * IncomingDamageMultiplier;
+	const USODamageType* SODamageType   = Cast<USODamageType>(DamageType);
+	const bool           bIgnoreResists = SODamageType && SODamageType->bIgnoresResistances;
+
+	float ScaledDamage = bIgnoreResists ? Damage : (Damage * IncomingDamageMultiplier);
+
+	if (SODamageType && !bIgnoreResists && SODamageType->Category != ESODamageCategory::True)
+	{
+		ScaledDamage *= FMath::Max(0.0f, 1.0f - GetResistance(SODamageType->Category));
+	}
+
 	if (ScaledDamage <= 0.0f)
 	{
 		return;
 	}
 
 	ApplyHealthDelta(-ScaledDamage, InstigatedBy, DamageCauser);
+}
+
+float USOHealthComponent::GetResistance(ESODamageCategory Category) const
+{
+	if (const float* Found = ElementalResistances.Find(Category))
+	{
+		return FMath::Clamp(*Found, 0.0f, 0.9f);
+	}
+	return 0.0f;
+}
+
+void USOHealthComponent::SetResistance(ESODamageCategory Category, float Value)
+{
+	ElementalResistances.Add(Category, FMath::Clamp(Value, 0.0f, 0.9f));
 }
 
 float USOHealthComponent::Heal(float HealAmount, AController* Instigator, AActor* Healer)

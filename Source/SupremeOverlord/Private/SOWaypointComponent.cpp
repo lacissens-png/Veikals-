@@ -1,6 +1,7 @@
 #include "SOWaypointComponent.h"
 
 #include "SOCharacter.h"
+#include "SOConsumableComponent.h"
 #include "SOWaypoint.h"
 
 USOWaypointComponent::USOWaypointComponent()
@@ -53,6 +54,12 @@ bool USOWaypointComponent::TravelToWaypoint(int32 Index)
 
 	bMapOpen = false;
 	OnWaypointMapToggled.Broadcast(false);
+
+	// Diablo-style QoL: arriving at a waypoint tops off potion charges.
+	if (Owner->ConsumableComponent)
+	{
+		Owner->ConsumableComponent->RefillCharges();
+	}
 
 	OnWaypointTravel.Broadcast(Waypoint);
 	OnWaypointTravelBP(Waypoint);

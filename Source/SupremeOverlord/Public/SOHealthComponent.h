@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "SODamageType.h"
 #include "SOHealthComponent.generated.h"
 
 class AController;
@@ -61,6 +62,23 @@ public:
 	/** Multiplier applied to all incoming damage (before clamping). 1.0 = normal, 0.5 = resistant, 2.0 = vulnerable. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "10.0"))
 	float IncomingDamageMultiplier = 1.0f;
+
+	/**
+	 * Fractional damage reduction per ESODamageCategory (0.25 = 25% less damage
+	 * taken from that school). Looked up in HandleAnyDamage against the incoming
+	 * USODamageType::Category; True-category damage and any USODamageType with
+	 * bIgnoresResistances set always bypass this (and IncomingDamageMultiplier).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health|Resistance")
+	TMap<ESODamageCategory, float> ElementalResistances;
+
+	/** Resistance to Category, clamped to [0, 0.9]. 0 if no entry is set. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Health|Resistance")
+	float GetResistance(ESODamageCategory Category) const;
+
+	/** Sets (or replaces) the resistance to Category, clamped to [0, 0.9]. Useful for gear/buffs granting resistance at runtime. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health|Resistance")
+	void SetResistance(ESODamageCategory Category, float Value);
 
 	/** Fires on every change to CurrentHealth (damage, heal, kill, revive). */
 	UPROPERTY(BlueprintAssignable, Category = "SupremeOverlord|Health")

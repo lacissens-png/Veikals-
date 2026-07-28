@@ -1778,6 +1778,99 @@ the raw class name if left blank).
    `GetDiscoveredSpeciesCount()` are all available for a future
    achievements/rewards layer.
 
+## 58. Elemental Resistances (completing a dormant system)
+
+**Files**: `SOHealthComponent.h/.cpp`
+
+`USODamageType` already carried an `ESODamageCategory` (`Physical`,
+`Shadow`, `Fire`, `Frost`, `Necrotic`, `Holy`, `True`) and a
+`bIgnoresResistances` flag from an earlier pass — but `HandleAnyDamage`
+never actually read either one; the `DamageType` parameter was unused
+and every hit only ever applied `IncomingDamageMultiplier`. Both fields
+are now wired up for real:
+
+- `USOHealthComponent::ElementalResistances` is a
+  `TMap<ESODamageCategory, float>` (0.0-0.9 fractional reduction per
+  school), read via `GetResistance(Category)` / written via
+  `SetResistance(Category, Value)` (handy for temporary resistance
+  buffs/potions).
+- `HandleAnyDamage` now casts the incoming `DamageType` to
+  `USODamageType`, and — unless `bIgnoresResistances` is set or the
+  category is `True` — multiplies the (already `IncomingDamageMultiplier`-
+  scaled) damage by `(1 - resistance)`.
+- `bIgnoresResistances` now also skips `IncomingDamageMultiplier`
+  itself, matching what its doc comment always said it should do.
+
+### Setup
+
+1. Tag each elemental `BP_DamageType_*` subclass with the right
+   `Category` (this may already be done from the original pass).
+2. Set `ElementalResistances` on a character/enemy's `HealthComponent`
+   (e.g. `Frost -> 0.3` for a fire-elemental boss that resists cold).
+3. Mark any "true damage" source (execute effects, debug damage) with
+   a `USODamageType` subclass whose `Category = True` or
+   `bIgnoresResistances = true` to bypass all of this.
+
+## 59. Potions / Quick-Use Consumables
+
+**Files**: `SOConsumableComponent.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`,
+`SOWaypointComponent.cpp`
+
+Press **I** to consume one potion charge, healing/restoring mana by a
+fraction of max (`HealFraction`/`ManaFraction`, defaults 35%/25%) on a
+short `UseCooldown` (default 3s) so it can't be spammed. Charges are a
+fixed pool (`MaxCharges`, default 4) refilled by
+`RefillCharges()` — wired automatically into
+`USOWaypointComponent::TravelToWaypoint`, so arriving at any waypoint
+tops potions back up, Diablo-town-portal style, instead of needing a
+shop purchase per use.
+
+### HUD changes
+
+Skill tile 12 (deep red, **I** key) shows the cooldown overlay plus a
+`"charges / max"` label underneath, same pattern as the Summon Minion
+count badge.
+
+### Setup
+
+1. `ConsumableComponent` already exists on `ASOCharacter` — tune
+   `MaxCharges`/`HealFraction`/`ManaFraction`/`UseCooldown` to taste.
+2. Set `PotionUseSFX` on `BP_SOCharacter`.
+3. Drink potions in a fight, then travel to any waypoint to top back up.
+
+## 60. Achievements
+
+**Files**: `SOAchievementComponent.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOHUD.h/.cpp`
+
+`USOAchievementComponent` is a generic unlock-by-`FName`-ID tracker
+with a HUD toast — it doesn't own any milestone *definitions* itself;
+anything can call `AchievementComponent->UnlockAchievement(ID,
+DisplayName)` and it dedupes, remembers, and shows a 3.5s "ACHIEVEMENT
+UNLOCKED: ..." banner across the top of the screen.
+
+Six concrete milestones are wired as a worked example, checked from
+existing delegate handlers already on `ASOCharacter`:
+
+| ID           | Trigger                                    |
+|--------------|---------------------------------------------|
+| `first_blood`| First kill ever (via `BestiaryComponent`)     |
+| `centurion`  | 100 total kills                              |
+| `level_10`   | Reach character level 10                     |
+| `level_25`   | Reach character level 25                     |
+| `rich`       | Accumulate 1000 gold                         |
+| `explorer`   | Discover 5 waypoints                         |
+
+### Setup
+
+1. No setup needed for the six wired-in examples — play normally and
+   watch the toasts.
+2. Add more by calling `UnlockAchievement` from any other event hook
+   (quest completion, boss defeat, crafting a Legendary, ...).
+3. Set `UnlockSFX` on `BP_SOCharacter`'s `AchievementComponent` for
+   audio feedback.
+
 ### Updated input table
 
 | Key   | Action                          |
@@ -1801,6 +1894,7 @@ the raw class name if left blank).
 | P     | Respec All Talents               |
 | O     | Cycle Difficulty Tier             |
 | L     | Toggle Bestiary / Kill Codex      |
+| I     | Use Potion                        |
 | F1    | Allocate Strength               |
 | F2    | Allocate Intellect              |
 | F3    | Allocate Vitality               |

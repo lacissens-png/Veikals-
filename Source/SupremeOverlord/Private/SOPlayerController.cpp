@@ -113,6 +113,7 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("RespecTalents",   IE_Pressed, this, &ASOPlayerController::OnRespecTalentsPressed);
 	InputComponent->BindAction("CycleDifficulty", IE_Pressed, this, &ASOPlayerController::OnCycleDifficultyPressed);
 	InputComponent->BindAction("ToggleBestiary",  IE_Pressed, this, &ASOPlayerController::OnToggleBestiaryPressed);
+	InputComponent->BindAction("UsePotion",       IE_Pressed, this, &ASOPlayerController::OnUsePotionPressed);
 
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
@@ -660,5 +661,13 @@ void ASOPlayerController::OnToggleBestiaryPressed()
 	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
 	{
 		SOCharacter->ToggleBestiary();
+	}
+}
+
+void ASOPlayerController::OnUsePotionPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->UsePotion();
 	}
 }
