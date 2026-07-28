@@ -1541,3 +1541,128 @@ attributes panel, sourced from
    set, assign that asset to `ItemSet`.
 3. Equip 2+ pieces — the HUD panel and `RecomputeAggregateStats` pick
    it up automatically.
+
+## 51. Treasure Goblin (rare fleeing enemy)
+
+**Files**: `SOEnemyCharacter.h/.cpp` (added flee + loot-burst flags),
+`SOEnemyAIController.h/.cpp` (added `Fleeing` state), `SOTreasureGoblinCharacter.h/.cpp`
+(new)
+
+Any `ASOEnemyCharacter` can now be told to flee instead of fight —
+`bFleeFromPlayer` bypasses the normal Idle/Chasing/Attacking states in
+`ASOEnemyAIController::ThinkTick` entirely in favor of a standalone
+Idle/Fleeing loop: once the player enters `SightRadius`, it plots a
+destination `FleeDistance` cm directly away and re-paths there every
+think tick, at `FleeSpeedMultiplier`× movement speed.
+
+`ASOTreasureGoblinCharacter` is a ready-to-place subclass with sensible
+defaults baked into the constructor: flees at 1.6× speed, deals no
+damage, and dies into a guaranteed, oversized loot burst via two new
+general-purpose fields on the base class:
+
+| Property             | Default (Goblin) | Effect                                      |
+|----------------------|-------------------|-----------------------------------------------|
+| `LootRollCount`      | 6                 | `DropLoot()` rolls the whole `LootTable` this many times |
+| `bGuaranteedItemDrop`| true              | `RollItemDrop()` ignores `ItemDropChance`, always attempts a pick from `ItemDropPool` |
+
+Both fields live on the base `ASOEnemyCharacter`, so any enemy can be
+turned into an occasional "elite drop" variant without touching code.
+
+### Setup
+
+1. Create a `BP_TreasureGoblin` subclass of `ASOTreasureGoblinCharacter`,
+   give it a generous `LootTable`/`ItemDropPool`, and a distinct mesh.
+2. Drop it into a wave spawner's rare slot or hand-place it as an
+   ambush.
+3. Approach it — it flees; landing a kill (Shadow Bolt, Corpse
+   Explosion, a well-timed Trap) pays off with a loot pile.
+
+## 52. Difficulty Tiers (New Game+ style)
+
+**Files**: `SODifficultySubsystem.h/.cpp` (new), `SOEnemyCharacter.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`
+
+`USODifficultySubsystem` is a `UGameInstanceSubsystem` holding one
+global `ESODifficultyTier` (Normal/Hard/Nightmare/Torment). Press **O**
+to cycle it. `ASOEnemyCharacter::BeginPlay` reads the active tier's
+multipliers *before* calling `Super::BeginPlay()` — critical, since
+`USOHealthComponent` snaps `CurrentHealth` to `MaxHealth` inside its
+own `BeginPlay`, so the scaling has to land first — and applies them to
+`MaxHealth`, `AttackDamage`, `XPReward`, and `ItemDropChance`. Gold
+orbs get `GetGoldMultiplier()` applied at spawn in `DropLoot()`.
+
+Only enemies spawned *after* a difficulty change are affected —
+already-alive enemies keep their original stats, matching how
+"restart on a harder tier" difficulty selection works in Diablo-likes.
+
+| Tier      | Enemy HP | Enemy Damage | XP    | Gold  | Item Drop Chance |
+|-----------|----------|--------------|-------|-------|-------------------|
+| Normal    | 1.0×     | 1.0×         | 1.0×  | 1.0×  | 1.0×              |
+| Hard      | 1.8×     | 1.3×         | 1.25× | 1.15× | 1.1×              |
+| Nightmare | 3.0×     | 1.8×         | 1.6×  | 1.35× | 1.25×             |
+| Torment   | 5.0×     | 2.5×         | 2.2×  | 1.6×  | 1.5×              |
+
+### HUD changes
+
+A "Difficulty: Nightmare"-style label renders under the gold counter,
+colored per tier (grey/gold/orange/red).
+
+### Setup
+
+1. No per-actor setup needed — every `ASOEnemyCharacter` picks up the
+   active tier automatically on spawn.
+2. Press **O** before starting a run (or mid-run, for subsequently
+   spawned enemies) to raise the stakes.
+3. Tune the multiplier tables in `SODifficultySubsystem.cpp` to taste.
+
+## 53. Talent Respec
+
+**Files**: `SOTalentComponent.h/.cpp` (added `RespecAll`), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`
+
+Press **P** to respec: every unlocked talent node is reverted (its
+`FSOTalentEffect`s undone via `RevertNodeEffects`, the exact inverse of
+`ApplyNodeEffects`) and its `PointCost` refunded, for a flat
+`RespecGoldCost` (default 50 gold) charged via `ASOCharacter::RespecTalents`.
+No-op if nothing is unlocked or gold is short.
+
+### Setup
+
+1. `RespecGoldCost` is already set on `ASOCharacter` — tune or zero it
+   out for a free respec.
+2. Set `RespecSFX` on `BP_SOCharacter` for audio feedback.
+3. Unlock a few nodes, press **P**, confirm the points return and
+   stats revert.
+
+### Updated input table
+
+| Key   | Action                          |
+|-------|---------------------------------|
+| LMB   | MoveTo                          |
+| RMB/Q | Primary Attack                  |
+| E     | Shadow Bolt                     |
+| R     | Life Drain                      |
+| T     | Summon Minion (at cursor)       |
+| Y     | Dismiss All Minions             |
+| C     | Place Trap (selected type)      |
+| V     | Cycle Trap Type                 |
+| Z     | Activate Overlord Mode          |
+| U     | Necromantic Resurrect           |
+| X     | Corpse Explosion                |
+| B     | Shadow Step / Blink             |
+| H     | Place Cursed Ground              |
+| Space | Dodge Roll                       |
+| M     | Toggle Waypoint Map              |
+| 5-9   | Travel to Waypoint 1-5 (map open) |
+| P     | Respec All Talents               |
+| O     | Cycle Difficulty Tier             |
+| F1    | Allocate Strength               |
+| F2    | Allocate Intellect              |
+| F3    | Allocate Vitality               |
+| F5    | Quick Save                      |
+| F9    | Quick Load                      |
+| F     | Interact / Buy                  |
+| G     | Sell Weapon                     |
+| ESC   | Toggle Pause                    |
+| F10   | Quit (while paused)             |
+| K     | Debug Damage Self               |

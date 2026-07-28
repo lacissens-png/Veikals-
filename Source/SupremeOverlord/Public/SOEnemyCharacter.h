@@ -165,4 +165,36 @@ public:
 	/** Whether this corpse can be targeted by Necromantic Resurrection. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death")
 	bool bCanBeResurrected = true;
+
+	// -----------------------------------------------------------------------
+	// Fleeing behavior — used by rare "treasure goblin" style enemies that
+	// run instead of fight. Read by ASOEnemyAIController::ThinkTick, which
+	// substitutes a flee-away routine for the normal chase/attack states
+	// whenever this is set, so no dedicated AI controller is needed.
+	// -----------------------------------------------------------------------
+
+	/** When true, this enemy always flees from the nearest live player instead of chasing/attacking. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Flee")
+	bool bFleeFromPlayer = false;
+
+	/** Distance (cm) the flee destination is placed away from the enemy, recomputed every AI think tick. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Flee", meta = (ClampMin = "100.0", UIMin = "100.0", UIMax = "3000.0"))
+	float FleeDistance = 800.0f;
+
+	/** Multiplies MovementSpeed while fleeing is enabled — applied once in BeginPlay. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Flee", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "3.0"))
+	float FleeSpeedMultiplier = 1.0f;
+
+	// -----------------------------------------------------------------------
+	// Loot burst — lets a rare enemy roll its LootTable multiple times and
+	// guarantee its item drop, without needing a separate drop code path.
+	// -----------------------------------------------------------------------
+
+	/** DropLoot() rolls the entire LootTable this many times. 1 = normal behavior. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot", meta = (ClampMin = "1", UIMin = "1", UIMax = "20"))
+	int32 LootRollCount = 1;
+
+	/** When true, RollItemDrop() ignores ItemDropChance and always attempts a roll from ItemDropPool. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Loot")
+	bool bGuaranteedItemDrop = false;
 };

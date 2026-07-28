@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SOCharacter.h"
 #include "SODamageType.h"
+#include "SODifficultySubsystem.h"
 #include "SOCorruptionComponent.h"
 #include "SOEnemyAIController.h"
 #include "SOExperienceComponent.h"
@@ -52,11 +53,24 @@ ASOEnemyCharacter::ASOEnemyCharacter()
 
 void ASOEnemyCharacter::BeginPlay()
 {
+	// Applied before Super::BeginPlay() so USOHealthComponent's own BeginPlay
+	// (triggered inside it) snaps CurrentHealth to the already-scaled MaxHealth.
+	if (const USODifficultySubsystem* Difficulty = USODifficultySubsystem::Get(GetWorld()))
+	{
+		if (HealthComponent)
+		{
+			HealthComponent->MaxHealth *= Difficulty->GetEnemyHealthMultiplier();
+		}
+		AttackDamage   *= Difficulty->GetEnemyDamageMultiplier();
+		XPReward        = FMath::RoundToInt(XPReward * Difficulty->GetXPMultiplier());
+		ItemDropChance  = FMath::Min(1.0f, ItemDropChance * Difficulty->GetItemDropChanceMultiplier());
+	}
+
 	Super::BeginPlay();
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
-		Movement->MaxWalkSpeed = MovementSpeed;
+		Movement->MaxWalkSpeed = MovementSpeed * (bFleeFromPlayer ? FleeSpeedMultiplier : 1.0f);
 	}
 
 	if (HealthComponent)
@@ -161,36 +175,47 @@ void ASOEnemyCharacter::DropLoot()
 	}
 
 	const FVector CorpseLocation = GetActorLocation();
+	const USODifficultySubsystem* Difficulty = USODifficultySubsystem::Get(World);
+	const int32 Rolls = FMath::Max(1, LootRollCount);
 
-	for (const FSOLootDrop& Drop : LootTable)
+	for (int32 RollIndex = 0; RollIndex < Rolls; ++RollIndex)
 	{
-		if (!Drop.OrbClass || Drop.DropChance <= 0.0f)
+		for (const FSOLootDrop& Drop : LootTable)
 		{
-			continue;
-		}
+			if (!Drop.OrbClass || Drop.DropChance <= 0.0f)
+			{
+				continue;
+			}
 
-		if (FMath::FRand() > Drop.DropChance)
-		{
-			continue;
-		}
+			if (FMath::FRand() > Drop.DropChance)
+			{
+				continue;
+			}
 
-		const int32 SafeMin = FMath::Max(1, Drop.MinCount);
-		const int32 SafeMax = FMath::Max(SafeMin, Drop.MaxCount);
-		const int32 Count   = FMath::RandRange(SafeMin, SafeMax);
+			const int32 SafeMin = FMath::Max(1, Drop.MinCount);
+			const int32 SafeMax = FMath::Max(SafeMin, Drop.MaxCount);
+			const int32 Count   = FMath::RandRange(SafeMin, SafeMax);
 
-		for (int32 i = 0; i < Count; ++i)
-		{
-			// Uniformly sample a disk of radius LootSpreadRadius.
-			const float Angle    = FMath::FRandRange(0.0f, 2.0f * PI);
-			const float DiskR    = LootSpreadRadius * FMath::Sqrt(FMath::FRand());
-			const FVector Offset = FVector(FMath::Cos(Angle) * DiskR, FMath::Sin(Angle) * DiskR, LootSpawnHeight);
-			const FVector SpawnLoc = CorpseLocation + Offset;
+			for (int32 i = 0; i < Count; ++i)
+			{
+				// Uniformly sample a disk of radius LootSpreadRadius.
+				const float Angle    = FMath::FRandRange(0.0f, 2.0f * PI);
+				const float DiskR    = LootSpreadRadius * FMath::Sqrt(FMath::FRand());
+				const FVector Offset = FVector(FMath::Cos(Angle) * DiskR, FMath::Sin(Angle) * DiskR, LootSpawnHeight);
+				const FVector SpawnLoc = CorpseLocation + Offset;
 
-			FActorSpawnParameters Params;
-			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			Params.Owner = this;
+				FActorSpawnParameters Params;
+				Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+				Params.Owner = this;
 
-			World->SpawnActor<ASOPickupOrb>(Drop.OrbClass, SpawnLoc, FRotator::ZeroRotator, Params);
+				if (ASOPickupOrb* Orb = World->SpawnActor<ASOPickupOrb>(Drop.OrbClass, SpawnLoc, FRotator::ZeroRotator, Params))
+				{
+					if (Difficulty && Orb->OrbType == ESOOrbType::Gold)
+					{
+						Orb->Amount *= Difficulty->GetGoldMultiplier();
+					}
+				}
+			}
 		}
 	}
 }
@@ -198,12 +223,13 @@ void ASOEnemyCharacter::DropLoot()
 void ASOEnemyCharacter::RollItemDrop()
 {
 	UWorld* World = GetWorld();
-	if (!World || !ItemPickupClass || ItemDropChance <= 0.0f || ItemDropPool.Num() == 0)
+	if (!World || !ItemPickupClass || ItemDropPool.Num() == 0
+		|| (!bGuaranteedItemDrop && ItemDropChance <= 0.0f))
 	{
 		return;
 	}
 
-	if (FMath::FRand() > ItemDropChance)
+	if (!bGuaranteedItemDrop && FMath::FRand() > ItemDropChance)
 	{
 		return;
 	}

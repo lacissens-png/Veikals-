@@ -600,6 +600,21 @@ public:
 	bool TravelToWaypoint(int32 Index);
 
 	// -----------------------------------------------------------------------
+	// Talent Respec — P key; refunds every unlocked talent node for a gold fee.
+	// -----------------------------------------------------------------------
+
+	/** Gold cost to respec. Set to 0 to make it free. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Talents", meta = (ClampMin = "0"))
+	int32 RespecGoldCost = 50;
+
+	/**
+	 * Reverts every unlocked talent node and refunds their points, charging
+	 * RespecGoldCost. Returns false if nothing is unlocked or gold is short.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Talents")
+	bool RespecTalents();
+
+	// -----------------------------------------------------------------------
 	// SFX slots for the new abilities.
 	// -----------------------------------------------------------------------
 
@@ -614,6 +629,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
 	TObjectPtr<class USoundBase> DodgeRollSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> RespecSFX;
 
 private:
 	FTimerHandle PrimaryAttackCooldownHandle;

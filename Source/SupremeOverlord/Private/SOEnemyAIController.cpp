@@ -109,6 +109,25 @@ void ASOEnemyAIController::ThinkTick()
 	const float LoseSq   = FMath::Square(Owner->LoseSightRadius);
 	const float AttackSq = FMath::Square(Owner->AttackRange);
 
+	if (Owner->bFleeFromPlayer)
+	{
+		if (DistSq <= SightSq)
+		{
+			EnterState(ESOEnemyAIState::Fleeing);
+
+			const FVector AwayDir = (Owner->GetActorLocation() - Target->GetActorLocation()).GetSafeNormal2D();
+			const FVector FleeDir = AwayDir.IsNearlyZero() ? Owner->GetActorForwardVector() : AwayDir;
+			const FVector FleeDestination = Owner->GetActorLocation() + FleeDir * Owner->FleeDistance;
+
+			MoveToLocation(FleeDestination, /*AcceptanceRadius=*/ 50.0f, /*bStopOnOverlap=*/ false, /*bUsePathfinding=*/ true);
+		}
+		else
+		{
+			EnterState(ESOEnemyAIState::Idle);
+		}
+		return;
+	}
+
 	if (bDrawDebug)
 	{
 		DrawDebugSphere(GetWorld(), Owner->GetActorLocation(), Owner->AttackRange, 16, FColor::Red,   false, ThinkInterval * 1.1f, 0, 1.5f);

@@ -12,6 +12,7 @@
 #include "SOAttributesComponent.h"
 #include "SOCharacter.h"
 #include "SODamageType.h"
+#include "SODifficultySubsystem.h"
 #include "SOHealthComponent.h"
 #include "SODialogueComponent.h"
 #include "SODialogueNPC.h"
@@ -107,6 +108,10 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("WaypointSelect3",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect3);
 	InputComponent->BindAction("WaypointSelect4",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect4);
 	InputComponent->BindAction("WaypointSelect5",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect5);
+
+	// Respec (P) / cycle difficulty (O).
+	InputComponent->BindAction("RespecTalents",   IE_Pressed, this, &ASOPlayerController::OnRespecTalentsPressed);
+	InputComponent->BindAction("CycleDifficulty", IE_Pressed, this, &ASOPlayerController::OnCycleDifficultyPressed);
 
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
@@ -632,3 +637,19 @@ void ASOPlayerController::OnWaypointSelect2() { SelectWaypoint(1); }
 void ASOPlayerController::OnWaypointSelect3() { SelectWaypoint(2); }
 void ASOPlayerController::OnWaypointSelect4() { SelectWaypoint(3); }
 void ASOPlayerController::OnWaypointSelect5() { SelectWaypoint(4); }
+
+void ASOPlayerController::OnRespecTalentsPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->RespecTalents();
+	}
+}
+
+void ASOPlayerController::OnCycleDifficultyPressed()
+{
+	if (USODifficultySubsystem* Difficulty = USODifficultySubsystem::Get(GetWorld()))
+	{
+		Difficulty->CycleDifficulty();
+	}
+}

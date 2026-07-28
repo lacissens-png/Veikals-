@@ -26,6 +26,7 @@
 #include "SOBlinkComponent.h"
 #include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
+#include "SODifficultySubsystem.h"
 #include "SODodgeRollComponent.h"
 #include "SOEquipmentComponent.h"
 #include "SOSummonComponent.h"
@@ -382,6 +383,34 @@ void ASOHUD::DrawHUD()
 		GoldItem.Scale = FVector2D(GoldCounterScale, GoldCounterScale);
 		GoldItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(GoldItem);
+	}
+
+	// -- Difficulty label (top-right, under the gold counter) ---------------
+	if (bShowDifficultyLabel && MediumFont)
+	{
+		if (const USODifficultySubsystem* Difficulty = USODifficultySubsystem::Get(GetWorld()))
+		{
+			const FString DiffText = FString::Printf(TEXT("Difficulty: %s"), *Difficulty->GetDifficultyDisplayName().ToString());
+
+			FLinearColor DiffColor;
+			switch (Difficulty->GetDifficultyTier())
+			{
+			case ESODifficultyTier::Hard:      DiffColor = FLinearColor(0.95f, 0.75f, 0.25f, 1.0f); break;
+			case ESODifficultyTier::Nightmare: DiffColor = FLinearColor(0.95f, 0.45f, 0.15f, 1.0f); break;
+			case ESODifficultyTier::Torment:   DiffColor = FLinearColor(0.90f, 0.15f, 0.15f, 1.0f); break;
+			default:                           DiffColor = FLinearColor(0.75f, 0.75f, 0.75f, 1.0f); break;
+			}
+
+			float TextW = 0.0f, TextH = 0.0f;
+			Canvas->TextSize(MediumFont, DiffText, TextW, TextH);
+
+			FCanvasTextItem DiffItem(FVector2D(ScreenW - TextW - GoldCounterOffset.X, GoldCounterOffset.Y + 26.0f),
+			                         FText::FromString(DiffText),
+			                         MediumFont,
+			                         DiffColor);
+			DiffItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(DiffItem);
+		}
 	}
 
 	// -- Skill panel (row of seven tiles centered above the XP bar) ---------

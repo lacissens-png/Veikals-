@@ -53,7 +53,7 @@ public:
 	bool CanUnlock(USOTalentNode* Node, FString& OutReason) const;
 
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Talents")
-	const TArray<USOTalentNode*>& GetUnlockedNodes() const { return UnlockedNodes; }
+	const TArray<TObjectPtr<USOTalentNode>>& GetUnlockedNodes() const { return UnlockedNodes; }
 
 	/** Called by ASOCharacter on level-up (and by save/load) to add points. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Talents")
@@ -63,8 +63,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Talents")
 	bool UnlockNode(USOTalentNode* Node);
 
+	/**
+	 * Reverts every unlocked node's stat effects and refunds their PointCost.
+	 * No-op (returns false) if nothing is unlocked. Gold cost, if any, is the
+	 * caller's responsibility — see ASOCharacter::RespecTalents.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Talents")
+	bool RespecAll();
+
 private:
 	void ApplyNodeEffects(USOTalentNode* Node);
+	void RevertNodeEffects(USOTalentNode* Node);
 
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Talents", Transient)
 	TArray<TObjectPtr<USOTalentNode>> UnlockedNodes;

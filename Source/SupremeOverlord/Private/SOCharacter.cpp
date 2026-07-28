@@ -1087,3 +1087,36 @@ bool ASOCharacter::TravelToWaypoint(int32 Index)
 {
 	return WaypointComponent ? WaypointComponent->TravelToWaypoint(Index) : false;
 }
+
+// ---------------------------------------------------------------------------
+// Talent Respec
+// ---------------------------------------------------------------------------
+
+bool ASOCharacter::RespecTalents()
+{
+	if (!TalentComponent || TalentComponent->GetUnlockedNodes().Num() == 0)
+	{
+		return false;
+	}
+	if (RespecGoldCost > 0 && Gold < RespecGoldCost)
+	{
+		return false;
+	}
+
+	if (!TalentComponent->RespecAll())
+	{
+		return false;
+	}
+
+	if (RespecGoldCost > 0)
+	{
+		AddGold(-RespecGoldCost);
+	}
+
+	if (RespecSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, RespecSFX, GetActorLocation());
+	}
+
+	return true;
+}

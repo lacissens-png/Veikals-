@@ -12,6 +12,7 @@ enum class ESOEnemyAIState : uint8
 	Idle       UMETA(DisplayName = "Idle"),
 	Chasing    UMETA(DisplayName = "Chasing"),
 	Attacking  UMETA(DisplayName = "Attacking"),
+	Fleeing    UMETA(DisplayName = "Fleeing"),
 	Dead       UMETA(DisplayName = "Dead")
 };
 
@@ -23,6 +24,10 @@ enum class ESOEnemyAIState : uint8
  *   Attacking -> distance > AttackRange               -> Chasing
  *   Attacking -> cooldown elapsed                     -> PerformAttack, restart cooldown
  *   Any     -> owner dies                             -> Dead
+ *
+ * When Owner->bFleeFromPlayer is set, the chase/attack states above are
+ * bypassed entirely in favor of Idle <-> Fleeing (run directly away from the
+ * target once it enters SightRadius) — used by rare enemies that never fight.
  *
  * Kept intentionally single-file so no BehaviorTree/Blackboard assets are
  * required to test combat. Swap to a BT later without touching the enemy

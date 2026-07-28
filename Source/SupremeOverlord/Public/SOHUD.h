@@ -130,12 +130,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Gold", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "4.0"))
 	float GoldCounterScale = 1.3f;
 
+	/** Show the current global difficulty tier under the gold counter. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Difficulty")
+	bool bShowDifficultyLabel = true;
+
 	/** Show a one-line reminder of the primary keybinds across the top of the screen. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
 	bool bShowControlHints = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
-	FString ControlHintText = TEXT("LMB Move   |   RMB/Q Strike   |   E Shadow   |   R Drain   |   T Summon   |   Y Dismiss   |   C Trap   |   V Cycle   |   Z Overlord   |   U Resurrect   |   X Corpse   |   B Blink   |   H Curse   |   Space Roll   |   M Waypoints   |   F1/2/3 Attrs   |   ESC Pause");
+	FString ControlHintText = TEXT("LMB Move   |   RMB/Q Strike   |   E Shadow   |   R Drain   |   T Summon   |   Y Dismiss   |   C Trap   |   V Cycle   |   Z Overlord   |   U Resurrect   |   X Corpse   |   B Blink   |   H Curse   |   Space Roll   |   M Waypoints   |   P Respec   |   O Difficulty   |   F1/2/3 Attrs   |   ESC Pause");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
 	bool bShowAttributesPanel = true;

@@ -84,6 +84,31 @@ bool USOTalentComponent::UnlockNode(USOTalentNode* Node)
 	return true;
 }
 
+bool USOTalentComponent::RespecAll()
+{
+	if (UnlockedNodes.Num() == 0)
+	{
+		return false;
+	}
+
+	int32 RefundedPoints = 0;
+	for (USOTalentNode* Node : UnlockedNodes)
+	{
+		if (!Node)
+		{
+			continue;
+		}
+		RevertNodeEffects(Node);
+		RefundedPoints += Node->PointCost;
+	}
+
+	UnlockedNodes.Reset();
+	AvailableTalentPoints += RefundedPoints;
+
+	OnTalentPointsChanged.Broadcast(AvailableTalentPoints, RefundedPoints);
+	return true;
+}
+
 void USOTalentComponent::ApplyNodeEffects(USOTalentNode* Node)
 {
 	if (!Node)
@@ -143,6 +168,71 @@ void USOTalentComponent::ApplyNodeEffects(USOTalentNode* Node)
 
 		case ESOTalentEffect::MultMovementSpeed:
 			Owner->MovementSpeed *= (1.0f + Effect.Magnitude);
+			if (UCharacterMovementComponent* Move = Owner->GetCharacterMovement())
+			{
+				Move->MaxWalkSpeed = Owner->MovementSpeed;
+			}
+			break;
+
+		case ESOTalentEffect::None:
+		default:
+			break;
+		}
+	}
+}
+
+void USOTalentComponent::RevertNodeEffects(USOTalentNode* Node)
+{
+	if (!Node)
+	{
+		return;
+	}
+	ASOCharacter* Owner = Cast<ASOCharacter>(GetOwner());
+	if (!Owner)
+	{
+		return;
+	}
+
+	// Mirrors ApplyNodeEffects with every operation inverted.
+	for (const FSOTalentEffect& Effect : Node->Effects)
+	{
+		switch (Effect.EffectType)
+		{
+		case ESOTalentEffect::FlatMaxHealth:
+			if (USOHealthComponent* HP = Owner->HealthComponent)
+			{
+				HP->MaxHealth = FMath::Max(1.0f, HP->MaxHealth - Effect.Magnitude);
+			}
+			break;
+
+		case ESOTalentEffect::FlatMaxMana:
+			if (USOManaComponent* MP = Owner->ManaComponent)
+			{
+				MP->MaxMana = FMath::Max(0.0f, MP->MaxMana - Effect.Magnitude);
+			}
+			break;
+
+		case ESOTalentEffect::FlatPrimaryDamage:
+			Owner->PrimaryAttackDamage = FMath::Max(0.0f, Owner->PrimaryAttackDamage - Effect.Magnitude);
+			break;
+
+		case ESOTalentEffect::FlatShadowBoltDamage:
+			Owner->ShadowBoltBaseDamage = FMath::Max(0.0f, Owner->ShadowBoltBaseDamage - Effect.Magnitude);
+			break;
+
+		case ESOTalentEffect::FlatLifeDrainHealFrac:
+			Owner->LifeDrainHealFraction = FMath::Clamp(Owner->LifeDrainHealFraction - Effect.Magnitude, 0.0f, 5.0f);
+			break;
+
+		case ESOTalentEffect::FlatManaRegen:
+			if (USOManaComponent* MP = Owner->ManaComponent)
+			{
+				MP->RegenPerSecond = FMath::Max(0.0f, MP->RegenPerSecond - Effect.Magnitude);
+			}
+			break;
+
+		case ESOTalentEffect::MultMovementSpeed:
+			Owner->MovementSpeed /= (1.0f + Effect.Magnitude);
 			if (UCharacterMovementComponent* Move = Owner->GetCharacterMovement())
 			{
 				Move->MaxWalkSpeed = Owner->MovementSpeed;

@@ -163,6 +163,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Waypoint")
 	void OnWaypointSelect5();
 
+	/** Bound to "RespecTalents" (P). Refunds all unlocked talent nodes for a gold fee. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Talents")
+	void OnRespecTalentsPressed();
+
+	/** Bound to "CycleDifficulty" (O). Advances the global difficulty tier. Not a character ability — applies to the whole run. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Difficulty")
+	void OnCycleDifficultyPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();
