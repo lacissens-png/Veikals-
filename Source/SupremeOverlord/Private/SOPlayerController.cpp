@@ -114,6 +114,7 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("CycleDifficulty", IE_Pressed, this, &ASOPlayerController::OnCycleDifficultyPressed);
 	InputComponent->BindAction("ToggleBestiary",  IE_Pressed, this, &ASOPlayerController::OnToggleBestiaryPressed);
 	InputComponent->BindAction("UsePotion",       IE_Pressed, this, &ASOPlayerController::OnUsePotionPressed);
+	InputComponent->BindAction("RealitySlash",    IE_Pressed, this, &ASOPlayerController::OnRealitySlashPressed);
 
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
@@ -670,4 +671,23 @@ void ASOPlayerController::OnUsePotionPressed()
 	{
 		SOCharacter->UsePotion();
 	}
+}
+
+void ASOPlayerController::OnRealitySlashPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector Target = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		Target = Hit.ImpactPoint;
+	}
+
+	SOCharacter->CastRealitySlash(Target);
 }

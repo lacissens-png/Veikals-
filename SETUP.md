@@ -1944,6 +1944,47 @@ While dead, a "Respawning in Ns..." countdown appears beneath the
    or set `bAutoRespawn = false` for a stricter "no continue" mode.
 3. `OnCharacterRespawned` is a BP event for respawn VFX/SFX/UI.
 
+## 63. Reality Slash (Overlord-flavored instant kill)
+
+**Files**: `SORealitySlashDamageType.h/.cpp` (new),
+`SORealitySlashComponent.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`
+
+Straight out of the source material: Ainz's signature spells
+("Grasp Heart", "Reality Slash") instantly kill ordinary monsters but
+explicitly fail against other "Players" — bosses. Press **J** to
+slash the nearest enemy to the cursor:
+
+- **Ordinary enemy** (not a boss, no active `USOEliteComponent`
+  affixes): dies outright via `USOHealthComponent::Kill()`. Because
+  `Kill()` drives the exact same `OnDeath` flow as a normal kill,
+  XP/loot/corruption/bestiary-codex/quest-credit all fire automatically
+  — no special-casing needed anywhere else.
+- **Boss or elite** (resists the instant kill): takes a `BossFallbackDamage`
+  (default 400) burst of `USORealitySlashDamageType` — a damage type
+  that "cuts through reality itself" (`Category = True`,
+  `bIgnoresResistances = true`), so it bypasses every elemental
+  resistance from §58. Doubles as a template for authoring further
+  elemental `USODamageType` subclasses.
+
+Mana cost 60, cooldown 8s, range 700cm — tuned as a powerful but
+deliberate cooldown-gated tool rather than a spammable execute.
+
+### HUD changes
+
+Skill tile 13 (void-black, **J** key) shows mana cost and cooldown
+overlay using the same tile pattern as the rest of the skill bar.
+
+### Setup
+
+1. `RealitySlashComponent` already exists on `ASOCharacter` — tune
+   `Range`/`ManaCost`/`Cooldown`/`BossFallbackDamage` to taste.
+2. Optionally author further `USODamageType` subclasses (elemental
+   schools) following `SORealitySlashDamageType.cpp` as a template.
+3. Set `RealitySlashSFX` on `BP_SOCharacter` for audio feedback.
+4. Slash a regular enemy (dies instantly), then a boss (takes heavy
+   True damage instead) to feel the difference.
+
 ### Updated input table
 
 | Key   | Action                          |
@@ -1968,6 +2009,7 @@ While dead, a "Respawning in Ns..." countdown appears beneath the
 | O     | Cycle Difficulty Tier             |
 | L     | Toggle Bestiary / Kill Codex      |
 | I     | Use Potion                        |
+| J     | Reality Slash                     |
 | F1    | Allocate Strength               |
 | F2    | Allocate Intellect              |
 | F3    | Allocate Vitality               |

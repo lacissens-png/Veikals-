@@ -139,7 +139,7 @@ public:
 	bool bShowControlHints = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
-	FString ControlHintText = TEXT("LMB Move   |   RMB/Q Strike   |   E Shadow   |   R Drain   |   T Summon   |   Y Dismiss   |   C Trap   |   V Cycle   |   Z Overlord   |   U Resurrect   |   X Corpse   |   B Blink   |   H Curse   |   Space Roll   |   M Waypoints   |   P Respec   |   O Difficulty   |   L Bestiary   |   I Potion   |   F1/2/3 Attrs   |   ESC Pause");
+	FString ControlHintText = TEXT("LMB Move   |   RMB/Q Strike   |   E Shadow   |   R Drain   |   T Summon   |   Y Dismiss   |   C Trap   |   V Cycle   |   Z Overlord   |   U Resurrect   |   X Corpse   |   B Blink   |   H Curse   |   Space Roll   |   M Waypoints   |   P Respec   |   O Difficulty   |   L Bestiary   |   I Potion   |   J Reality Slash   |   F1/2/3 Attrs   |   ESC Pause");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
 	bool bShowAttributesPanel = true;

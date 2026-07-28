@@ -16,6 +16,7 @@
 #include "SOBlinkComponent.h"
 #include "SOConsumableComponent.h"
 #include "SOCorpseExplosionComponent.h"
+#include "SORealitySlashComponent.h"
 #include "SOCorruptionComponent.h"
 #include "SOCursedGround.h"
 #include "SODodgeRollComponent.h"
@@ -82,6 +83,7 @@ ASOCharacter::ASOCharacter()
 	BestiaryComponent        = CreateDefaultSubobject<USOBestiaryComponent>(TEXT("BestiaryComponent"));
 	ConsumableComponent      = CreateDefaultSubobject<USOConsumableComponent>(TEXT("ConsumableComponent"));
 	AchievementComponent     = CreateDefaultSubobject<USOAchievementComponent>(TEXT("AchievementComponent"));
+	RealitySlashComponent    = CreateDefaultSubobject<USORealitySlashComponent>(TEXT("RealitySlashComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -1266,6 +1268,30 @@ void ASOCharacter::ToggleBestiary()
 	{
 		BestiaryComponent->ToggleCodex();
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Reality Slash
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::CastRealitySlash(FVector TargetLocation)
+{
+	if (!IsAlive() || !RealitySlashComponent)
+	{
+		return;
+	}
+	if (RealitySlashComponent->Cast(TargetLocation, this))
+	{
+		if (RealitySlashSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, RealitySlashSFX, GetActorLocation());
+		}
+	}
+}
+
+float ASOCharacter::GetRealitySlashCooldownRemaining() const
+{
+	return RealitySlashComponent ? RealitySlashComponent->GetCooldownRemaining() : 0.0f;
 }
 
 // ---------------------------------------------------------------------------

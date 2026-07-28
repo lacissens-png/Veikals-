@@ -179,6 +179,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Consumable")
 	void OnUsePotionPressed();
 
+	/** Bound to "RealitySlash" (J). Instant-kills (or heavily damages) the nearest enemy to the cursor. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|RealitySlash")
+	void OnRealitySlashPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

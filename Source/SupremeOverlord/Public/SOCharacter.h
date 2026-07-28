@@ -166,6 +166,24 @@ public:
 	void ToggleBestiary();
 
 	// -----------------------------------------------------------------------
+	// Reality Slash — J key; Overlord-flavored instant-kill on ordinary
+	// enemies, a heavy True-damage burst on anything that resists (bosses/elites).
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|RealitySlash")
+	TObjectPtr<class USORealitySlashComponent> RealitySlashComponent;
+
+	/** Slashes the nearest enemy to TargetLocation. See USORealitySlashComponent::Cast. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|RealitySlash")
+	void CastRealitySlash(FVector TargetLocation);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|RealitySlash")
+	float GetRealitySlashCooldownRemaining() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> RealitySlashSFX;
+
+	// -----------------------------------------------------------------------
 	// Hit-stop / camera shake "juice" — brief time freeze + camera shake on
 	// landing or taking a hit, purely cosmetic game feel.
 	// -----------------------------------------------------------------------

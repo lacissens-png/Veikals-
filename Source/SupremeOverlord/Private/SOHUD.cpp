@@ -32,6 +32,7 @@
 #include "SODifficultySubsystem.h"
 #include "SODodgeRollComponent.h"
 #include "SOEquipmentComponent.h"
+#include "SORealitySlashComponent.h"
 #include "SOSummonComponent.h"
 #include "SOWaypoint.h"
 #include "SOWaypointComponent.h"
@@ -419,7 +420,7 @@ void ASOHUD::DrawHUD()
 	// -- Skill panel (row of seven tiles centered above the XP bar) ---------
 	if (bShowSkillPanel && MediumFont)
 	{
-		const int32 NumTiles       = 12;
+		const int32 NumTiles       = 13;
 		const float RowWidth       = NumTiles * SkillTileSize.X + (NumTiles - 1) * SkillTileGap;
 		const float RowY           = ScreenH - XPBarSize.Y - XPBarBottomOffset - SkillTileSize.Y - SkillPanelGap;
 		const float RowStartX      = (ScreenW - RowWidth) * 0.5f;
@@ -676,6 +677,22 @@ void ASOHUD::DrawHUD()
 				FLinearColor(1.0f, 0.6f, 0.6f, 1.0f));
 			ChargeItem.EnableShadow(FLinearColor::Black);
 			Canvas->DrawItem(ChargeItem);
+		}
+
+		// Reality Slash (J key) - stark bone-white/void tile, Overlord's signature instant-kill
+		if (SO->RealitySlashComponent)
+		{
+			DrawSkillTile(
+				Canvas,
+				FVector2D(RowStartX + 12 * (SkillTileSize.X + SkillTileGap), RowY),
+				TEXT("J"),
+				TEXT("Slash"),
+				SO->RealitySlashComponent->ManaCost,
+				CurrentManaVal,
+				SO->GetRealitySlashCooldownRemaining(),
+				SO->RealitySlashComponent->Cooldown,
+				FLinearColor(0.08f, 0.05f, 0.12f, 1.0f),
+				MediumFont);
 		}
 	}
 
