@@ -1656,6 +1656,151 @@ No-op if nothing is unlocked or gold is short.
 | 5-9   | Travel to Waypoint 1-5 (map open) |
 | P     | Respec All Talents               |
 | O     | Cycle Difficulty Tier             |
+| L     | Toggle Bestiary / Kill Codex      |
+| F1    | Allocate Strength               |
+| F2    | Allocate Intellect              |
+| F3    | Allocate Vitality               |
+| F5    | Quick Save                      |
+| F9    | Quick Load                      |
+| F     | Interact / Buy                  |
+| G     | Sell Weapon                     |
+| ESC   | Toggle Pause                    |
+| F10   | Quit (while paused)             |
+| K     | Debug Damage Self               |
+
+## 54. Gem Sockets
+
+**Files**: `SOGemData.h` (new), `SOItemData.h` (added `MaxSockets`/`SocketedGems`),
+`SOEquipmentComponent.h/.cpp` (added `SocketGem`), `SOLootRoller.h/.cpp`
+(`ApplyAffix` made public)
+
+Any weapon/armor can have `MaxSockets` gem slots. A `USOGemData` asset
+(Chipped→Perfect quality ladder, purely presentational) defines one
+`ESOAffixStat` + `Value`, exactly like a rolled affix.
+`USOEquipmentComponent::SocketGem(Slot, Gem)` bakes that bonus into the
+equipped item's own stat fields via `USOLootRoller::ApplyAffix` — the
+same routine random drop affixes use — then calls
+`RecomputeAggregateStats()` so armor-targeted gems (Health/Mana/Speed/
+Damage Reduction) take effect immediately; weapon-targeted gems
+(Primary/Shadow Bolt Damage/Attack Speed) are already read live via
+`GetEffective*Damage()`.
+
+No new key binding — sockets are meant to be filled from an inventory
+screen (`Equipment->SocketGem(...)`), not cast like a spell.
+
+### Setup
+
+1. Create `USOGemData` assets per tier (e.g. a "Flawless Ruby":
+   `Stat=PrimaryDamage`, `Value=15`).
+2. Set `MaxSockets` on the weapon/armor templates that should be
+   socketable.
+3. Call `EquipmentComponent->SocketGem(ESOEquipSlot::MainHand, Gem)`
+   from your inventory UI once it exists.
+
+## 55. Familiar Companion
+
+**Files**: `SOFamiliarActor.h/.cpp` (new), `SOCharacter.h/.cpp`
+
+`ASOFamiliarActor` is a permanent hovering companion — distinct from
+`ASOMinion`: it never expires, doesn't count against the minion cap,
+and doesn't melee. It follows the owner at a fixed offset (with a
+gentle bob) and periodically zaps the nearest enemy in range for light
+chip damage. Set `FamiliarClass` on `ASOCharacter` and it spawns once,
+automatically, in `BeginPlay` — no key needed, it's a passive
+companion rather than a cast ability.
+
+| Property             | Default | Notes                                    |
+|-----------------------|---------|---------------------------------------------|
+| `FollowOffset`        | (-150,100,120) | Hover position relative to the owner  |
+| `FollowInterpSpeed`   | 4.0     | How snappily it catches up               |
+| `ZapDamage`           | 8       | Damage per zap                            |
+| `ZapRange`            | 900 cm  | Max range to the nearest enemy            |
+| `ZapInterval`         | 2 s     | Seconds between zaps                      |
+
+### Setup
+
+1. Create a `BP_Familiar` subclass of `ASOFamiliarActor` with a fitting
+   mesh (imp, raven, floating skull, ...).
+2. Assign it to `FamiliarClass` on `BP_SOCharacter`.
+3. Start a level — the familiar spawns and starts zapping nearby
+   enemies automatically.
+
+## 56. Hit-Stop / Camera Shake Juice
+
+**Files**: `SOCharacter.h/.cpp`
+
+Cosmetic "game feel" polish: `ASOCharacter::TriggerHitImpact(ShakeScale)`
+plays a `HitCameraShakeClass` camera shake and briefly sets
+`UGameplayStatics::SetGlobalTimeDilation` to `HitStopTimeDilation`
+(default 0.05) for `HitStopDuration` real-world seconds (default
+0.045s) before restoring normal speed. Because timers advance on
+*dilated* world time, the restore timer's duration is pre-multiplied by
+the dilation factor (`HitStopDuration * HitStopTimeDilation`) — passing
+the raw real-seconds value would make the "restore" timer itself run in
+slow motion and never recover in time.
+
+Wired into two hooks automatically:
+- **Landing a Primary Attack hit** — `ShakeScale = 0.5` (punchy but subtle).
+- **Taking any damage** (`HealthComponent->OnHealthChanged`, `Delta < 0`)
+  — `ShakeScale = 1.0` (more pronounced, since getting hit should read
+  clearly).
+
+Call `TriggerHitImpact()` manually from any other cast function
+(Corpse Explosion, a boss nova, ...) for the same feedback elsewhere.
+
+### Setup
+
+1. Create a `UCameraShakeBase` Blueprint (or use a `UMatineeCameraShake`
+   subclass) and assign it to `HitCameraShakeClass` on `BP_SOCharacter`.
+2. Tune `HitStopTimeDilation`/`HitStopDuration` to taste — smaller
+   dilation and longer duration reads as a much harder-hitting freeze.
+
+## 57. Bestiary / Kill Codex
+
+**Files**: `SOBestiaryComponent.h/.cpp` (new), `SOEnemyCharacter.h/.cpp`
+(added `BestiaryDisplayName`), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`
+
+Tracks kills per enemy *class* (not per-instance) for simple meta-
+progression. `ASOEnemyCharacter::HandleDeath` calls
+`Killer->BestiaryComponent->RecordKill(GetClass())` alongside the
+existing XP/quest/corruption grants. Press **L** to open/close a
+Canvas codex overlay listing every discovered species by kill count,
+descending, using each class's `BestiaryDisplayName` (falls back to
+the raw class name if left blank).
+
+### Setup
+
+1. Set `BestiaryDisplayName` on each `BP_Enemy*` subclass (e.g.
+   "Skeleton Grunt", "Shadow Wraith") for a clean codex entry.
+2. Kill a few enemies, press **L** to check the tally.
+3. `BestiaryComponent->GetEntryDescriptions()` / `GetTotalKills()` /
+   `GetDiscoveredSpeciesCount()` are all available for a future
+   achievements/rewards layer.
+
+### Updated input table
+
+| Key   | Action                          |
+|-------|---------------------------------|
+| LMB   | MoveTo                          |
+| RMB/Q | Primary Attack                  |
+| E     | Shadow Bolt                     |
+| R     | Life Drain                      |
+| T     | Summon Minion (at cursor)       |
+| Y     | Dismiss All Minions             |
+| C     | Place Trap (selected type)      |
+| V     | Cycle Trap Type                 |
+| Z     | Activate Overlord Mode          |
+| U     | Necromantic Resurrect           |
+| X     | Corpse Explosion                |
+| B     | Shadow Step / Blink             |
+| H     | Place Cursed Ground              |
+| Space | Dodge Roll                       |
+| M     | Toggle Waypoint Map              |
+| 5-9   | Travel to Waypoint 1-5 (map open) |
+| P     | Respec All Talents               |
+| O     | Cycle Difficulty Tier             |
+| L     | Toggle Bestiary / Kill Codex      |
 | F1    | Allocate Strength               |
 | F2    | Allocate Intellect              |
 | F3    | Allocate Vitality               |

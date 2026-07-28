@@ -64,6 +64,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Equipment")
 	const TArray<FString>& GetActiveSetBonusDescriptions() const { return ActiveSetBonusDescriptions; }
 
+	/**
+	 * Socket Gem into the item currently equipped in Slot. Fails if the slot is
+	 * empty or already has no free sockets (see USOItemData::GetFreeSocketCount).
+	 * The gem's bonus is baked into the item's own stat fields via
+	 * USOLootRoller::ApplyAffix, then RecomputeAggregateStats re-syncs the
+	 * owner's aggregate stats so armor/set gems take effect immediately.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Equipment")
+	bool SocketGem(ESOEquipSlot Slot, class USOGemData* Gem);
+
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Equipment", Transient)
 	TMap<ESOEquipSlot, TObjectPtr<USOItemData>> EquippedItems;

@@ -110,4 +110,19 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Set")
 	TObjectPtr<class USOItemSetData> ItemSet;
+
+	// -----------------------------------------------------------------------
+	// Gem Sockets — USOEquipmentComponent::SocketGem fills these in.
+	// -----------------------------------------------------------------------
+
+	/** Number of gem sockets this item has. 0 = no sockets. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Sockets", meta = (ClampMin = "0", UIMin = "0", UIMax = "6"))
+	int32 MaxSockets = 0;
+
+	/** Gems currently socketed. Each entry's bonus has already been baked into this item's own stat fields. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Item|Sockets", Transient)
+	TArray<TObjectPtr<class USOGemData>> SocketedGems;
+
+	UFUNCTION(BlueprintPure, Category = "Item|Sockets")
+	int32 GetFreeSocketCount() const { return FMath::Max(0, MaxSockets - SocketedGems.Num()); }
 };

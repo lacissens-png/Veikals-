@@ -171,6 +171,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Difficulty")
 	void OnCycleDifficultyPressed();
 
+	/** Bound to "ToggleBestiary" (L). Opens/closes the kill codex overlay. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Bestiary")
+	void OnToggleBestiaryPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

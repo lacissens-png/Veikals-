@@ -32,10 +32,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Loot")
 	static USOItemData* RollItemInstance(const USOItemData* Template, UObject* Outer, int32 ItemLevel = 1);
 
+	/**
+	 * Applies one stat bonus directly to Item's own fields (PrimaryDamageBonus
+	 * for weapons, MaxHealthBonus for armor, etc. — routes on the item's
+	 * dynamic type). Shared by the random-affix roll above and by
+	 * USOEquipmentComponent::SocketGem, so a socketed gem and a rolled affix
+	 * behave identically once applied.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Loot")
+	static void ApplyAffix(USOItemData* Item, const FSOItemAffix& Affix);
+
 private:
 	static ESOItemRarity RollRarity();
 	static int32         GetAffixCountForRarity(ESOItemRarity Rarity);
 	static float         RollAffixMagnitude(ESOAffixStat Stat, int32 ItemLevel);
 	static FString       BuildAffixDescription(ESOAffixStat Stat, float Value);
-	static void          ApplyAffix(USOItemData* Item, const FSOItemAffix& Affix);
 };

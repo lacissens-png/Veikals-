@@ -109,9 +109,10 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("WaypointSelect4",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect4);
 	InputComponent->BindAction("WaypointSelect5",   IE_Pressed, this, &ASOPlayerController::OnWaypointSelect5);
 
-	// Respec (P) / cycle difficulty (O).
+	// Respec (P) / cycle difficulty (O) / bestiary (L).
 	InputComponent->BindAction("RespecTalents",   IE_Pressed, this, &ASOPlayerController::OnRespecTalentsPressed);
 	InputComponent->BindAction("CycleDifficulty", IE_Pressed, this, &ASOPlayerController::OnCycleDifficultyPressed);
+	InputComponent->BindAction("ToggleBestiary",  IE_Pressed, this, &ASOPlayerController::OnToggleBestiaryPressed);
 
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
@@ -651,5 +652,13 @@ void ASOPlayerController::OnCycleDifficultyPressed()
 	if (USODifficultySubsystem* Difficulty = USODifficultySubsystem::Get(GetWorld()))
 	{
 		Difficulty->CycleDifficulty();
+	}
+}
+
+void ASOPlayerController::OnToggleBestiaryPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->ToggleBestiary();
 	}
 }

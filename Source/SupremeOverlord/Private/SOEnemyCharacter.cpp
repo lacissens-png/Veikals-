@@ -134,6 +134,11 @@ void ASOEnemyCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, ACo
 				Killer->QuestComponent->NotifyEnemyKilled(this);
 			}
 
+			if (Killer->BestiaryComponent)
+			{
+				Killer->BestiaryComponent->RecordKill(GetClass());
+			}
+
 			if (CorruptionValue > 0.0f && Killer->CorruptionComponent)
 			{
 				Killer->CorruptionComponent->AddCorruption(CorruptionValue);

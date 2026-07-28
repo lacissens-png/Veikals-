@@ -40,6 +40,10 @@ protected:
 	UFUNCTION()
 	void HandleLevelUp(USOExperienceComponent* OwningComponent, int32 NewLevel, int32 PreviousLevel);
 
+	/** Bound to HealthComponent->OnHealthChanged — triggers hit-stop/camera shake when Delta < 0 (took damage). */
+	UFUNCTION()
+	void HandleHealthChanged(USOHealthComponent* OwningComponent, float OldHealth, float NewHealth, float Delta, AController* InstigatedBy, AActor* DamageCauser);
+
 public:
 	/** Fixed isometric spring arm - not driven by pawn rotation. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Camera")
@@ -112,6 +116,52 @@ public:
 	/** Waypoint travel — tracks discovered waypoints and handles fast-travel teleports. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Waypoint")
 	TObjectPtr<class USOWaypointComponent> WaypointComponent;
+
+	// -----------------------------------------------------------------------
+	// Familiar — a permanent hovering companion, distinct from summoned
+	// minions. Auto-spawned once in BeginPlay when FamiliarClass is set.
+	// -----------------------------------------------------------------------
+
+	/** Familiar class to spawn on BeginPlay. Leave unset to play without one. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Familiar")
+	TSubclassOf<class ASOFamiliarActor> FamiliarClass;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "SupremeOverlord|Familiar", Transient)
+	TObjectPtr<class ASOFamiliarActor> ActiveFamiliar;
+
+	/** Tracks kills per enemy species for the bestiary/codex (L key). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Bestiary")
+	TObjectPtr<class USOBestiaryComponent> BestiaryComponent;
+
+	/** Opens/closes the bestiary/codex overlay. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Bestiary")
+	void ToggleBestiary();
+
+	// -----------------------------------------------------------------------
+	// Hit-stop / camera shake "juice" — brief time freeze + camera shake on
+	// landing or taking a hit, purely cosmetic game feel.
+	// -----------------------------------------------------------------------
+
+	/** Camera shake played on impact. Leave unset to disable shake (hit-stop still applies). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Juice")
+	TSubclassOf<class UCameraShakeBase> HitCameraShakeClass;
+
+	/** Global time dilation applied for HitStopDuration real seconds. 1.0 disables hit-stop entirely. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Juice", meta = (ClampMin = "0.01", ClampMax = "1.0"))
+	float HitStopTimeDilation = 0.05f;
+
+	/** Real-world seconds the freeze lasts, regardless of HitStopTimeDilation. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Juice", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "0.3"))
+	float HitStopDuration = 0.045f;
+
+	/**
+	 * Plays the hit camera shake and briefly freezes the world via global time
+	 * dilation. ShakeScale multiplies the camera shake's intensity (bigger for
+	 * a boss nova, smaller for a jab). Safe to call rapidly — each call resets
+	 * the freeze timer rather than stacking.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Juice")
+	void TriggerHitImpact(float ShakeScale = 1.0f);
 
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
@@ -654,6 +704,8 @@ private:
 	float CursedGroundCooldown    = 1.0f;
 
 	TArray<TWeakObjectPtr<class ASOCursedGround>> ActiveCursedGrounds;
+
+	FTimerHandle HitStopTimerHandle;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Currency", Transient)
 	int32 Gold = 0;

@@ -6,16 +6,19 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SOAttributesComponent.h"
 #include "SOAuraComponent.h"
+#include "SOBestiaryComponent.h"
 #include "SOBlinkComponent.h"
 #include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
 #include "SOCursedGround.h"
 #include "SODodgeRollComponent.h"
 #include "SOEquipmentComponent.h"
+#include "SOFamiliarActor.h"
 #include "SOTrap.h"
 #include "SOInventoryComponent.h"
 #include "SOItemData.h"
@@ -72,6 +75,7 @@ ASOCharacter::ASOCharacter()
 	BlinkComponent           = CreateDefaultSubobject<USOBlinkComponent>(TEXT("BlinkComponent"));
 	DodgeRollComponent       = CreateDefaultSubobject<USODodgeRollComponent>(TEXT("DodgeRollComponent"));
 	WaypointComponent        = CreateDefaultSubobject<USOWaypointComponent>(TEXT("WaypointComponent"));
+	BestiaryComponent        = CreateDefaultSubobject<USOBestiaryComponent>(TEXT("BestiaryComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -99,6 +103,7 @@ void ASOCharacter::BeginPlay()
 	if (HealthComponent)
 	{
 		HealthComponent->OnDeath.AddDynamic(this, &ASOCharacter::HandleDeath);
+		HealthComponent->OnHealthChanged.AddDynamic(this, &ASOCharacter::HandleHealthChanged);
 	}
 
 	if (ExperienceComponent)
@@ -115,6 +120,22 @@ void ASOCharacter::BeginPlay()
 	if (StartingWeapon)
 	{
 		EquipWeapon(StartingWeapon);
+	}
+
+	if (FamiliarClass)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			Params.Owner = this;
+
+			ActiveFamiliar = World->SpawnActor<ASOFamiliarActor>(FamiliarClass, GetActorLocation(), GetActorRotation(), Params);
+			if (ActiveFamiliar)
+			{
+				ActiveFamiliar->OwnerCharacter = this;
+			}
+		}
 	}
 }
 
@@ -174,6 +195,15 @@ void ASOCharacter::AddGold(int32 Amount)
 void ASOCharacter::HandleDeath(USOHealthComponent* /*OwningComponent*/, AController* InstigatedBy, AActor* DamageCauser)
 {
 	OnCharacterDied(InstigatedBy, DamageCauser);
+}
+
+void ASOCharacter::HandleHealthChanged(USOHealthComponent* /*OwningComponent*/, float /*OldHealth*/, float /*NewHealth*/,
+                                       float Delta, AController* /*InstigatedBy*/, AActor* /*DamageCauser*/)
+{
+	if (Delta < 0.0f && IsAlive())
+	{
+		TriggerHitImpact(1.0f);
+	}
 }
 
 void ASOCharacter::HandleLevelUp(USOExperienceComponent* /*OwningComponent*/, int32 NewLevel, int32 PreviousLevel)
@@ -355,6 +385,11 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 	if (TotalDamageDealt > 0.0f && HealthComponent && HasLegendaryEffect(ESOLegendaryEffect::VampiricStrikes))
 	{
 		HealthComponent->Heal(TotalDamageDealt * VampiricStrikesHealFraction, InstigatorController, this);
+	}
+
+	if (UniqueHitActors.Num() > 0)
+	{
+		TriggerHitImpact(0.5f);
 	}
 
 	if (PrimaryAttackSFX)
@@ -1054,6 +1089,40 @@ float ASOCharacter::GetDodgeRollCooldownRemaining() const
 // Legendary Uniques
 // ---------------------------------------------------------------------------
 
+void ASOCharacter::TriggerHitImpact(float ShakeScale)
+{
+	if (HitCameraShakeClass)
+	{
+		if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		{
+			PC->ClientStartCameraShake(HitCameraShakeClass, ShakeScale);
+		}
+	}
+
+	if (HitStopDuration <= 0.0f || HitStopTimeDilation >= 1.0f)
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	UGameplayStatics::SetGlobalTimeDilation(World, HitStopTimeDilation);
+
+	// Timers advance on dilated world time, so the requested real-world
+	// HitStopDuration must be pre-multiplied by the dilation factor here,
+	// otherwise the "restore" timer itself would run in slow motion too.
+	World->GetTimerManager().ClearTimer(HitStopTimerHandle);
+	World->GetTimerManager().SetTimer(
+		HitStopTimerHandle,
+		FTimerDelegate::CreateLambda([World]() { UGameplayStatics::SetGlobalTimeDilation(World, 1.0f); }),
+		HitStopDuration * HitStopTimeDilation,
+		false);
+}
+
 bool ASOCharacter::HasLegendaryEffect(ESOLegendaryEffect Effect) const
 {
 	if (Effect == ESOLegendaryEffect::None || !EquipmentComponent)
@@ -1086,6 +1155,14 @@ void ASOCharacter::ToggleWaypointMap()
 bool ASOCharacter::TravelToWaypoint(int32 Index)
 {
 	return WaypointComponent ? WaypointComponent->TravelToWaypoint(Index) : false;
+}
+
+void ASOCharacter::ToggleBestiary()
+{
+	if (BestiaryComponent)
+	{
+		BestiaryComponent->ToggleCodex();
+	}
 }
 
 // ---------------------------------------------------------------------------

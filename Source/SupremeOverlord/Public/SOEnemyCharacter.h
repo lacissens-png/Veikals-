@@ -166,6 +166,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Death")
 	bool bCanBeResurrected = true;
 
+	/** Clean species name shown in the bestiary/codex. Falls back to the class name if left empty. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Bestiary")
+	FText BestiaryDisplayName;
+
 	// -----------------------------------------------------------------------
 	// Fleeing behavior — used by rare "treasure goblin" style enemies that
 	// run instead of fight. Read by ASOEnemyAIController::ThinkTick, which

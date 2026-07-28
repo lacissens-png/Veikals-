@@ -23,6 +23,7 @@
 #include "SOQuestData.h"
 #include "SOStatusEffectComponent.h"
 #include "SOAuraComponent.h"
+#include "SOBestiaryComponent.h"
 #include "SOBlinkComponent.h"
 #include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
@@ -1197,6 +1198,67 @@ void ASOHUD::DrawHUD()
 
 		FCanvasTextItem CloseHint(FVector2D(PanelX + 24.0f, PanelY + PanelHeight - 26.0f),
 		                          FText::FromString(TEXT("5-9 Travel   |   M Close")),
+		                          MediumFont,
+		                          FLinearColor(0.6f, 0.6f, 0.6f, 1.0f));
+		CloseHint.Scale = FVector2D(0.85f, 0.85f);
+		CloseHint.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(CloseHint);
+	}
+
+	// -- Bestiary / kill codex overlay ----------------------------------------
+	if (SO->BestiaryComponent && SO->BestiaryComponent->IsCodexOpen() && MediumFont)
+	{
+		const TArray<FString> Entries = SO->BestiaryComponent->GetEntryDescriptions();
+		const int32 ShownEntries = FMath::Min(Entries.Num(), 10);
+
+		const float PanelWidth  = 420.0f;
+		const float RowHeight   = 24.0f;
+		const float PanelHeight = 100.0f + FMath::Max(1, ShownEntries) * RowHeight;
+		const float PanelX      = (ScreenW - PanelWidth) * 0.5f;
+		const float PanelY      = (ScreenH - PanelHeight) * 0.5f;
+
+		FCanvasTileItem Panel(FVector2D(PanelX, PanelY), FVector2D(PanelWidth, PanelHeight),
+		                      FLinearColor(0.05f, 0.03f, 0.03f, 0.92f));
+		Panel.BlendMode = SE_BLEND_Translucent;
+		Canvas->DrawItem(Panel);
+
+		if (LargeFont)
+		{
+			const FString Title = FString::Printf(TEXT("BESTIARY  (%d kills, %d species)"),
+				SO->BestiaryComponent->GetTotalKills(), SO->BestiaryComponent->GetDiscoveredSpeciesCount());
+			FCanvasTextItem TitleItem(FVector2D(PanelX + 24.0f, PanelY + 16.0f),
+			                          FText::FromString(Title),
+			                          LargeFont,
+			                          FLinearColor(0.90f, 0.55f, 0.25f, 1.0f));
+			TitleItem.Scale = FVector2D(1.1f, 1.1f);
+			TitleItem.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(TitleItem);
+		}
+
+		if (ShownEntries == 0)
+		{
+			FCanvasTextItem Empty(FVector2D(PanelX + 24.0f, PanelY + 60.0f),
+			                      FText::FromString(TEXT("No kills recorded yet.")),
+			                      MediumFont,
+			                      FLinearColor(0.7f, 0.7f, 0.7f, 1.0f));
+			Empty.EnableShadow(FLinearColor::Black);
+			Canvas->DrawItem(Empty);
+		}
+		else
+		{
+			for (int32 i = 0; i < ShownEntries; ++i)
+			{
+				FCanvasTextItem RowItem(FVector2D(PanelX + 24.0f, PanelY + 60.0f + i * RowHeight),
+				                        FText::FromString(Entries[i]),
+				                        MediumFont,
+				                        FLinearColor(0.92f, 0.92f, 0.92f, 1.0f));
+				RowItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(RowItem);
+			}
+		}
+
+		FCanvasTextItem CloseHint(FVector2D(PanelX + 24.0f, PanelY + PanelHeight - 26.0f),
+		                          FText::FromString(TEXT("L Close")),
 		                          MediumFont,
 		                          FLinearColor(0.6f, 0.6f, 0.6f, 1.0f));
 		CloseHint.Scale = FVector2D(0.85f, 0.85f);

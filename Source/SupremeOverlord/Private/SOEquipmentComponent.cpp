@@ -3,8 +3,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SOArmorData.h"
 #include "SOCharacter.h"
+#include "SOGemData.h"
 #include "SOHealthComponent.h"
 #include "SOItemSetData.h"
+#include "SOLootRoller.h"
 #include "SOManaComponent.h"
 #include "SOWeaponData.h"
 
@@ -170,4 +172,33 @@ void USOEquipmentComponent::RecomputeAggregateStats()
 	AppliedMaxManaBonus       = NewManaBonus;
 	AppliedSpeedMultiplier    = NewSpeedMultiplier;
 	AppliedDamageReductionPct = NewDR;
+}
+
+bool USOEquipmentComponent::SocketGem(ESOEquipSlot Slot, USOGemData* Gem)
+{
+	if (!Gem)
+	{
+		return false;
+	}
+
+	USOItemData* Item = GetItemInSlot(Slot);
+	if (!Item || Item->GetFreeSocketCount() <= 0)
+	{
+		return false;
+	}
+
+	FSOItemAffix Bonus;
+	Bonus.Stat        = Gem->Stat;
+	Bonus.Value       = Gem->Value;
+	Bonus.Description = Gem->DisplayName.ToString();
+
+	USOLootRoller::ApplyAffix(Item, Bonus);
+	Item->SocketedGems.Add(Gem);
+
+	// Re-sync aggregate stats so a gem socketed into armor (Health/Mana/Speed/DR)
+	// takes effect immediately; a no-op for weapon-only stats already read live
+	// via GetEffective*Damage().
+	RecomputeAggregateStats();
+
+	return true;
 }
