@@ -103,6 +103,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Interact")
 	void OnSellPressed();
 
+	/** Resolves the cursor to a world location and asks the character to summon a minion there. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
+	void OnSummonMinionPressed();
+
+	/** Destroys all active minions. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
+	void OnDismissMinionsPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

@@ -13,6 +13,7 @@
 #include "SOInventoryComponent.h"
 #include "SOQuestComponent.h"
 #include "SOStatusEffectComponent.h"
+#include "SOSummonComponent.h"
 #include "SOTalentComponent.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
@@ -54,6 +55,7 @@ ASOCharacter::ASOCharacter()
 	InventoryComponent  = CreateDefaultSubobject<USOInventoryComponent>(TEXT("InventoryComponent"));
 	QuestComponent        = CreateDefaultSubobject<USOQuestComponent>(TEXT("QuestComponent"));
 	StatusEffectComponent = CreateDefaultSubobject<USOStatusEffectComponent>(TEXT("StatusEffectComponent"));
+	SummonComponent       = CreateDefaultSubobject<USOSummonComponent>(TEXT("SummonComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -452,6 +454,39 @@ float ASOCharacter::GetLifeDrainCooldownRemaining() const
 		return FMath::Max(0.0f, World->GetTimerManager().GetTimerRemaining(LifeDrainCooldownHandle));
 	}
 	return 0.0f;
+}
+
+float ASOCharacter::GetSummonCooldownRemaining() const
+{
+	return SummonComponent ? SummonComponent->GetSummonCooldownRemaining() : 0.0f;
+}
+
+float ASOCharacter::GetSummonCooldown() const
+{
+	return SummonComponent ? SummonComponent->SummonCooldown : 1.0f;
+}
+
+void ASOCharacter::CastSummonMinion(FVector TargetLocation)
+{
+	if (!IsAlive() || !SummonComponent)
+	{
+		return;
+	}
+	if (SummonComponent->SummonMinion(TargetLocation, this))
+	{
+		if (SummonCastSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, SummonCastSFX, GetActorLocation());
+		}
+	}
+}
+
+void ASOCharacter::DismissAllMinions()
+{
+	if (SummonComponent)
+	{
+		SummonComponent->DismissAll();
+	}
 }
 
 bool ASOCharacter::CanCastLifeDrain() const

@@ -994,3 +994,69 @@ Panel look is tunable via `DialoguePanelColor`, `DialoguePanelBorderColor`,
 |-----|--------|
 | F   | Start dialogue / advance no-choice node |
 | 1-4 | Select choice 1-4 |
+
+---
+
+## 37. Minion Summoning System
+
+**Files**: `SOMinion.h/.cpp`, `SOSummonComponent.h/.cpp`
+
+The player commands an army of undead/dark minions — the core "Supreme
+Overlord" power fantasy.
+
+### Components
+
+**`USOSummonComponent`** (on `ASOCharacter`):
+- `MaxMinions` (default 3) — cap on simultaneous live minions.
+- `ManaCostPerSummon` (default 30) — mana drained per summon.
+- `SummonCooldown` (default 1.5 s) — minimum time between summons.
+- `MinionClass` — assign `BP_Minion_Skeleton` (or any `ASOMinion`
+  subclass) in the editor.
+- `SummonMinion(Location, Caster)` — enforces all guards, snaps the
+  spawn point to the nav mesh via `GetRandomPointInNavigableRadius`,
+  and broadcasts `OnMinionSummoned`.
+- `DismissAll()` — destroys every active minion immediately.
+- `GetActiveCount()` — prunes stale weak-object pointers and returns
+  the live count.
+
+**`ASOMinion`** (spawned actor):
+- Carries `USOHealthComponent` (HP) and `USOStatusEffectComponent`
+  (can be Burning/Slowed/etc. by hazard zones or enemy spells).
+- Ticks at 10 Hz: finds the nearest `ASOEnemyCharacter` within
+  `AggroRange` (2000 cm default), chases via
+  `UAIBlueprintHelperLibrary::SimpleMoveToActor`, attacks when within
+  `AttackRange` on an `AttackCooldown` timer.
+- Optional `LifetimeDuration` (0 = permanent) — minion auto-dissipates
+  after the set number of seconds.
+- On death: broadcasts back to the owning `SummonComponent` via
+  `OnMinionDied`, disables collision, un-possesses the AI controller,
+  and sets a 3-second lifespan for corpse visibility.
+
+### Key bindings
+
+| Key | Action |
+|-----|--------|
+| T   | Summon one minion at cursor position |
+| Y   | Dismiss all active minions |
+
+### HUD changes
+
+The skill panel expanded from 3 → **4 tiles**. The fourth tile (blue)
+shows:
+- **T** key label and "Summon" name.
+- Cooldown overlay and remaining time.
+- Mana cost badge.
+- **`X / Y`** active/max minion count below the tile in light blue.
+
+### Setup
+
+1. Create a `BP_Minion_Skeleton` Blueprint subclass of `ASOMinion`.
+   - Set `MaxHealth` to 60, `AttackDamage` to 15, `AttackCooldown`
+     to 1.2 s.
+   - Assign a skeletal mesh (skeleton/zombie/wraith) and an
+     `AAIController` (or leave default).
+2. On `BP_SOCharacter` (the player Blueprint), set
+   `SummonComponent → MinionClass = BP_Minion_Skeleton`.
+3. Optionally set `SummonCastSFX` for an audio cue.
+4. Play — press **T** near enemies to summon, **Y** to recall the
+   army. The HUD fourth tile shows live count `2 / 3`.

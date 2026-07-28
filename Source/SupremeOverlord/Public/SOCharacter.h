@@ -83,6 +83,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|StatusEffects")
 	TObjectPtr<class USOStatusEffectComponent> StatusEffectComponent;
 
+	/** Minion summoning — spawns and tracks the player's undead army. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Summoning")
+	TObjectPtr<class USOSummonComponent> SummonComponent;
+
 	/** Distance from the character to the camera along the spring arm. Tweak in editor to zoom in/out. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Camera", meta = (ClampMin = "100.0", ClampMax = "5000.0", UIMin = "100.0", UIMax = "3000.0"))
 	float CameraDistance = 1200.0f;
@@ -379,6 +383,24 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Save")
 	void OnSaveGameCompleted(bool bSaved, bool bSuccess, const FString& Slot);
 
+	// -----------------------------------------------------------------------
+	// Minion Summoning.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Attempts to summon a minion near TargetLocation.
+	 * Delegates to SummonComponent — see USOSummonComponent::SummonMinion for guards.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
+	void CastSummonMinion(FVector TargetLocation);
+
+	/** Destroys all active minions. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Summoning")
+	void DismissAllMinions();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Summoning")
+	void OnMinionSummoned(class ASOMinion* Minion);
+
 	// Cooldown-remaining accessors used by the HUD skill bar.
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
 	float GetPrimaryAttackCooldownRemaining() const;
@@ -388,6 +410,16 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
 	float GetLifeDrainCooldownRemaining() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Cooldowns")
+	float GetSummonCooldownRemaining() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Summoning")
+	float GetSummonCooldown() const;
+
+	/** Hint to the SFX slot for the summon cast. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Audio")
+	TObjectPtr<class USoundBase> SummonCastSFX;
 
 	/** AoE around the caster: damages all live enemies, then heals the caster for a fraction of total damage dealt. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat|LifeDrain")

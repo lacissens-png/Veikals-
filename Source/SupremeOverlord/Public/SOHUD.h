@@ -135,7 +135,7 @@ public:
 	bool bShowControlHints = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Hints")
-	FString ControlHintText = TEXT("LMB Move   |   RMB / Q Primary   |   E Shadow Bolt   |   R Life Drain   |   F1/F2/F3 Allocate   |   K Debug   |   ESC Pause");
+	FString ControlHintText = TEXT("LMB Move   |   RMB / Q Primary   |   E Shadow Bolt   |   R Life Drain   |   T Summon   |   Y Dismiss   |   F1/F2/F3 Allocate   |   ESC Pause");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
 	bool bShowAttributesPanel = true;

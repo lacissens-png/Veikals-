@@ -84,6 +84,10 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Interact", IE_Pressed, this, &ASOPlayerController::OnInteractPressed);
 	InputComponent->BindAction("Sell",     IE_Pressed, this, &ASOPlayerController::OnSellPressed);
 
+	// Summon minion (T) / dismiss all (Y).
+	InputComponent->BindAction("SummonMinion",   IE_Pressed, this, &ASOPlayerController::OnSummonMinionPressed);
+	InputComponent->BindAction("DismissMinions", IE_Pressed, this, &ASOPlayerController::OnDismissMinionsPressed);
+
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
 	InputComponent->BindAction("DialogueChoice2", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice2);
@@ -380,6 +384,33 @@ void ASOPlayerController::OnDialogueChoice1() { DispatchDialogueChoice(this, 0);
 void ASOPlayerController::OnDialogueChoice2() { DispatchDialogueChoice(this, 1); }
 void ASOPlayerController::OnDialogueChoice3() { DispatchDialogueChoice(this, 2); }
 void ASOPlayerController::OnDialogueChoice4() { DispatchDialogueChoice(this, 3); }
+
+void ASOPlayerController::OnSummonMinionPressed()
+{
+	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+	if (!SOCharacter || !SOCharacter->IsAlive())
+	{
+		return;
+	}
+
+	FVector SummonTarget = SOCharacter->GetActorLocation() + SOCharacter->GetActorForwardVector() * 200.0f;
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ClickTraceChannel, /*bTraceComplex=*/ false, Hit) && Hit.bBlockingHit)
+	{
+		SummonTarget = Hit.ImpactPoint;
+	}
+
+	SOCharacter->CastSummonMinion(SummonTarget);
+}
+
+void ASOPlayerController::OnDismissMinionsPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->DismissAllMinions();
+	}
+}
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)
 {

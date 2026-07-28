@@ -22,6 +22,7 @@
 #include "SOQuestComponent.h"
 #include "SOQuestData.h"
 #include "SOStatusEffectComponent.h"
+#include "SOSummonComponent.h"
 #include "SOVendorNPC.h"
 #include "SOWeaponData.h"
 
@@ -365,10 +366,10 @@ void ASOHUD::DrawHUD()
 		Canvas->DrawItem(GoldItem);
 	}
 
-	// -- Skill panel (row of three tiles centered above the XP bar) ----------
+	// -- Skill panel (row of four tiles centered above the XP bar) ----------
 	if (bShowSkillPanel && MediumFont)
 	{
-		const int32 NumTiles       = 3;
+		const int32 NumTiles       = 4;
 		const float RowWidth       = NumTiles * SkillTileSize.X + (NumTiles - 1) * SkillTileGap;
 		const float RowY           = ScreenH - XPBarSize.Y - XPBarBottomOffset - SkillTileSize.Y - SkillPanelGap;
 		const float RowStartX      = (ScreenW - RowWidth) * 0.5f;
@@ -412,6 +413,43 @@ void ASOHUD::DrawHUD()
 			SO->LifeDrainCooldown,
 			FLinearColor(0.55f, 0.05f, 0.30f, 1.0f),
 			MediumFont);
+
+		// Summon Minion
+		{
+			const float SummonMana = SO->SummonComponent ? SO->SummonComponent->ManaCostPerSummon : 0.0f;
+			const FVector2D TileOrigin(RowStartX + 3 * (SkillTileSize.X + SkillTileGap), RowY);
+			DrawSkillTile(
+				Canvas,
+				TileOrigin,
+				TEXT("T"),
+				TEXT("Summon"),
+				SummonMana,
+				CurrentManaVal,
+				SO->GetSummonCooldownRemaining(),
+				SO->GetSummonCooldown(),
+				FLinearColor(0.15f, 0.50f, 0.85f, 1.0f),
+				MediumFont);
+
+			// Minion count badge below the tile (replaces or accompanies the mana cost label)
+			if (SO->SummonComponent)
+			{
+				const int32 MaxM    = SO->SummonComponent->MaxMinions;
+				// GetActiveCount is non-const so we cast
+				const int32 ActiveM = const_cast<USOSummonComponent*>(SO->SummonComponent.Get())->GetActiveCount();
+				const FString CountStr = FString::Printf(TEXT("%d / %d"), ActiveM, MaxM);
+				float CW = 0.0f, CH = 0.0f;
+				Canvas->TextSize(MediumFont, CountStr, CW, CH);
+				// Sits below the mana cost line (~24px below tile bottom)
+				FCanvasTextItem CountItem(
+					FVector2D(TileOrigin.X + (SkillTileSize.X - CW) * 0.5f,
+					          TileOrigin.Y + SkillTileSize.Y + 22.0f),
+					FText::FromString(CountStr),
+					MediumFont,
+					FLinearColor(0.65f, 0.85f, 1.0f, 1.0f));
+				CountItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(CountItem);
+			}
+		}
 	}
 
 	// -- XP bar (bottom-center) + level number -------------------------------
