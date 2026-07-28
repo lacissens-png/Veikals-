@@ -27,6 +27,7 @@
 #include "SOCorpseExplosionComponent.h"
 #include "SOCorruptionComponent.h"
 #include "SODodgeRollComponent.h"
+#include "SOEquipmentComponent.h"
 #include "SOSummonComponent.h"
 #include "SOWaypoint.h"
 #include "SOWaypointComponent.h"
@@ -276,6 +277,15 @@ void ASOHUD::DrawHUD()
 			if (Unspent > 0)
 			{
 				DrawLine(FString::Printf(TEXT("Unspent points: %d"), Unspent), UnspentPointsColor);
+			}
+
+			if (SO->EquipmentComponent)
+			{
+				const TArray<FString>& SetBonuses = SO->EquipmentComponent->GetActiveSetBonusDescriptions();
+				for (const FString& Line : SetBonuses)
+				{
+					DrawLine(Line, FLinearColor(0.10f, 0.85f, 0.30f, 1.0f)); // matches USOItemData's Set rarity tint
+				}
 			}
 		}
 	}

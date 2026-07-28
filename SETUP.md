@@ -1496,3 +1496,48 @@ with a `"5-9 Travel | M Close"` footer; the control hint bar mentions
 | ESC   | Toggle Pause                    |
 | F10   | Quit (while paused)             |
 | K     | Debug Damage Self               |
+
+## 50. Item Sets
+
+**Files**: `SOItemAffix.h` (added `FSOSetBonusTier`), `SOItemSetData.h`
+(new), `SOItemData.h` (added `ItemSet`), `SOEquipmentComponent.h/.cpp`,
+`SOLootRoller.cpp`, `SOHUD.cpp`
+
+Gives the previously-unused `ESOItemRarity::Set` tier an actual
+gameplay effect. A `USOItemSetData` asset defines a name and a ladder
+of `FSOSetBonusTier` thresholds (e.g. a 2pc and a 4pc entry, each a
+single `FSOItemAffix` stat + value). Any `USOWeaponData`/`USOArmorData`
+that references the same `USOItemSetData` via its `ItemSet` field is
+part of that set — no ID registry, just a direct asset reference like
+`TrapClass` or `MinionClass`.
+
+`USOEquipmentComponent::RecomputeAggregateStats()` (already called on
+every equip/unequip) now also counts how many equipped items share
+each `ItemSet` and folds in every tier whose `PiecesRequired` is met,
+alongside the existing armor-stat aggregation — stacking naturally
+with the 2pc bonus staying active once you also meet the 4pc. Only the
+four stats armor already supports are valid for set tiers: **Max
+Health, Max Mana, Movement Speed, Damage Reduction** (Primary/Shadow
+Bolt Damage and Attack Speed aren't wired for sets since those are
+per-weapon fields, not character aggregates).
+
+`USOLootRoller` treats any item with a non-null `ItemSet` like a
+legendary unique: rarity is forced to `Set` and no random affixes are
+rolled — the item's power is its authored base stats plus whatever set
+bonus tiers get assembled.
+
+### HUD changes
+
+Active set bonus lines (e.g. `"Bonewalker's Regalia (4pc): +12%
+Damage Reduction"`) render in the green Set-rarity tint just below the
+attributes panel, sourced from
+`EquipmentComponent->GetActiveSetBonusDescriptions()`.
+
+### Setup
+
+1. Create a `USOItemSetData` asset, set `SetName`, and add tiers (e.g.
+   `PiecesRequired=2` / `Bonus.Stat=DamageReduction` / `Bonus.Value=0.08`).
+2. On each `USOWeaponData`/`USOArmorData` piece meant to belong to the
+   set, assign that asset to `ItemSet`.
+3. Equip 2+ pieces — the HUD panel and `RecomputeAggregateStats` pick
+   it up automatically.

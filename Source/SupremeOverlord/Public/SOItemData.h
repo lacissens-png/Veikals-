@@ -97,4 +97,17 @@ public:
 	/** Fixed special ability this item grants while equipped. Checked via ASOCharacter::HasLegendaryEffect. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Legendary")
 	ESOLegendaryEffect LegendaryEffect = ESOLegendaryEffect::None;
+
+	// -----------------------------------------------------------------------
+	// Item Sets — null means this item isn't part of a set.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * The set this item belongs to, if any. USOEquipmentComponent counts how
+	 * many equipped items share the same ItemSet and applies every bonus
+	 * tier whose piece threshold is met. USOLootRoller forces Rarity to Set
+	 * and skips random affixes for any item with this set.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Set")
+	TObjectPtr<class USOItemSetData> ItemSet;
 };

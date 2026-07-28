@@ -2,6 +2,7 @@
 
 #include "SOArmorData.h"
 #include "SOItemData.h"
+#include "SOItemSetData.h"
 #include "SOWeaponData.h"
 #include "UObject/UObjectGlobals.h"
 
@@ -22,6 +23,14 @@ USOItemData* USOLootRoller::RollItemInstance(const USOItemData* Template, UObjec
 	// Hand-authored legendaries/uniques are final as designed — no rarity reroll, no affixes.
 	if (Template->bIsLegendaryUnique)
 	{
+		return NewItem;
+	}
+
+	// Set items are final too — their power comes from base stats + the assembled set
+	// bonus (USOEquipmentComponent), not random affixes. Force the Set rarity tint.
+	if (Template->ItemSet)
+	{
+		NewItem->Rarity = ESOItemRarity::Set;
 		return NewItem;
 	}
 

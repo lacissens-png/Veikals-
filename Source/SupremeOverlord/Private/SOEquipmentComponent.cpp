@@ -4,6 +4,7 @@
 #include "SOArmorData.h"
 #include "SOCharacter.h"
 #include "SOHealthComponent.h"
+#include "SOItemSetData.h"
 #include "SOManaComponent.h"
 #include "SOWeaponData.h"
 
@@ -99,6 +100,44 @@ void USOEquipmentComponent::RecomputeAggregateStats()
 			NewManaBonus       += Armor->MaxManaBonus;
 			NewSpeedMultiplier *= Armor->MovementSpeedMultiplier;
 			NewDR               = FMath::Min(0.9f, NewDR + Armor->DamageReductionPct);
+		}
+	}
+
+	// Count equipped pieces per set, then fold in every bonus tier whose threshold is met.
+	TMap<USOItemSetData*, int32> SetCounts;
+	for (const TPair<ESOEquipSlot, TObjectPtr<USOItemData>>& Pair : EquippedItems)
+	{
+		if (Pair.Value && Pair.Value->ItemSet)
+		{
+			SetCounts.FindOrAdd(Pair.Value->ItemSet)++;
+		}
+	}
+
+	ActiveSetBonusDescriptions.Reset();
+
+	for (const TPair<USOItemSetData*, int32>& SetPair : SetCounts)
+	{
+		USOItemSetData* SetData       = SetPair.Key;
+		const int32     EquippedCount = SetPair.Value;
+
+		for (const FSOSetBonusTier& Tier : SetData->Tiers)
+		{
+			if (EquippedCount < Tier.PiecesRequired)
+			{
+				continue;
+			}
+
+			switch (Tier.Bonus.Stat)
+			{
+			case ESOAffixStat::MaxHealth:       NewHealthBonus     += Tier.Bonus.Value;                    break;
+			case ESOAffixStat::MaxMana:         NewManaBonus       += Tier.Bonus.Value;                    break;
+			case ESOAffixStat::MovementSpeed:   NewSpeedMultiplier *= (1.0f + Tier.Bonus.Value);           break;
+			case ESOAffixStat::DamageReduction: NewDR               = FMath::Min(0.9f, NewDR + Tier.Bonus.Value); break;
+			default: break; // PrimaryDamage/ShadowBoltDamage/AttackSpeed aren't supported for set tiers.
+			}
+
+			ActiveSetBonusDescriptions.Add(FString::Printf(TEXT("%s (%dpc): %s"),
+				*SetData->SetName.ToString(), Tier.PiecesRequired, *Tier.Bonus.Description));
 		}
 	}
 

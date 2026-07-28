@@ -49,3 +49,23 @@ enum class ESOLegendaryEffect : uint8
 	EndlessMinions      UMETA(DisplayName = "Endless Minions"),
 	VampiricStrikes     UMETA(DisplayName = "Vampiric Strikes"),
 };
+
+/**
+ * One threshold in an item set's bonus ladder — granted once at least
+ * PiecesRequired items from the set are equipped simultaneously, stacking
+ * with every lower threshold also met (standard 2pc/4pc/6pc ARPG design).
+ * Only the four stats USOArmorData already supports are meaningful here
+ * (MaxHealth, MaxMana, MovementSpeed, DamageReduction) — set bonuses are
+ * character-wide, applied by USOEquipmentComponent alongside armor stats.
+ */
+USTRUCT(BlueprintType)
+struct FSOSetBonusTier
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetBonus", meta = (ClampMin = "2", UIMin = "2", UIMax = "8"))
+	int32 PiecesRequired = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetBonus")
+	FSOItemAffix Bonus;
+};

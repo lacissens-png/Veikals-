@@ -52,9 +52,17 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Equipment")
 	const TMap<ESOEquipSlot, TObjectPtr<USOItemData>>& GetAllEquipped() const { return EquippedItems; }
 
-	/** Sums MaxHealth/Mana/DR/SpeedMult from every equipped armor and applies the delta to the owner. */
+	/**
+	 * Sums MaxHealth/Mana/DR/SpeedMult from every equipped armor plus any
+	 * active item-set bonuses (2pc/4pc/etc., see USOItemSetData), and applies
+	 * the combined delta to the owner.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Equipment")
 	void RecomputeAggregateStats();
+
+	/** Human-readable lines for every currently active set bonus tier, e.g. "Bonewalker's Regalia (4pc): +12% Damage Reduction". */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Equipment")
+	const TArray<FString>& GetActiveSetBonusDescriptions() const { return ActiveSetBonusDescriptions; }
 
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Equipment", Transient)
@@ -65,4 +73,7 @@ private:
 	float AppliedMaxManaBonus       = 0.0f;
 	float AppliedSpeedMultiplier    = 1.0f;
 	float AppliedDamageReductionPct = 0.0f;
+
+	UPROPERTY(Transient)
+	TArray<FString> ActiveSetBonusDescriptions;
 };
