@@ -1,6 +1,7 @@
 #include "SOHazardZone.h"
 
 #include "Components/BoxComponent.h"
+#include "SOStatusEffectComponent.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
@@ -86,6 +87,16 @@ void ASOHazardZone::OnEndOverlap(UPrimitiveComponent*, AActor* OtherActor,
                                   UPrimitiveComponent*, int32)
 {
 	ActorsInside.Remove(OtherActor);
+
+	// Apply a lingering debuff to actors that leave the zone.
+	if (bApplyLingeringStatus && IsValid(OtherActor))
+	{
+		if (USOStatusEffectComponent* SFX = OtherActor->FindComponentByClass<USOStatusEffectComponent>())
+		{
+			SFX->ApplyEffect(LingeringStatusType, LingeringDuration,
+			                 LingeringDamagePerTick, LingeringTickInterval);
+		}
+	}
 }
 
 void ASOHazardZone::DamageTick()

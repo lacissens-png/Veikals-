@@ -11,6 +11,7 @@
 #include "SOExperienceComponent.h"
 #include "SOQuestComponent.h"
 #include "SOHealthComponent.h"
+#include "SOStatusEffectComponent.h"
 #include "SOItemData.h"
 #include "SOItemPickup.h"
 #include "SOPickupOrb.h"
@@ -23,7 +24,8 @@ ASOEnemyCharacter::ASOEnemyCharacter()
 	bUseControllerRotationYaw   = false;
 	bUseControllerRotationRoll  = false;
 
-	HealthComponent = CreateDefaultSubobject<USOHealthComponent>(TEXT("HealthComponent"));
+	HealthComponent         = CreateDefaultSubobject<USOHealthComponent>(TEXT("HealthComponent"));
+	StatusEffectComponent   = CreateDefaultSubobject<USOStatusEffectComponent>(TEXT("StatusEffectComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{

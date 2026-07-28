@@ -13,6 +13,8 @@
 #include "SOCharacter.h"
 #include "SODamageType.h"
 #include "SOHealthComponent.h"
+#include "SODialogueComponent.h"
+#include "SODialogueNPC.h"
 #include "SOVendorNPC.h"
 
 ASOPlayerController::ASOPlayerController()
@@ -78,9 +80,15 @@ void ASOPlayerController::SetupInputComponent()
 	FInputActionBinding& LoadBind = InputComponent->BindAction("QuickLoad", IE_Pressed, this, &ASOPlayerController::OnQuickLoadPressed);
 	LoadBind.bExecuteWhenPaused = true;
 
-	// Interact - vendor buy (F) / sell (G).
+	// Interact - dialogue (F) / vendor buy (F) / sell (G).
 	InputComponent->BindAction("Interact", IE_Pressed, this, &ASOPlayerController::OnInteractPressed);
 	InputComponent->BindAction("Sell",     IE_Pressed, this, &ASOPlayerController::OnSellPressed);
+
+	// Dialogue choice keys 1-4.
+	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
+	InputComponent->BindAction("DialogueChoice2", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice2);
+	InputComponent->BindAction("DialogueChoice3", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice3);
+	InputComponent->BindAction("DialogueChoice4", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice4);
 }
 
 bool ASOPlayerController::CanIssueMoveOrders() const
@@ -256,6 +264,40 @@ void ASOPlayerController::OnQuickLoadPressed()
 	}
 }
 
+static USODialogueComponent* FindNearbyDialogue(ASOCharacter* Player)
+{
+	if (!Player)
+	{
+		return nullptr;
+	}
+	TArray<AActor*> NPCs;
+	UGameplayStatics::GetAllActorsOfClass(Player, ASODialogueNPC::StaticClass(), NPCs);
+
+	USODialogueComponent* Closest = nullptr;
+	float ClosestDistSq = TNumericLimits<float>::Max();
+	const FVector PlayerLoc = Player->GetActorLocation();
+
+	for (AActor* A : NPCs)
+	{
+		ASODialogueNPC* NPC = Cast<ASODialogueNPC>(A);
+		if (!NPC || !NPC->DialogueComponent || !NPC->DialogueComponent->EntryNode)
+		{
+			continue;
+		}
+		if (!NPC->DialogueComponent->IsPlayerInRange(Player))
+		{
+			continue;
+		}
+		const float DistSq = FVector::DistSquared(PlayerLoc, NPC->GetActorLocation());
+		if (DistSq < ClosestDistSq)
+		{
+			ClosestDistSq = DistSq;
+			Closest       = NPC->DialogueComponent;
+		}
+	}
+	return Closest;
+}
+
 static ASOVendorNPC* FindNearbyVendor(ASOCharacter* Player)
 {
 	if (!Player)
@@ -288,6 +330,25 @@ static ASOVendorNPC* FindNearbyVendor(ASOCharacter* Player)
 void ASOPlayerController::OnInteractPressed()
 {
 	ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn());
+
+	// Dialogue takes priority over vendor interaction.
+	if (USODialogueComponent* Dialogue = FindNearbyDialogue(SOCharacter))
+	{
+		if (Dialogue->IsInDialogue())
+		{
+			// F advances a no-choice node or closes if there are choices (player must use 1-4).
+			if (Dialogue->GetCurrentNode() && Dialogue->GetCurrentNode()->Choices.Num() == 0)
+			{
+				Dialogue->SelectChoice(-1);
+			}
+		}
+		else
+		{
+			Dialogue->StartDialogue(SOCharacter);
+		}
+		return;
+	}
+
 	if (ASOVendorNPC* Vendor = FindNearbyVendor(SOCharacter))
 	{
 		Vendor->TryBuyNext(SOCharacter);
@@ -302,6 +363,23 @@ void ASOPlayerController::OnSellPressed()
 		Vendor->TrySellCurrentWeapon(SOCharacter);
 	}
 }
+
+static void DispatchDialogueChoice(APlayerController* PC, int32 Index)
+{
+	ASOCharacter* SOCharacter = PC ? Cast<ASOCharacter>(PC->GetPawn()) : nullptr;
+	if (USODialogueComponent* Dialogue = FindNearbyDialogue(SOCharacter))
+	{
+		if (Dialogue->IsInDialogue())
+		{
+			Dialogue->SelectChoice(Index);
+		}
+	}
+}
+
+void ASOPlayerController::OnDialogueChoice1() { DispatchDialogueChoice(this, 0); }
+void ASOPlayerController::OnDialogueChoice2() { DispatchDialogueChoice(this, 1); }
+void ASOPlayerController::OnDialogueChoice3() { DispatchDialogueChoice(this, 2); }
+void ASOPlayerController::OnDialogueChoice4() { DispatchDialogueChoice(this, 3); }
 
 void ASOPlayerController::MovePawnToLocation(const FVector& WorldLocation)
 {

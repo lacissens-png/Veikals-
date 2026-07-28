@@ -103,6 +103,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Interact")
 	void OnSellPressed();
 
+	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
+	void OnDialogueChoice1();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
+	void OnDialogueChoice2();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
+	void OnDialogueChoice3();
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
+	void OnDialogueChoice4();
+
 private:
 	/** Shared guard for MoveTo/Repeat: returns true only if the pawn exists and reports alive. */
 	bool CanIssueMoveOrders() const;

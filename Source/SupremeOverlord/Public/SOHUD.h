@@ -289,6 +289,58 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Quests")
 	FLinearColor QuestObjectiveCompleteColor = FLinearColor(0.4f, 1.0f, 0.4f, 1.0f);
 
+	// -----------------------------------------------------------------------
+	// Status effect icons (row above the HP bar)
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|StatusEffects")
+	bool bShowStatusEffects = true;
+
+	/** Pixel size of each status effect icon. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|StatusEffects")
+	FVector2D StatusIconSize = FVector2D(26.0f, 26.0f);
+
+	/** Gap between icons. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|StatusEffects", meta = (ClampMin = "0.0"))
+	float StatusIconGap = 4.0f;
+
+	// -----------------------------------------------------------------------
+	// Dialogue box (bottom center when a conversation is active)
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue")
+	bool bShowDialogueBox = true;
+
+	/** Width of the dialogue panel as a fraction of screen width. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue", meta = (ClampMin = "0.2", ClampMax = "1.0"))
+	float DialoguePanelWidthFraction = 0.7f;
+
+	/** Height of the dialogue panel in pixels. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue", meta = (ClampMin = "50.0"))
+	float DialoguePanelHeight = 220.0f;
+
+	/** Gap from the bottom edge of the screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue", meta = (ClampMin = "0.0"))
+	float DialoguePanelBottomOffset = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue")
+	FLinearColor DialoguePanelColor = FLinearColor(0.04f, 0.04f, 0.08f, 0.90f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue")
+	FLinearColor DialoguePanelBorderColor = FLinearColor(0.25f, 0.18f, 0.45f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue")
+	FLinearColor DialogueSpeakerColor = FLinearColor(0.98f, 0.85f, 0.35f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue")
+	FLinearColor DialogueBodyColor = FLinearColor(0.92f, 0.92f, 0.92f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue")
+	FLinearColor DialogueChoiceColor = FLinearColor(0.75f, 0.85f, 1.0f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Dialogue", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float DialogueTextScale = 1.1f;
+
 private:
 	/** Renders one skill tile with cooldown overlay + labels. */
 	void DrawSkillTile(class UCanvas* InCanvas,

@@ -5,6 +5,7 @@
 #include "SOEnemyCharacter.generated.h"
 
 class USOHealthComponent;
+class USOStatusEffectComponent;
 class USODamageType;
 class USOItemData;
 class ASOPickupOrb;
@@ -66,6 +67,10 @@ public:
 	/** Health/damage/death — same component the player uses. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Health")
 	TObjectPtr<USOHealthComponent> HealthComponent;
+
+	/** Status effects (Burning, Frozen, etc.) that can be applied by player spells and hazard zones. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|StatusEffects")
+	TObjectPtr<USOStatusEffectComponent> StatusEffectComponent;
 
 	/** Max walk speed the AI moves at. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Enemy|Movement", meta = (ClampMin = "50.0", UIMin = "50.0", UIMax = "1500.0"))

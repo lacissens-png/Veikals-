@@ -879,3 +879,118 @@ animated popups.
 3. Play — the quest tracker appears in the HUD left panel; it
    auto-advances as enemies die and waves clear.
 
+
+---
+
+## 35. Status Effect System
+
+**Files**: `SOStatusEffectComponent.h/.cpp`
+
+`USOStatusEffectComponent` is a `UActorComponent` that manages ticking
+debuffs and buffs on any character — both the player and enemies carry
+it by default.
+
+### Effect types
+
+| Type     | Behaviour |
+|----------|-----------|
+| Burning  | Fire DOT per tick |
+| Poisoned | Nature DOT, can stack (e.g. max 5 stacks) |
+| Frozen   | Walk speed → 0 immediately |
+| Slowed   | Walk speed reduced by `SlowFraction` (default 50 %) |
+| Shocked  | Incoming damage × `ShockedDamageMultiplier` (1.25) |
+| Blessed  | Negative `DamagePerTick` = heal over time |
+| Cursed   | Outgoing damage × `CursedDamageMultiplier` (0.75) |
+
+### API
+
+```cpp
+StatusEffectComponent->ApplyEffect(ESOStatusEffectType::Burning,
+    /*Duration*/ 5.0f,
+    /*DamagePerTick*/ 8.0f,
+    /*TickInterval*/ 1.0f,
+    /*MaxStacks*/ 1);
+StatusEffectComponent->RemoveEffect(ESOStatusEffectType::Burning);
+bool bBurning = StatusEffectComponent->HasEffect(ESOStatusEffectType::Burning);
+float mult = StatusEffectComponent->GetIncomingDamageMultiplier();
+```
+
+Applying while an effect is already active refreshes the duration (and
+adds a stack if `CurrentStacks < MaxStacks`).
+
+### Hazard zone integration
+
+`ASOHazardZone` can optionally apply a lingering status when an actor
+**leaves** the zone: set `bApplyLingeringStatus = true` and configure
+`LingeringStatusType`, `LingeringDuration`, `LingeringDamagePerTick`.
+
+### HUD
+
+The HUD renders a row of coloured tiles **above the mana bar**.
+Each tile shows:
+- A 3-letter abbreviation (BRN / PSN / FRZ / SLW / SHK / BLS / CRS).
+- Remaining seconds at the bottom.
+- A yellow stack-count badge in the top-right corner when stacked.
+
+Tile size and gap are tunable via `StatusIconSize` / `StatusIconGap`
+on the HUD asset.
+
+---
+
+## 36. Dialogue System
+
+**Files**: `SODialogueNode.h/.cpp`, `SODialogueComponent.h/.cpp`,
+`SODialogueNPC.h/.cpp`
+
+Builds conversation trees from `USODialogueNode` data assets.
+Each node contains a speaker name, body text, and up to four
+`FSODialogueChoice` entries that point to the next node.
+
+### Asset workflow
+
+1. Create one `SODialogueNode` data asset per "page" of dialogue in
+   the Content Browser.
+2. Fill in `SpeakerName`, `BodyText`, and any `Choices` (ChoiceText +
+   soft-ref to the next `SODialogueNode`).  Leave Choices empty to
+   make the node a plain advance-or-end screen.
+3. Chain nodes by setting `NextNode` on each choice.
+4. Place an `ASODialogueNPC` actor in the level and set `EntryNode` on
+   its `DialogueComponent` to the root data asset.
+
+### Interaction
+
+- Press **F** near an NPC to start the dialogue.
+- Press **F** again (or **1-4**) to advance through nodes or pick
+  choices.
+- Conversation ends automatically when a NextNode pointer is null.
+
+### HUD
+
+The HUD shows a full-width panel at the **bottom-center** of the
+screen while a dialogue is active (suppressed during pause):
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ Elder Moros                                                      │
+│ "You have proven yourself worthy of the dark blessing..."        │
+│  [1]  Accept the blessing.                                       │
+│  [2]  Refuse and walk away.                                      │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+Panel look is tunable via `DialoguePanelColor`, `DialoguePanelBorderColor`,
+`DialogueSpeakerColor`, `DialogueBodyColor`, `DialogueChoiceColor`, and
+`DialogueTextScale` on the HUD asset.
+
+### Delegates (bind in BP for animations)
+
+- `OnDialogueStarted(FirstNode)`
+- `OnDialogueNodeChanged(NewNode)`
+- `OnDialogueEnded()`
+
+### Key bindings
+
+| Key | Action |
+|-----|--------|
+| F   | Start dialogue / advance no-choice node |
+| 1-4 | Select choice 1-4 |

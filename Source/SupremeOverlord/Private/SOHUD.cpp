@@ -16,8 +16,12 @@
 #include "SOManaComponent.h"
 #include "SOItemPickup.h"
 #include "SOPickupOrb.h"
+#include "SODialogueComponent.h"
+#include "SODialogueNode.h"
+#include "SODialogueNPC.h"
 #include "SOQuestComponent.h"
 #include "SOQuestData.h"
+#include "SOStatusEffectComponent.h"
 #include "SOVendorNPC.h"
 #include "SOWeaponData.h"
 
@@ -146,6 +150,92 @@ void ASOHUD::DrawHUD()
 			ManaItem.Scale = FVector2D(ManaTextScale, ManaTextScale);
 			ManaItem.EnableShadow(FLinearColor::Black);
 			Canvas->DrawItem(ManaItem);
+		}
+	}
+
+	// -- Status effect icons (row directly above the mana bar) ---------------
+	if (bShowStatusEffects && SO->StatusEffectComponent)
+	{
+		const TArray<FSOStatusEffect>& Effects = SO->StatusEffectComponent->GetActiveEffects();
+		if (Effects.Num() > 0 && MediumFont)
+		{
+			const float ManaTopY  = BarY - ManaBarSize.Y - ManaBarGap;
+			const float IconRowY  = ManaTopY - StatusIconSize.Y - StatusIconGap;
+			float IconX = BarX;
+
+			for (const FSOStatusEffect& Eff : Effects)
+			{
+				FLinearColor TileColor;
+				FString      Abbrev;
+				switch (Eff.Type)
+				{
+				case ESOStatusEffectType::Burning:   TileColor = FLinearColor(0.90f, 0.30f, 0.05f, 1.0f); Abbrev = TEXT("BRN"); break;
+				case ESOStatusEffectType::Poisoned:  TileColor = FLinearColor(0.20f, 0.75f, 0.10f, 1.0f); Abbrev = TEXT("PSN"); break;
+				case ESOStatusEffectType::Frozen:    TileColor = FLinearColor(0.40f, 0.80f, 1.00f, 1.0f); Abbrev = TEXT("FRZ"); break;
+				case ESOStatusEffectType::Slowed:    TileColor = FLinearColor(0.25f, 0.65f, 0.75f, 1.0f); Abbrev = TEXT("SLW"); break;
+				case ESOStatusEffectType::Shocked:   TileColor = FLinearColor(1.00f, 0.92f, 0.15f, 1.0f); Abbrev = TEXT("SHK"); break;
+				case ESOStatusEffectType::Blessed:   TileColor = FLinearColor(0.95f, 0.90f, 0.35f, 1.0f); Abbrev = TEXT("BLS"); break;
+				case ESOStatusEffectType::Cursed:    TileColor = FLinearColor(0.55f, 0.00f, 0.85f, 1.0f); Abbrev = TEXT("CRS"); break;
+				default:                             TileColor = FLinearColor::White;                      Abbrev = TEXT("???"); break;
+				}
+
+				// Black border
+				{
+					FCanvasTileItem BorderTile(FVector2D(IconX - 1.0f, IconRowY - 1.0f),
+					                           FVector2D(StatusIconSize.X + 2.0f, StatusIconSize.Y + 2.0f),
+					                           FLinearColor::Black);
+					BorderTile.BlendMode = SE_BLEND_Translucent;
+					Canvas->DrawItem(BorderTile);
+				}
+				// Colored fill (dimmed so text stays readable)
+				{
+					FLinearColor FillColor(TileColor.R * 0.55f, TileColor.G * 0.55f, TileColor.B * 0.55f, 0.90f);
+					FCanvasTileItem Fill(FVector2D(IconX, IconRowY), StatusIconSize, FillColor);
+					Fill.BlendMode = SE_BLEND_Translucent;
+					Canvas->DrawItem(Fill);
+				}
+
+				// 3-letter abbreviation centered in the tile
+				{
+					float TW = 0.0f, TH = 0.0f;
+					Canvas->TextSize(MediumFont, Abbrev, TW, TH, 0.85f, 0.85f);
+					FCanvasTextItem AbbrevItem(FVector2D(IconX + (StatusIconSize.X - TW) * 0.5f, IconRowY + 3.0f),
+					                           FText::FromString(Abbrev),
+					                           MediumFont,
+					                           FLinearColor::White);
+					AbbrevItem.Scale = FVector2D(0.85f, 0.85f);
+					AbbrevItem.EnableShadow(FLinearColor::Black);
+					Canvas->DrawItem(AbbrevItem);
+				}
+				// Remaining duration at the bottom of the tile
+				{
+					const FString DurStr = FString::Printf(TEXT("%.1f"), Eff.RemainingDuration);
+					float DW = 0.0f, DH = 0.0f;
+					Canvas->TextSize(MediumFont, DurStr, DW, DH, 0.75f, 0.75f);
+					FCanvasTextItem DurItem(FVector2D(IconX + (StatusIconSize.X - DW) * 0.5f,
+					                                  IconRowY + StatusIconSize.Y - DH - 2.0f),
+					                        FText::FromString(DurStr),
+					                        MediumFont,
+					                        FLinearColor(0.95f, 0.95f, 0.95f, 0.90f));
+					DurItem.Scale = FVector2D(0.75f, 0.75f);
+					DurItem.EnableShadow(FLinearColor::Black);
+					Canvas->DrawItem(DurItem);
+				}
+				// Stack badge in the top-right corner when stacked
+				if (Eff.CurrentStacks > 1)
+				{
+					const FString StackStr = FString::FromInt(Eff.CurrentStacks);
+					FCanvasTextItem StackItem(FVector2D(IconX + StatusIconSize.X - 9.0f, IconRowY + 1.0f),
+					                          FText::FromString(StackStr),
+					                          MediumFont,
+					                          FLinearColor(1.0f, 0.90f, 0.20f, 1.0f));
+					StackItem.Scale = FVector2D(0.70f, 0.70f);
+					StackItem.EnableShadow(FLinearColor::Black);
+					Canvas->DrawItem(StackItem);
+				}
+
+				IconX += StatusIconSize.X + StatusIconGap;
+			}
 		}
 	}
 
@@ -632,6 +722,120 @@ void ASOHUD::DrawHUD()
 				if (A)
 				{
 					DrawMinimapDot(Canvas, MMOrigin, WorldToMinimap(A->GetActorLocation()), MinimapItemColor);
+				}
+			}
+		}
+	}
+
+	// -- Dialogue box (bottom-center when a conversation is active) ----------
+	if (bShowDialogueBox && MediumFont && !UGameplayStatics::IsGamePaused(this))
+	{
+		TArray<AActor*> DialogueActors;
+		UGameplayStatics::GetAllActorsOfClass(this, ASODialogueNPC::StaticClass(), DialogueActors);
+
+		USODialogueComponent* ActiveDialogue = nullptr;
+		for (AActor* A : DialogueActors)
+		{
+			if (ASODialogueNPC* NPC = Cast<ASODialogueNPC>(A))
+			{
+				if (NPC->DialogueComponent && NPC->DialogueComponent->IsInDialogue())
+				{
+					ActiveDialogue = NPC->DialogueComponent;
+					break;
+				}
+			}
+		}
+
+		if (ActiveDialogue)
+		{
+			USODialogueNode* Node = ActiveDialogue->GetCurrentNode();
+			if (Node)
+			{
+				const float PanelW   = ScreenW * DialoguePanelWidthFraction;
+				const float PanelX   = (ScreenW - PanelW) * 0.5f;
+				const float PanelY   = ScreenH - DialoguePanelHeight - DialoguePanelBottomOffset;
+				const float BorderPx = 2.0f;
+				const float Pad      = 16.0f;
+
+				// Border
+				{
+					FCanvasTileItem BorderTile(FVector2D(PanelX - BorderPx, PanelY - BorderPx),
+					                           FVector2D(PanelW + BorderPx * 2.0f, DialoguePanelHeight + BorderPx * 2.0f),
+					                           DialoguePanelBorderColor);
+					BorderTile.BlendMode = SE_BLEND_Translucent;
+					Canvas->DrawItem(BorderTile);
+				}
+				// Background
+				{
+					FCanvasTileItem PanelBG(FVector2D(PanelX, PanelY),
+					                        FVector2D(PanelW, DialoguePanelHeight),
+					                        DialoguePanelColor);
+					PanelBG.BlendMode = SE_BLEND_Translucent;
+					Canvas->DrawItem(PanelBG);
+				}
+
+				float TextY = PanelY + Pad;
+
+				// Speaker name (gold, slightly larger)
+				if (!Node->SpeakerName.IsEmpty())
+				{
+					const float SpeakerScale = DialogueTextScale * 1.1f;
+					FCanvasTextItem SpeakerItem(FVector2D(PanelX + Pad, TextY),
+					                            Node->SpeakerName,
+					                            MediumFont,
+					                            DialogueSpeakerColor);
+					SpeakerItem.Scale = FVector2D(SpeakerScale, SpeakerScale);
+					SpeakerItem.EnableShadow(FLinearColor::Black);
+					Canvas->DrawItem(SpeakerItem);
+					float NW = 0.0f, NH = 0.0f;
+					Canvas->TextSize(MediumFont, Node->SpeakerName.ToString(), NW, NH, SpeakerScale, SpeakerScale);
+					TextY += NH + 8.0f;
+				}
+
+				// Body text
+				if (!Node->BodyText.IsEmpty())
+				{
+					FCanvasTextItem BodyItem(FVector2D(PanelX + Pad, TextY),
+					                         Node->BodyText,
+					                         MediumFont,
+					                         DialogueBodyColor);
+					BodyItem.Scale = FVector2D(DialogueTextScale, DialogueTextScale);
+					BodyItem.EnableShadow(FLinearColor::Black);
+					Canvas->DrawItem(BodyItem);
+					float BW = 0.0f, BH = 0.0f;
+					Canvas->TextSize(MediumFont, Node->BodyText.ToString(), BW, BH, DialogueTextScale, DialogueTextScale);
+					TextY += BH + 14.0f;
+				}
+
+				// Numbered choices or [F] Continue hint
+				if (Node->Choices.Num() > 0)
+				{
+					for (int32 i = 0; i < Node->Choices.Num() && i < 4; ++i)
+					{
+						const FString ChoiceStr = FString::Printf(TEXT("[%d]  %s"),
+						                                          i + 1,
+						                                          *Node->Choices[i].ChoiceText.ToString());
+						FCanvasTextItem ChoiceItem(FVector2D(PanelX + Pad + 8.0f, TextY),
+						                           FText::FromString(ChoiceStr),
+						                           MediumFont,
+						                           DialogueChoiceColor);
+						ChoiceItem.Scale = FVector2D(DialogueTextScale, DialogueTextScale);
+						ChoiceItem.EnableShadow(FLinearColor::Black);
+						Canvas->DrawItem(ChoiceItem);
+						float CW = 0.0f, CH = 0.0f;
+						Canvas->TextSize(MediumFont, ChoiceStr, CW, CH, DialogueTextScale, DialogueTextScale);
+						TextY += CH + 4.0f;
+					}
+				}
+				else
+				{
+					FCanvasTextItem ContinueItem(FVector2D(PanelX + Pad + 8.0f, TextY),
+					                             FText::FromString(TEXT("[F]  Continue")),
+					                             MediumFont,
+					                             FLinearColor(0.70f, 0.70f, 0.70f, 0.90f));
+					ContinueItem.Scale = FVector2D(DialogueTextScale * 0.9f, DialogueTextScale * 0.9f);
+					ContinueItem.EnableShadow(FLinearColor::Black);
+					Canvas->DrawItem(ContinueItem);
 				}
 			}
 		}

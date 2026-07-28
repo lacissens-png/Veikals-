@@ -12,6 +12,7 @@
 #include "SOEquipmentComponent.h"
 #include "SOInventoryComponent.h"
 #include "SOQuestComponent.h"
+#include "SOStatusEffectComponent.h"
 #include "SOTalentComponent.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
@@ -51,7 +52,8 @@ ASOCharacter::ASOCharacter()
 	TalentComponent     = CreateDefaultSubobject<USOTalentComponent>(TEXT("TalentComponent"));
 	EquipmentComponent  = CreateDefaultSubobject<USOEquipmentComponent>(TEXT("EquipmentComponent"));
 	InventoryComponent  = CreateDefaultSubobject<USOInventoryComponent>(TEXT("InventoryComponent"));
-	QuestComponent      = CreateDefaultSubobject<USOQuestComponent>(TEXT("QuestComponent"));
+	QuestComponent        = CreateDefaultSubobject<USOQuestComponent>(TEXT("QuestComponent"));
+	StatusEffectComponent = CreateDefaultSubobject<USOStatusEffectComponent>(TEXT("StatusEffectComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{

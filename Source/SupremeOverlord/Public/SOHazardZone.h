@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SODamageType.h"
+#include "SOStatusEffectComponent.h"
 #include "SOHazardZone.generated.h"
 
 class UBoxComponent;
@@ -61,6 +62,28 @@ protected:
 	/** If > 0 the zone despawns after this many seconds. 0 = permanent. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard", meta = (ClampMin = "0"))
 	float Lifetime = 0.0f;
+
+	// ---------- Lingering status effect applied when leaving the zone ----------
+
+	/** When true, actors leaving the zone receive a status effect that lingers outside it. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard|Status")
+	bool bApplyLingeringStatus = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard|Status",
+	          meta = (EditCondition = "bApplyLingeringStatus"))
+	ESOStatusEffectType LingeringStatusType = ESOStatusEffectType::Burning;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard|Status",
+	          meta = (EditCondition = "bApplyLingeringStatus", ClampMin = "0.1"))
+	float LingeringDuration = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard|Status",
+	          meta = (EditCondition = "bApplyLingeringStatus", ClampMin = "0.0"))
+	float LingeringDamagePerTick = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard|Status",
+	          meta = (EditCondition = "bApplyLingeringStatus", ClampMin = "0.1"))
+	float LingeringTickInterval = 1.0f;
 
 	/** Optional particle system played on each damage tick per actor hit. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard|FX")
