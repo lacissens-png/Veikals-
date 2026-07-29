@@ -107,6 +107,19 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Vassal")
 	float GetAttackCooldownMultiplier() const;
 
+	/**
+	 * Damage multiplier applied to the active vassal's own attacks while the
+	 * summoner's Overlord Mode (USOCorruptionComponent) is active — the
+	 * Overlord's surging power flows to their Floor Guardian too. Queried live
+	 * by ASOVassalActor::Tick(), 1.0 outside Overlord Mode.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Vassal")
+	float GetVassalDamageMultiplier() const;
+
+	/** Damage multiplier granted to the active vassal while the summoner's Overlord Mode is active. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vassal|Config", meta = (ClampMin = "1.0"))
+	float OverlordVassalDamageMultiplier = 1.5f;
+
 	// ---------- Delegates ----------
 
 	UPROPERTY(BlueprintAssignable, Category = "Vassal")

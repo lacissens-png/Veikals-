@@ -92,9 +92,15 @@ void ASOVassalActor::Tick(float DeltaTime)
 	{
 		if (AttackCooldownRemaining <= 0.0f)
 		{
+			// Live-queried, not stored - so the boost turns off the instant
+			// Overlord Mode ends, with nothing to revert.
+			const float DamageMult = OwnerVassalComponent.IsValid()
+				? OwnerVassalComponent->GetVassalDamageMultiplier()
+				: 1.0f;
+
 			UGameplayStatics::ApplyDamage(
 				CurrentTarget.Get(),
-				AttackDamage,
+				AttackDamage * DamageMult,
 				GetController(),
 				this,
 				USODamageType::StaticClass());

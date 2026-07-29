@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
 #include "SOCharacter.h"
+#include "SOCorruptionComponent.h"
 #include "SOExperienceComponent.h"
 #include "SOManaComponent.h"
 #include "SOVassalActor.h"
@@ -186,6 +187,16 @@ float USOVassalComponent::GetAttackCooldownMultiplier() const
 	if (HasActiveVassal() && ActiveVassalData && ActiveVassalData->BuffType == ESOVassalBuffType::AttackSpeed)
 	{
 		return FMath::Clamp(1.0f - ActiveVassalData->BuffMagnitude, 0.1f, 1.0f);
+	}
+	return 1.0f;
+}
+
+float USOVassalComponent::GetVassalDamageMultiplier() const
+{
+	const ASOCharacter* Owner = Cast<ASOCharacter>(GetOwner());
+	if (Owner && Owner->CorruptionComponent && Owner->CorruptionComponent->IsOverlordModeActive())
+	{
+		return OverlordVassalDamageMultiplier;
 	}
 	return 1.0f;
 }

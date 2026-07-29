@@ -2419,6 +2419,32 @@ session):
   load-support methods already followed the established
   "set-directly, no delegate replay" rule.
 
+## 74. Overlord Mode now empowers your active Vassal
+
+An audit pass across the remaining ability components (Trap, Aura,
+Blink, Corpse Explosion, Familiar, Treasure Goblin, Reality Slash,
+Cursed Ground), `USOSummonComponent`, `USOHealthComponent`'s full
+damage pipeline, `USODifficultySubsystem`, and `USOLootRoller` found
+no bugs — everything already follows the established live-multiplier
+and diff-against-applied patterns. (One near-miss while auditing the
+damage pipeline: Trap/Familiar attribute damage to themselves rather
+than the caster as `DamageCauser`, which looked like it could starve
+`USOStatusEffectComponent::GetOutgoingDamageMultiplier()` of the
+caster's own buffs — but that multiplier is driven entirely by the
+`Cursed` status, which is only ever applied to *enemies* as a "-25%
+damage dealt" debuff, never to the player. No fix needed.)
+
+With the correctness pass turning up nothing further, added a new
+feature instead: **Overlord Mode and the Vassal system, previously two
+disconnected pieces of the same "Overlord" fantasy, now interact.**
+While Corruption's Overlord Mode is active, your summoned vassal's own
+attacks are boosted by a new `OverlordVassalDamageMultiplier` (default
+1.5x) via `USOVassalComponent::GetVassalDamageMultiplier()`, queried
+live each attack in `ASOVassalActor::Tick()` — the same
+query-don't-mutate pattern as the vassal's existing buff getters, so
+the boost turns off automatically the instant Overlord Mode ends, with
+nothing to revert.
+
 ### Updated input table
 
 | Key   | Action                          |
