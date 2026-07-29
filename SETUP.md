@@ -2496,6 +2496,42 @@ they either only ever increase the pool, or run before
 `Super::BeginPlay()`/`Revive()` has established `CurrentHealth` in the
 first place, so they needed no change.
 
+## 77. Quest tracking corruption fix: iterator invalidation on quest completion
+
+Broader pass over `USOQuestComponent`, `USOQuestData`, `USOGemData`,
+and `USODialogueNode` found the most serious bug of this session so
+far, in `USOQuestComponent`:
+
+- **Four separate loops iterated `ActiveQuests` with a range-based
+  `for` while calling something that removes the current entry from
+  that same array mid-iteration.** `TryCompleteQuest()` calls
+  `ActiveQuests.RemoveAll(...)`, which shifts every later element down
+  by one slot. A range-based `for` loop caches its end iterator once
+  at loop entry; the moment an element is removed, that cached bound
+  goes stale, so the loop's next step reads from a shifted/incorrect
+  position. `TickComponent` and `SeedMaterialObjectives` at least
+  `break`ed their *inner* objective loop right after completion (a
+  pre-existing comment even flagged the removal), but the *outer* loop
+  over quests was still unsafe. `NotifyEnemyKilled` and
+  `HandleWaveCleared` were worse: they call `AdvanceObjective()`
+  per-objective with no break at all, so completing a quest mid-loop
+  left the code reading further objectives off a `FSOActiveQuest&`
+  reference whose backing memory might now belong to a completely
+  different quest (or be past the array's new, smaller `Num()`) -
+  silently corrupting objective progress for other simultaneously
+  active quests, with no crash to make the bug obvious.
+- Fixed by converting all four loops to reverse-index iteration over
+  `ActiveQuests` (the same safe pattern `FailQuest()` already used) -
+  walking backwards means a removal only ever affects indices already
+  visited, never the ones still ahead. `NotifyEnemyKilled` and
+  `HandleWaveCleared` additionally capture the quest's `USOQuestData*`
+  before calling `AdvanceObjective()` and check `IsQuestActive()`
+  against that captured pointer afterward (rather than trusting the
+  now-possibly-stale `FSOActiveQuest&`) to detect completion and break
+  out cleanly.
+- `USOQuestData`, `USOGemData`, and `USODialogueNode` (pure data
+  assets) checked out with no issues.
+
 ### Updated input table
 
 | Key   | Action                          |

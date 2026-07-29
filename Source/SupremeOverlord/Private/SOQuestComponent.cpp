@@ -90,8 +90,14 @@ void USOQuestComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	const FVector PlayerLoc = Owner->GetActorLocation();
 
-	for (FSOActiveQuest& AQ : ActiveQuests)
+	// Reverse-index iteration: TryCompleteQuest() removes the current entry
+	// from ActiveQuests via RemoveAll, which shifts every later element down
+	// by one. A forward/range-based loop's cached end iterator goes stale the
+	// moment that happens; walking backwards means a removal only ever
+	// affects indices we've already visited, never the ones still ahead.
+	for (int32 QuestIdx = ActiveQuests.Num() - 1; QuestIdx >= 0; --QuestIdx)
 	{
+		FSOActiveQuest& AQ = ActiveQuests[QuestIdx];
 		if (!AQ.Data)
 		{
 			continue;
@@ -110,7 +116,8 @@ void USOQuestComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 				AQ.Progress[i] = Obj.RequiredCount;
 				OnObjectiveUpdated.Broadcast(AQ.Data, i);
 				TryCompleteQuest(AQ);
-				// TryCompleteQuest may modify ActiveQuests - break inner loop
+				// TryCompleteQuest may have removed AQ's backing entry - stop
+				// touching it and move on to the next quest.
 				break;
 			}
 		}
@@ -207,9 +214,14 @@ void USOQuestComponent::NotifyEnemyKilled(AActor* EnemyActor)
 		return;
 	}
 
-	for (FSOActiveQuest& AQ : ActiveQuests)
+	// See TickComponent for why this walks ActiveQuests backwards by index -
+	// AdvanceObjective() can complete and remove the current entry mid-loop.
+	for (int32 QuestIdx = ActiveQuests.Num() - 1; QuestIdx >= 0; --QuestIdx)
 	{
+		FSOActiveQuest& AQ = ActiveQuests[QuestIdx];
 		if (!AQ.Data) continue;
+
+		USOQuestData* const QuestData = AQ.Data;
 
 		for (int32 i = 0; i < AQ.Data->Objectives.Num(); ++i)
 		{
@@ -246,6 +258,16 @@ void USOQuestComponent::NotifyEnemyKilled(AActor* EnemyActor)
 			if (bMatches)
 			{
 				AdvanceObjective(AQ, i, 1);
+
+				// AdvanceObjective may have completed the quest and removed
+				// AQ's backing entry (its content, at this same array slot,
+				// could now belong to a different quest entirely thanks to
+				// the shift) - detect that via the captured pointer, not AQ,
+				// and stop touching this quest's objectives if so.
+				if (!IsQuestActive(QuestData))
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -258,9 +280,13 @@ void USOQuestComponent::HandleMaterialCountChanged(USOMaterialData* /*Material*/
 
 void USOQuestComponent::HandleWaveCleared(int32 /*WaveIndex*/)
 {
-	for (FSOActiveQuest& AQ : ActiveQuests)
+	// See NotifyEnemyKilled for why this walks ActiveQuests backwards by index.
+	for (int32 QuestIdx = ActiveQuests.Num() - 1; QuestIdx >= 0; --QuestIdx)
 	{
+		FSOActiveQuest& AQ = ActiveQuests[QuestIdx];
 		if (!AQ.Data) continue;
+
+		USOQuestData* const QuestData = AQ.Data;
 
 		for (int32 i = 0; i < AQ.Data->Objectives.Num(); ++i)
 		{
@@ -268,6 +294,11 @@ void USOQuestComponent::HandleWaveCleared(int32 /*WaveIndex*/)
 			if (AQ.Data->Objectives[i].Type == ESOQuestObjectiveType::ClearWaves)
 			{
 				AdvanceObjective(AQ, i, 1);
+
+				if (!IsQuestActive(QuestData))
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -350,8 +381,10 @@ void USOQuestComponent::SeedMaterialObjectives()
 		return;
 	}
 
-	for (FSOActiveQuest& AQ : ActiveQuests)
+	// See TickComponent for why this walks ActiveQuests backwards by index.
+	for (int32 QuestIdx = ActiveQuests.Num() - 1; QuestIdx >= 0; --QuestIdx)
 	{
+		FSOActiveQuest& AQ = ActiveQuests[QuestIdx];
 		if (!AQ.Data) continue;
 
 		for (int32 i = 0; i < AQ.Data->Objectives.Num(); ++i)
@@ -373,7 +406,7 @@ void USOQuestComponent::SeedMaterialObjectives()
 				if (AQ.IsObjectiveComplete(i))
 				{
 					TryCompleteQuest(AQ);
-					break; // AQ may be gone
+					break; // AQ's backing entry may be gone/shifted now.
 				}
 			}
 		}
