@@ -545,9 +545,18 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 
 		UniqueHitActors.Add(HitActor);
 
-		const float SwingDamage = GetEffectivePrimaryAttackDamage() * ComboMult;
+		// Each target hit by the swing rolls its own crit - a wide-arc cleave
+		// hitting several enemies gets several independent chances, rewarding
+		// good positioning rather than one roll deciding the whole swing.
+		const bool  bCrit       = RollCriticalHit();
+		const float SwingDamage = GetEffectivePrimaryAttackDamage() * ComboMult * (bCrit ? CritDamageMultiplier : 1.0f);
 		UGameplayStatics::ApplyDamage(HitActor, SwingDamage, InstigatorController, this, DTClass);
 		TotalDamageDealt += SwingDamage;
+
+		if (bCrit)
+		{
+			OnCriticalHit.Broadcast(HitActor, SwingDamage);
+		}
 	}
 
 	// Vampiric Strikes legendary — heal back a fraction of everything this swing dealt.
@@ -646,8 +655,12 @@ void ASOCharacter::CastShadowBolt(FVector TargetLocation)
 	}
 
 	// Push the character's effective spell damage onto the projectile so it
-	// scales with equipped weapons without touching the projectile BP.
-	Bolt->Damage      = GetEffectiveShadowBoltDamage();
+	// scales with equipped weapons without touching the projectile BP. The
+	// cast rolls a single crit up front (unlike Primary Attack's per-target
+	// rolls) since a bolt only ever has one primary target.
+	const bool bCrit  = RollCriticalHit();
+	Bolt->Damage      = GetEffectiveShadowBoltDamage() * (bCrit ? CritDamageMultiplier : 1.0f);
+	Bolt->bIsCrit     = bCrit;
 	Bolt->bChainOnHit = HasLegendaryEffect(ESOLegendaryEffect::ShadowBoltChain);
 
 	if (ShadowBoltCastSFX)

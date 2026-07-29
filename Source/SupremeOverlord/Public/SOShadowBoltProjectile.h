@@ -55,6 +55,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|ShadowBolt")
 	TSubclassOf<USODamageType> DamageType;
 
+	/** Set by ASOCharacter::CastShadowBolt when the cast rolled a critical hit; Damage is already scaled accordingly. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "SupremeOverlord|ShadowBolt")
+	bool bIsCrit = false;
+
 	/** Set by ASOCharacter::CastShadowBolt when the caster has the ShadowBoltChain legendary effect equipped. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|ShadowBolt|Legendary")
 	bool bChainOnHit = false;

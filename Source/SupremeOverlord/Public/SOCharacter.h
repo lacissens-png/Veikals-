@@ -19,6 +19,7 @@ class ASOShadowBoltProjectile;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSOOnGoldChanged,     int32, OldGold, int32, NewGold, int32, Delta);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams  (FSOOnWeaponChanged,   USOWeaponData*, OldWeapon, USOWeaponData*, NewWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams  (FSOOnCriticalHit,     AActor*, Target, float, FinalDamage);
 
 UCLASS()
 class SUPREMEOVERLORD_API ASOCharacter : public ACharacter
@@ -298,6 +299,32 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Health|Respawn")
 	void OnCharacterRespawned();
+
+	// -----------------------------------------------------------------------
+	// Critical hits — a percentage chance for a qualifying attack to deal
+	// bonus damage. Rolled by Primary Attack (independently per target hit in
+	// the swing) and Shadow Bolt (once per cast); any other ability can opt in
+	// by calling RollCriticalHit() itself.
+	// -----------------------------------------------------------------------
+
+	/** Chance [0-1] for a qualifying hit to be a critical strike. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Critical", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float CritChance = 0.05f;
+
+	/** Damage multiplier applied on a critical hit (2.0 = double damage). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Critical", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "10.0"))
+	float CritDamageMultiplier = 2.0f;
+
+	/** Rolls CritChance. A true result's damage should be multiplied by GetCritDamageMultiplier(). */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Critical")
+	bool RollCriticalHit() const { return FMath::FRand() < CritChance; }
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Critical")
+	float GetCritDamageMultiplier() const { return CritDamageMultiplier; }
+
+	/** Fired once per individual target that lands a critical hit, after damage is applied. */
+	UPROPERTY(BlueprintAssignable, Category = "SupremeOverlord|Combat|Critical")
+	FSOOnCriticalHit OnCriticalHit;
 
 	// -----------------------------------------------------------------------
 	// Primary attack — melee cone overlap in front of the character, with a

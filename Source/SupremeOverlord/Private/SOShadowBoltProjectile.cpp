@@ -7,6 +7,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInterface.h"
+#include "SOCharacter.h"
 #include "SODamageType.h"
 #include "SOEnemyCharacter.h"
 #include "SOMinion.h"
@@ -112,6 +113,14 @@ void ASOShadowBoltProjectile::HandleHit(UPrimitiveComponent* /*HitComp*/, AActor
 	if (OtherActor)
 	{
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DTClass);
+
+		if (bIsCrit)
+		{
+			if (ASOCharacter* CasterChar = Cast<ASOCharacter>(GetInstigator()))
+			{
+				CasterChar->OnCriticalHit.Broadcast(OtherActor, Damage);
+			}
+		}
 	}
 
 	if (bChainOnHit)

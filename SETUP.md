@@ -2606,6 +2606,39 @@ the count. `USOBlinkComponent::EndPlay()` was adjusted the same way,
 calling `ClearInvulnerability()` (not just cancelling the timer) if a
 window was still pending when the component is torn down.
 
+## 80. Added Critical Hits — a missing genre-fundamental stat
+
+A search for any existing critical-hit system (crit chance, crit
+damage, anything) came up completely empty — every Diablo-style ARPG
+has one, and its total absence was a genuine gap in `ASOCharacter`'s
+combat stats (which otherwise cover flat damage, cooldowns, resistance,
+etc. in reasonable depth).
+
+Added `CritChance` (0-1, default 0.05) and `CritDamageMultiplier`
+(default 2.0x) to `ASOCharacter`, plus `RollCriticalHit()` /
+`GetCritDamageMultiplier()` so any ability can opt in, and a new
+`OnCriticalHit(AActor* Target, float FinalDamage)` delegate for
+VFX/SFX/UI hookup later — following the same pattern as every other
+combat feedback hook in this codebase (`OnPrimaryAttackPerformed`,
+`OnBossPhaseChanged`, ...), left as a BP-assignable event rather than
+a Canvas-drawn HUD element.
+
+Wired into the two "bread and butter" damage sources:
+- **Primary Attack** rolls a crit independently for *each* target hit
+  in the swing — a wide Axe cleave connecting with three enemies gets
+  three independent chances, rewarding good positioning rather than
+  one roll deciding the whole swing.
+- **Shadow Bolt** rolls once per cast (a single-target projectile only
+  has one primary target), scales `Bolt->Damage` before spawning, and
+  tags the bolt with a new `bIsCrit` field so `HandleHit` can broadcast
+  `OnCriticalHit` once it resolves the actual hit target.
+
+Other abilities (Life Drain, Reality Slash, Corpse Explosion, ...)
+don't roll crits yet — left for a future pass since each has its own
+damage-shape questions (Reality Slash is already an instant-kill,
+AoE abilities would need the same "one roll per target vs. one roll
+per cast" design decision Primary Attack/Shadow Bolt just settled).
+
 ### Updated input table
 
 | Key   | Action                          |
