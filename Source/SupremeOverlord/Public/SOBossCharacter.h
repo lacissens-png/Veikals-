@@ -80,11 +80,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Phase 2", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
 	float Phase2SpeedMult = 1.15f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Phase 2", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float Phase2RadiusMult = 1.15f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Phase 3", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "5.0"))
 	float Phase3DamageMult = 1.75f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Phase 3", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
 	float Phase3SpeedMult = 1.35f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Phase 3", meta = (ClampMin = "0.5", UIMin = "0.5", UIMax = "3.0"))
+	float Phase3RadiusMult = 1.35f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Boss|Phase 3", meta = (ClampMin = "0", UIMin = "0", UIMax = "10"))
 	int32 Phase3AoECadence = 1;
@@ -142,6 +148,7 @@ private:
 	// Cached base values so we can re-scale relative to them on each phase change.
 	float BaseAttackDamage = 0.0f;
 	float BaseMovementSpeed = 0.0f;
+	float BaseTelegraphedAoERadius = 0.0f;
 
 	bool bEnraged = false;
 	FTimerHandle EnrageTimerHandle;

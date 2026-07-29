@@ -47,6 +47,11 @@ void USOEliteComponent::RollRandomAffixes()
 
 void USOEliteComponent::ApplyAffixesToOwner()
 {
+	if (bAffixesApplied)
+	{
+		return;
+	}
+
 	ASOEnemyCharacter* Enemy = Cast<ASOEnemyCharacter>(GetOwner());
 	if (!Enemy || AffixMask == 0)
 	{
@@ -89,5 +94,6 @@ void USOEliteComponent::ApplyAffixesToOwner()
 		Enemy->LoseSightRadius *= FarSightedMult;
 	}
 
+	bAffixesApplied = true;
 	OnAffixesApplied.Broadcast(AffixMask);
 }

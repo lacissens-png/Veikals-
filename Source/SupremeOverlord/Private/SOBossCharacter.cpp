@@ -25,21 +25,27 @@ ASOBossCharacter::ASOBossCharacter()
 
 void ASOBossCharacter::BeginPlay()
 {
+	// Bosses start with far more HP than a grunt. Simple 5x baseline until
+	// designers override in a BP — this must happen *before* Super::BeginPlay(),
+	// since ASOEnemyCharacter::BeginPlay() applies Difficulty-tier (and Elite,
+	// applied even earlier via OnRegister) HP scaling there. Checking the
+	// floor afterward would compare against an already-scaled value and
+	// silently overwrite that scaling with a flat 500 (e.g. Normal/Hard/
+	// Nightmare all landing under 400 and collapsing to the same 500 HP).
+	if (HealthComponent && HealthComponent->MaxHealth < 400.0f)
+	{
+		HealthComponent->MaxHealth = 500.0f;
+	}
+
 	Super::BeginPlay();
 
-	BaseAttackDamage  = AttackDamage;
-	BaseMovementSpeed = MovementSpeed;
+	BaseAttackDamage        = AttackDamage;
+	BaseMovementSpeed       = MovementSpeed;
+	BaseTelegraphedAoERadius = TelegraphedAoERadius;
 
 	if (HealthComponent)
 	{
 		HealthComponent->OnHealthChanged.AddDynamic(this, &ASOBossCharacter::HandleHealthChanged);
-
-		// Bosses start with far more HP than a grunt. Simple 5x baseline until designers override in a BP.
-		if (HealthComponent->MaxHealth < 400.0f)
-		{
-			HealthComponent->MaxHealth = 500.0f;
-			HealthComponent->Revive(HealthComponent->MaxHealth);
-		}
 	}
 
 	CurrentPhase = ESOBossPhase::Phase1;
@@ -84,17 +90,20 @@ void ASOBossCharacter::EnterPhase(ESOBossPhase NewPhase)
 	switch (NewPhase)
 	{
 	case ESOBossPhase::Phase1:
-		AttackDamage  = BaseAttackDamage;
-		MovementSpeed = BaseMovementSpeed;
+		AttackDamage         = BaseAttackDamage;
+		MovementSpeed        = BaseMovementSpeed;
+		TelegraphedAoERadius = BaseTelegraphedAoERadius;
 		break;
 	case ESOBossPhase::Phase2:
-		AttackDamage  = BaseAttackDamage  * Phase2DamageMult;
-		MovementSpeed = BaseMovementSpeed * Phase2SpeedMult;
+		AttackDamage         = BaseAttackDamage         * Phase2DamageMult;
+		MovementSpeed        = BaseMovementSpeed        * Phase2SpeedMult;
+		TelegraphedAoERadius = BaseTelegraphedAoERadius * Phase2RadiusMult;
 		break;
 	case ESOBossPhase::Phase3:
-		AttackDamage  = BaseAttackDamage  * Phase3DamageMult;
-		MovementSpeed = BaseMovementSpeed * Phase3SpeedMult;
-		AoECadence    = Phase3AoECadence;
+		AttackDamage         = BaseAttackDamage         * Phase3DamageMult;
+		MovementSpeed        = BaseMovementSpeed        * Phase3SpeedMult;
+		TelegraphedAoERadius = BaseTelegraphedAoERadius * Phase3RadiusMult;
+		AoECadence           = Phase3AoECadence;
 		break;
 	}
 

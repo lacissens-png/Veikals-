@@ -2300,6 +2300,40 @@ difficulty, corruption, and the new vassal roster — already used a
 proper direct-`Restore*` pattern with no side effects and needed no
 changes.
 
+## 70. Boss/Elite scaling fixes: HP-floor overwrite, Elite affix idempotency, phase-scaled AoE radius
+
+A focused audit of boss phases, Elite affixes, and Difficulty-tier
+scaling — three systems that all multiply the same underlying stats —
+found:
+
+- **Every boss below a 400 HP floor collapsed to the exact same 500 HP,
+  regardless of Difficulty tier.** `ASOBossCharacter::BeginPlay`'s "5x
+  baseline" floor-check ran *after* `Super::BeginPlay()`, which is
+  where `ASOEnemyCharacter` applies Difficulty-tier HP scaling
+  (`MaxHealth *= Difficulty->GetEnemyHealthMultiplier()`). Normal
+  (100), Hard (180), and Nightmare (300) all still landed under 400,
+  so the floor-check silently overwrote all three to a flat 500,
+  erasing the tier scaling entirely. Fixed by moving the floor-check
+  to run *before* `Super::BeginPlay()`, so Difficulty (and Elite, if
+  ever combined with a boss) scaling applies on top of the 500
+  baseline instead of after it.
+- **`USOEliteComponent::ApplyAffixesToOwner` had no idempotency
+  guard**, unlike the boss's phase system (which explicitly caches and
+  rescales from `Base*` values specifically "so re-entering a phase
+  doesn't compound"). Every affix here uses `Enemy->X *= Mult`
+  directly with no cached base — a second call (the header even
+  documented a stale "register + BeginPlay" call pattern that no
+  longer matches the code, and `OnRegister()` legitimately re-fires on
+  a construction-script rerun) would silently double every stat.
+  Added a `bAffixesApplied` guard so the mutation only ever happens
+  once per component instance.
+- **Boss phases were documented to scale `TelegraphedAoERadius` but
+  never actually did** — only `AttackDamage`/`MovementSpeed` were
+  rescaled per phase. Added `Phase2RadiusMult`/`Phase3RadiusMult`
+  (mirroring the damage/speed multipliers) so the boss's telegraphed
+  AoE genuinely gets more dangerous in later phases, matching what the
+  class's own doc comment already promised.
+
 ### Updated input table
 
 | Key   | Action                          |

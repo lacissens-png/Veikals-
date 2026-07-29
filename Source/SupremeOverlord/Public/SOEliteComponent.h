@@ -24,7 +24,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSOOnEliteAffixesApplied, int32, Aff
 /**
  * Attach to any ASOEnemyCharacter (in a Blueprint subclass or at spawn time)
  * to mutate its stats before BeginPlay resolves. Applies in Owner's
- * OnConstruction so the changes seed the health/mana components too.
+ * OnRegister so the changes seed the health/mana components too.
  *
  * Affix bits can be authored fixed in the editor, or randomised at spawn
  * time via RollRandomAffixes for wave-spawner elites.
@@ -86,11 +86,21 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Elite")
 	bool IsElite() const { return AffixMask != 0; }
 
-	/** Applies the current AffixMask to the owning enemy. Called automatically on register + BeginPlay. */
+	/**
+	 * Applies the current AffixMask to the owning enemy. Called automatically
+	 * on register. No-ops on every call after the first (multipliers are
+	 * applied once, permanently, to the enemy's stats) — since every
+	 * multiplier here is `*=` rather than rescaled from a cached base, a
+	 * second call (e.g. a re-triggered OnRegister from a construction-script
+	 * rerun in the editor) would otherwise double every affix.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Elite")
 	void ApplyAffixesToOwner();
 
 	/** Chooses RollCount unique random affixes, overwriting AffixMask. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Elite")
 	void RollRandomAffixes();
+
+private:
+	bool bAffixesApplied = false;
 };
