@@ -283,6 +283,13 @@ void ASOHUD::DrawHUD()
 			DrawLine(FString::Printf(TEXT("INT  %d   (F2)"), Attrs->GetAttribute(ESOAttribute::Intellect)), AttributesTextColor);
 			DrawLine(FString::Printf(TEXT("VIT  %d   (F3)"), Attrs->GetAttribute(ESOAttribute::Vitality)),  AttributesTextColor);
 
+			// Effective crit (base + talents + the equipped weapon's CritChanceBonus),
+			// so the player can actually see what their gear/talent investment bought.
+			DrawLine(FString::Printf(TEXT("CRIT %.0f%%   (x%.1f dmg)"),
+			                         SO->GetEffectiveCritChance() * 100.0f,
+			                         SO->GetCritDamageMultiplier()),
+			         CritStatColor);
+
 			const int32 Unspent = Attrs->GetUnspentPoints();
 			if (Unspent > 0)
 			{

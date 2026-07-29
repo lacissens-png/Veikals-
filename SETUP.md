@@ -2726,6 +2726,33 @@ failed the same way and none of them produced a crash, a warning, or
 any visible symptom other than a stat quietly being lower than the
 character sheet implied.
 
+## 84. Surfaced crit chance on the HUD
+
+Sections 80-82 built crit into a stat that varies with talents, weapon
+affixes, and socketed gems — but left the player no way to *see* it,
+which makes the whole investment loop invisible (you can't tell a +4%
+crit weapon from a +2% one without doing arithmetic on tooltips).
+
+Added an effective-crit line to the attributes panel, right under
+STR/INT/VIT:
+
+```
+CRIT 12%   (x2.0 dmg)
+```
+
+It reads `GetEffectiveCritChance()` (base + talents + the equipped
+weapon's `CritChanceBonus`) rather than the raw `CritChance` field, so
+swapping weapons updates it live. Tint is configurable via the new
+`ASOHUD::CritStatColor`, matching how every other panel line already
+exposes its color.
+
+Deliberately *not* added: a per-hit "CRIT!" toast. The existing
+`ShowTransactionToast`/`ShowLegendaryDropToast` pattern suits rare
+one-off events, but crits land constantly in normal combat and would
+turn the toast row into flicker. Floating combat text belongs in a
+BP/UMG widget driven by the existing `OnCriticalHit` delegate, which
+already carries both the target and the final post-multiplier damage.
+
 ### Updated input table
 
 | Key   | Action                          |

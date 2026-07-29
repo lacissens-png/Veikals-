@@ -159,6 +159,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
 	FLinearColor UnspentPointsColor = FLinearColor(1.0f, 0.85f, 0.25f, 1.0f);
 
+	/** Tint for the effective crit chance / crit damage line. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Attributes")
+	FLinearColor CritStatColor = FLinearColor(1.0f, 0.55f, 0.45f, 1.0f);
+
 	/** Show a Wave X / Enemies Y counter across the top when a spawner is active. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|HUD|Waves")
 	bool bShowWaveCounter = true;
