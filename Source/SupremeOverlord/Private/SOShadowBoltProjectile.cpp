@@ -11,6 +11,7 @@
 #include "SODamageType.h"
 #include "SOEnemyCharacter.h"
 #include "SOMinion.h"
+#include "SOShadowDamageType.h"
 #include "SOVassalActor.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -106,9 +107,12 @@ void ASOShadowBoltProjectile::HandleHit(UPrimitiveComponent* /*HitComp*/, AActor
 		}
 	}
 
+	// Falls back to the Shadow school rather than the Physical-default base
+	// type - this is the game's signature shadow spell, so Shadow resistance
+	// should apply to it even when a designer hasn't assigned a DamageType.
 	TSubclassOf<UDamageType> DTClass = DamageType
 		? DamageType
-		: TSubclassOf<UDamageType>(USODamageType::StaticClass());
+		: TSubclassOf<UDamageType>(USOShadowDamageType::StaticClass());
 
 	if (OtherActor)
 	{

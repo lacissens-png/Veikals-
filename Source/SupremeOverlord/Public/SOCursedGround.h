@@ -57,6 +57,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CursedGround", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "500.0"))
 	float DamagePerTick = 10.0f;
 
+	/** Damage type used per pulse. Leave null to fall back to the Shadow school (USOShadowDamageType). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CursedGround")
+	TSubclassOf<class USODamageType> DamageTypeOverride;
+
 	/** When true, each pulse also refreshes a Slowed effect on everything inside. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CursedGround")
 	bool bAppliesSlow = true;

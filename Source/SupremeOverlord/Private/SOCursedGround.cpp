@@ -7,6 +7,7 @@
 #include "SOCharacter.h"
 #include "SODamageType.h"
 #include "SOEnemyCharacter.h"
+#include "SOShadowDamageType.h"
 #include "SOStatusEffectComponent.h"
 #include "TimerManager.h"
 
@@ -79,8 +80,14 @@ void ASOCursedGround::ApplyGroundEffects()
 
 		if (DamagePerTick > 0.0f)
 		{
-			UGameplayStatics::ApplyDamage(Enemy, DamagePerTick, InstigatorCtrl, DamageCauser,
-			                              USODamageType::StaticClass());
+			// Shadow rather than the Physical-default base type - a dark curse
+			// zone landing as Physical would wrongly be mitigated by Physical
+			// resistance. Designers can override via DamageTypeOverride.
+			const TSubclassOf<UDamageType> DTClass = DamageTypeOverride
+				? DamageTypeOverride
+				: TSubclassOf<UDamageType>(USOShadowDamageType::StaticClass());
+
+			UGameplayStatics::ApplyDamage(Enemy, DamagePerTick, InstigatorCtrl, DamageCauser, DTClass);
 			TotalDamage += DamagePerTick;
 		}
 

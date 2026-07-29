@@ -2753,6 +2753,51 @@ turn the toast row into flicker. Floating combat text belongs in a
 BP/UMG widget driven by the existing `OnCriticalHit` delegate, which
 already carries both the target and the final post-multiplier damage.
 
+## 85. The Shadow damage school existed only as an unused enum value
+
+Checking whether traps had been left on generic damage types the way
+hazard zones had been (fixed back in section 66) turned up something
+bigger. `ESODamageCategory::Shadow` has been in the enum since the
+damage system was written, but **no class anywhere set it** — only
+Fire, Frost, and Necrotic ever got concrete `USODamageType`
+subclasses. Everything shadow-themed therefore fell back to the base
+`USODamageType`, whose `Category` defaults to **Physical**:
+
+- **Shadow Bolt** — the game's signature spell, in a game built around
+  a shadow-wielding overlord — dealt *Physical* damage.
+- **Cursed Ground** hardcoded the base type with no override field at
+  all.
+- **Shadow Snare** and **Necrotic Spore** traps both used the base
+  type despite their names naming their school outright.
+- **Life Drain** fell back to the base type too.
+
+The practical effect: an enemy configured with Shadow resistance would
+never resist any of it, while Physical resistance would wrongly
+mitigate the player's entire spell kit.
+
+Fixed by adding `USOShadowDamageType` (mirroring the existing
+Fire/Frost/Necrotic classes exactly) and routing each ability to the
+school its own name already claims:
+
+| Ability | Was | Now |
+|---|---|---|
+| Shadow Bolt | Physical | Shadow |
+| Shadow Snare trap | Physical | Shadow |
+| Cursed Ground | Physical | Shadow (+ new `DamageTypeOverride`) |
+| Necrotic Spore trap | Physical | Necrotic |
+| Life Drain | Physical | Necrotic |
+
+Every one of these is a *fallback* — designer-assigned
+`DamageType`/`DamageTypeOverride` fields still win where they exist,
+and `Cursed Ground` gained such a field since it previously had none.
+
+**Left deliberately unchanged:** the Arcane Mine trap. It applies
+`Shocked`, but `ESODamageCategory` has no Arcane or Lightning entry,
+and inventing a school to satisfy one trap is a design call rather
+than a bug fix — it stays on the Physical-default base type with a
+comment saying why. (`ESOHazardType::Poison`/`Lightning` fall back the
+same way for the same reason, per section 66.)
+
 ### Updated input table
 
 | Key   | Action                          |

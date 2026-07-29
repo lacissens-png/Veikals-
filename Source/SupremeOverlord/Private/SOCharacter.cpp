@@ -32,6 +32,7 @@
 #include "SOLootRoller.h"
 #include "SOMaterialData.h"
 #include "SOMinion.h"
+#include "SONecroticDamageType.h"
 #include "SOQuestComponent.h"
 #include "SOQuestData.h"
 #include "SOStatusEffectComponent.h"
@@ -794,9 +795,13 @@ void ASOCharacter::CastLifeDrain()
 		FCollisionShape::MakeSphere(LifeDrainRadius),
 		Params);
 
+	// Necrotic rather than the Physical-default base type - siphoning life is
+	// necrotic by convention, and a spell landing as Physical would wrongly be
+	// mitigated by Physical resistance. Designers can still override via
+	// LifeDrainDamageType.
 	TSubclassOf<UDamageType> DTClass = LifeDrainDamageType
 		? LifeDrainDamageType
-		: TSubclassOf<UDamageType>(USODamageType::StaticClass());
+		: TSubclassOf<UDamageType>(USONecroticDamageType::StaticClass());
 
 	AController* InstigatorController = GetController();
 

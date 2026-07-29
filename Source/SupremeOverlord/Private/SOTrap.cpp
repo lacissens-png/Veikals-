@@ -6,6 +6,8 @@
 #include "SOCharacter.h"
 #include "SODamageType.h"
 #include "SOEnemyCharacter.h"
+#include "SONecroticDamageType.h"
+#include "SOShadowDamageType.h"
 #include "SOStatusEffectComponent.h"
 #include "TimerManager.h"
 
@@ -85,7 +87,7 @@ void ASOTrap::OnSphereBeginOverlap(UPrimitiveComponent* /*OverlappedComponent*/,
 	case ESOTrapType::ShadowSnare:
 		if (Damage > 0.0f)
 		{
-			UGameplayStatics::ApplyDamage(Enemy, Damage, InstigatorCtrl, this, USODamageType::StaticClass());
+			UGameplayStatics::ApplyDamage(Enemy, Damage, InstigatorCtrl, this, USOShadowDamageType::StaticClass());
 		}
 		if (Enemy->StatusEffectComponent)
 		{
@@ -96,6 +98,9 @@ void ASOTrap::OnSphereBeginOverlap(UPrimitiveComponent* /*OverlappedComponent*/,
 	case ESOTrapType::ArcaneMine:
 		if (Damage > 0.0f)
 		{
+			// No Arcane/Lightning entry exists in ESODamageCategory, so this
+			// stays on the Physical-default base type rather than inventing a
+			// school for it.
 			UGameplayStatics::ApplyDamage(Enemy, Damage, InstigatorCtrl, this, USODamageType::StaticClass());
 		}
 		if (Enemy->StatusEffectComponent)
@@ -107,7 +112,7 @@ void ASOTrap::OnSphereBeginOverlap(UPrimitiveComponent* /*OverlappedComponent*/,
 	case ESOTrapType::NecroticSpore:
 		if (Damage > 0.0f)
 		{
-			UGameplayStatics::ApplyDamage(Enemy, Damage, InstigatorCtrl, this, USODamageType::StaticClass());
+			UGameplayStatics::ApplyDamage(Enemy, Damage, InstigatorCtrl, this, USONecroticDamageType::StaticClass());
 		}
 		if (Enemy->StatusEffectComponent)
 		{
