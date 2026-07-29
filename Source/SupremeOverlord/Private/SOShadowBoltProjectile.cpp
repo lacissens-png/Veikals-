@@ -9,6 +9,8 @@
 #include "Materials/MaterialInterface.h"
 #include "SODamageType.h"
 #include "SOEnemyCharacter.h"
+#include "SOMinion.h"
+#include "SOVassalActor.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASOShadowBoltProjectile::ASOShadowBoltProjectile()
@@ -81,6 +83,26 @@ void ASOShadowBoltProjectile::HandleHit(UPrimitiveComponent* /*HitComp*/, AActor
 	if (OtherActor == this || OtherActor == GetInstigator())
 	{
 		return;
+	}
+
+	// Same-side friendly fire guard: a bolt fired by an enemy shouldn't damage
+	// another enemy caught in its flight path, and a bolt fired by the player
+	// shouldn't damage the player's own minion/vassal standing in the way.
+	// It still physically stopped here (that's why we got a hit event at all),
+	// so destroy it, but deal no damage to a same-side target.
+	if (OtherActor)
+	{
+		const AActor* Instigator     = GetInstigator();
+		const bool    bFiredByEnemy  = Instigator && Instigator->IsA(ASOEnemyCharacter::StaticClass());
+		const bool    bHitSameSide   = bFiredByEnemy
+			? OtherActor->IsA(ASOEnemyCharacter::StaticClass())
+			: (OtherActor->IsA(ASOMinion::StaticClass()) || OtherActor->IsA(ASOVassalActor::StaticClass()));
+
+		if (bHitSameSide)
+		{
+			Destroy();
+			return;
+		}
 	}
 
 	TSubclassOf<UDamageType> DTClass = DamageType

@@ -2445,6 +2445,28 @@ query-don't-mutate pattern as the vassal's existing buff getters, so
 the boost turns off automatically the instant Overlord Mode ends, with
 nothing to revert.
 
+## 75. Shadow Bolt friendly-fire fix
+
+Audit of `ASOEnemyAIController` (state machine, flee behavior, attack
+cooldown), `ASOCasterEnemyCharacter`, and `ASOShadowBoltProjectile`
+found one real bug:
+
+- **`ASOShadowBoltProjectile::HandleHit` applied damage to whatever it
+  physically collided with, with only the firing instigator excluded.**
+  The bolt's `CollisionSphere` uses the `BlockAllDynamic` profile, so
+  in a busy fight a player's own Shadow Bolt could physically collide
+  with — and damage — their own `ASOMinion` or `ASOVassalActor`
+  standing in the flight path between the caster and the intended
+  enemy target. The same class is reused for `ASOCasterEnemyCharacter`
+  ranged attacks, so the mirror case existed too: an enemy caster's
+  bolt could clip and damage an allied enemy standing in its path.
+  Fixed with a same-side check in `HandleHit`: a bolt fired by an enemy
+  now no-damage-destroys on hitting another `ASOEnemyCharacter`, and a
+  bolt fired by the player now no-damage-destroys on hitting an
+  `ASOMinion`/`ASOVassalActor` — in both cases the bolt still visibly
+  stops (it did physically hit something solid), it just deals no
+  damage to a friendly target instead of continuing to apply it.
+
 ### Updated input table
 
 | Key   | Action                          |
