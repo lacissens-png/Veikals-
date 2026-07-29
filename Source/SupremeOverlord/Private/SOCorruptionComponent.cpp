@@ -51,6 +51,14 @@ void USOCorruptionComponent::AddCorruption(float Amount)
 	}
 }
 
+void USOCorruptionComponent::SetCorruption(float Amount)
+{
+	bOverlordModeActive       = false;
+	OverlordModeTimeRemaining = 0.0f;
+	CurrentCorruption         = FMath::Clamp(Amount, 0.0f, MaxCorruption);
+	OnCorruptionChanged.Broadcast(GetCorruptionFraction());
+}
+
 void USOCorruptionComponent::ActivateOverlordMode()
 {
 	if (bOverlordModeActive || CurrentCorruption < MaxCorruption)

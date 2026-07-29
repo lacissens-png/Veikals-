@@ -61,6 +61,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Consumable")
 	int32 RefillCharges();
 
+	/** Load support: sets charges directly, clamped to [0, MaxCharges]. */
+	UFUNCTION(BlueprintCallable, Category = "Consumable")
+	void SetCurrentCharges(int32 Charges) { CurrentCharges = FMath::Clamp(Charges, 0, MaxCharges); }
+
 	// ---------- Delegates ----------
 
 	UPROPERTY(BlueprintAssignable, Category = "Consumable")

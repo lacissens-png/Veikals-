@@ -73,6 +73,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Quest")
 	int32 GetObjectiveProgress(USOQuestData* Quest, int32 ObjectiveIndex) const;
 
+	/**
+	 * Load support: replaces ActiveQuests/CompletedQuests wholesale with
+	 * already-resolved save data (no prerequisite/duplicate checks, no
+	 * accepted/completed delegates — this restores state, it doesn't re-earn it).
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Quest")
+	void RestoreQuestState(const TArray<FSOActiveQuest>& InActiveQuests, const TArray<USOQuestData*>& InCompletedQuests);
+
 	// ---------- Event entry points (called from other systems) ----------
 
 	/** Called from ASOEnemyCharacter::HandleDeath for every enemy death. */

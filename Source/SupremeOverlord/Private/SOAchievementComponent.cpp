@@ -45,3 +45,14 @@ bool USOAchievementComponent::UnlockAchievement(FName ID, const FText& DisplayNa
 
 	return true;
 }
+
+void USOAchievementComponent::RestoreUnlockedAchievements(const TArray<FName>& IDs)
+{
+	for (const FName& ID : IDs)
+	{
+		if (!ID.IsNone())
+		{
+			UnlockedAchievements.Add(ID);
+		}
+	}
+}

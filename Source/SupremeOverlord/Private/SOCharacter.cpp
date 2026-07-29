@@ -24,13 +24,19 @@
 #include "SOEquipmentComponent.h"
 #include "SOFamiliarActor.h"
 #include "SOTrap.h"
+#include "SODifficultySubsystem.h"
+#include "SOGemData.h"
 #include "SOInventoryComponent.h"
 #include "SOItemData.h"
+#include "SOLootRoller.h"
+#include "SOMaterialData.h"
 #include "SOMinion.h"
 #include "SOQuestComponent.h"
+#include "SOQuestData.h"
 #include "SOStatusEffectComponent.h"
 #include "SOSummonComponent.h"
 #include "SOTalentComponent.h"
+#include "SOTalentNode.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
@@ -814,13 +820,111 @@ bool ASOCharacter::SaveGameToSlotName(const FString& Slot)
 	Save->PrimaryAttackDamage  = PrimaryAttackDamage;
 	Save->ShadowBoltBaseDamage = ShadowBoltBaseDamage;
 
-	if (EquippedWeapon)
+	if (EquipmentComponent)
 	{
-		Save->EquippedWeaponPath = EquippedWeapon->GetPathName();
+		for (const TPair<ESOEquipSlot, TObjectPtr<USOItemData>>& Pair : EquipmentComponent->GetAllEquipped())
+		{
+			USOItemData* Item = Pair.Value;
+			if (!Item)
+			{
+				continue;
+			}
+
+			FSOSavedItemInstance SavedItem;
+			SavedItem.SourceTemplate = Item->SourceTemplate.IsNull() ? TSoftObjectPtr<USOItemData>(Item) : Item->SourceTemplate;
+			SavedItem.Rarity         = Item->Rarity;
+			SavedItem.ItemLevel      = Item->ItemLevel;
+			SavedItem.RolledAffixes  = Item->RolledAffixes;
+			for (USOGemData* Gem : Item->SocketedGems)
+			{
+				if (Gem)
+				{
+					SavedItem.SocketedGemPaths.Add(Gem);
+				}
+			}
+
+			Save->EquippedItems.Add(Pair.Key, SavedItem);
+		}
 	}
-	else
+
+	if (InventoryComponent)
 	{
-		Save->EquippedWeaponPath.Reset();
+		for (const TPair<TObjectPtr<USOMaterialData>, int32>& Pair : InventoryComponent->GetAllMaterials())
+		{
+			if (!Pair.Key)
+			{
+				continue;
+			}
+			FSOSavedMaterialCount SavedCount;
+			SavedCount.Material = Pair.Key.Get();
+			SavedCount.Count    = Pair.Value;
+			Save->MaterialCounts.Add(SavedCount);
+		}
+	}
+
+	if (TalentComponent)
+	{
+		for (USOTalentNode* Node : TalentComponent->GetUnlockedNodes())
+		{
+			if (Node)
+			{
+				Save->UnlockedTalentNodes.Add(Node);
+			}
+		}
+		Save->AvailableTalentPoints = TalentComponent->GetTalentPoints();
+	}
+
+	if (QuestComponent)
+	{
+		for (const FSOActiveQuest& AQ : QuestComponent->ActiveQuests)
+		{
+			if (!AQ.Data)
+			{
+				continue;
+			}
+			FSOSavedQuestProgress Progress;
+			Progress.Quest    = AQ.Data.Get();
+			Progress.Progress = AQ.Progress;
+			Save->ActiveQuestProgress.Add(Progress);
+		}
+		for (USOQuestData* Quest : QuestComponent->CompletedQuests)
+		{
+			if (Quest)
+			{
+				Save->CompletedQuests.Add(Quest);
+			}
+		}
+	}
+
+	if (BestiaryComponent)
+	{
+		Save->BestiaryKillCounts = BestiaryComponent->GetAllKillCounts();
+	}
+
+	if (AchievementComponent)
+	{
+		Save->UnlockedAchievements = AchievementComponent->GetUnlockedAchievements();
+	}
+
+	if (ConsumableComponent)
+	{
+		Save->PotionCharges = ConsumableComponent->GetCurrentCharges();
+	}
+
+	if (WaypointComponent)
+	{
+		Save->DiscoveredWaypointIDs = WaypointComponent->GetDiscoveredWaypointIDs();
+		Save->LastWaypointID        = WaypointComponent->GetLastWaypointID();
+	}
+
+	if (USODifficultySubsystem* Difficulty = USODifficultySubsystem::Get(GetWorld()))
+	{
+		Save->DifficultyTier = Difficulty->GetDifficultyTier();
+	}
+
+	if (CorruptionComponent)
+	{
+		Save->CorruptionAmount = CorruptionComponent->GetCorruption();
 	}
 
 	const bool bOK = UGameplayStatics::SaveGameToSlot(Save, UseSlot, DefaultSaveUserIndex);
@@ -891,16 +995,126 @@ bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
 		AttributesComponent->GrantPoints(Save->UnspentAttributePoints);
 	}
 
-	if (!Save->EquippedWeaponPath.IsEmpty())
+	if (EquipmentComponent)
 	{
-		if (USOWeaponData* Weapon = LoadObject<USOWeaponData>(nullptr, *Save->EquippedWeaponPath))
+		for (const TPair<ESOEquipSlot, FSOSavedItemInstance>& Pair : Save->EquippedItems)
 		{
-			EquipWeapon(Weapon);
+			USOItemData* Template = Pair.Value.SourceTemplate.LoadSynchronous();
+			if (!Template)
+			{
+				continue;
+			}
+
+			USOItemData* Restored = USOLootRoller::ReconstructItemInstance(
+				Template, GetTransientPackage(), Pair.Value.Rarity, Pair.Value.ItemLevel, Pair.Value.RolledAffixes);
+			if (!Restored)
+			{
+				continue;
+			}
+
+			EquipmentComponent->Equip(Restored);
+
+			for (const TSoftObjectPtr<USOGemData>& GemPath : Pair.Value.SocketedGemPaths)
+			{
+				if (USOGemData* Gem = GemPath.LoadSynchronous())
+				{
+					EquipmentComponent->SocketGem(Pair.Key, Gem);
+				}
+			}
 		}
 	}
-	else
+
+	if (InventoryComponent)
 	{
-		UnequipWeapon();
+		for (const FSOSavedMaterialCount& SavedCount : Save->MaterialCounts)
+		{
+			if (USOMaterialData* Material = SavedCount.Material.LoadSynchronous())
+			{
+				InventoryComponent->AddMaterial(Material, SavedCount.Count);
+			}
+		}
+	}
+
+	if (TalentComponent)
+	{
+		TArray<USOTalentNode*> Nodes;
+		for (const TSoftObjectPtr<USOTalentNode>& NodePath : Save->UnlockedTalentNodes)
+		{
+			if (USOTalentNode* Node = NodePath.LoadSynchronous())
+			{
+				Nodes.Add(Node);
+			}
+		}
+		TalentComponent->RestoreFromSave(Nodes, Save->AvailableTalentPoints);
+	}
+
+	if (QuestComponent)
+	{
+		TArray<FSOActiveQuest> Active;
+		for (const FSOSavedQuestProgress& Progress : Save->ActiveQuestProgress)
+		{
+			USOQuestData* Quest = Progress.Quest.LoadSynchronous();
+			if (!Quest)
+			{
+				continue;
+			}
+			FSOActiveQuest AQ;
+			AQ.Data     = Quest;
+			AQ.Progress = Progress.Progress;
+			Active.Add(AQ);
+		}
+
+		TArray<USOQuestData*> Completed;
+		for (const TSoftObjectPtr<USOQuestData>& QuestPath : Save->CompletedQuests)
+		{
+			if (USOQuestData* Quest = QuestPath.LoadSynchronous())
+			{
+				Completed.Add(Quest);
+			}
+		}
+
+		QuestComponent->RestoreQuestState(Active, Completed);
+	}
+
+	if (BestiaryComponent)
+	{
+		for (const TPair<TSubclassOf<ASOEnemyCharacter>, int32>& Pair : Save->BestiaryKillCounts)
+		{
+			BestiaryComponent->RestoreKillCount(Pair.Key, Pair.Value);
+		}
+	}
+
+	if (AchievementComponent)
+	{
+		AchievementComponent->RestoreUnlockedAchievements(Save->UnlockedAchievements);
+	}
+
+	if (ConsumableComponent)
+	{
+		ConsumableComponent->SetCurrentCharges(Save->PotionCharges);
+	}
+
+	if (WaypointComponent)
+	{
+		UWorld* World = GetWorld();
+		for (const FName& ID : Save->DiscoveredWaypointIDs)
+		{
+			WaypointComponent->RestoreDiscoveredWaypointByID(ID, World);
+		}
+		if (!Save->LastWaypointID.IsNone())
+		{
+			WaypointComponent->RestoreLastWaypointByID(Save->LastWaypointID);
+		}
+	}
+
+	if (USODifficultySubsystem* Difficulty = USODifficultySubsystem::Get(GetWorld()))
+	{
+		Difficulty->SetDifficultyTier(Save->DifficultyTier);
+	}
+
+	if (CorruptionComponent)
+	{
+		CorruptionComponent->SetCorruption(Save->CorruptionAmount);
 	}
 
 	OnSaveGameCompleted(false, true, UseSlot);

@@ -69,6 +69,15 @@ TArray<FString> USOBestiaryComponent::GetEntryDescriptions() const
 	return Lines;
 }
 
+void USOBestiaryComponent::RestoreKillCount(TSubclassOf<ASOEnemyCharacter> EnemyClass, int32 Count)
+{
+	if (!EnemyClass || Count <= 0)
+	{
+		return;
+	}
+	KillCounts.FindOrAdd(EnemyClass) = Count;
+}
+
 void USOBestiaryComponent::ToggleCodex()
 {
 	bCodexOpen = !bCodexOpen;

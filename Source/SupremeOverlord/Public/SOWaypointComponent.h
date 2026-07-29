@@ -26,9 +26,33 @@ public:
 
 	// ---------- Runtime API ----------
 
-	/** Registers Waypoint as discovered (deduped). Safe to call repeatedly for the same waypoint. */
+	/**
+	 * Registers Waypoint as discovered (deduped). Safe to call repeatedly for
+	 * the same waypoint. bSilent skips delegates/BP hooks — used when
+	 * restoring from a save file so load doesn't replay every discovery FX/SFX.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Waypoint")
-	bool DiscoverWaypoint(ASOWaypoint* Waypoint);
+	bool DiscoverWaypoint(ASOWaypoint* Waypoint, bool bSilent = false);
+
+	/** Save support: every discovered waypoint's stable ID, in discovery order. */
+	UFUNCTION(BlueprintPure, Category = "Waypoint")
+	TArray<FName> GetDiscoveredWaypointIDs() const;
+
+	/** Save support: LastWaypoint's stable ID, or NAME_None if no waypoint has been discovered yet. */
+	UFUNCTION(BlueprintPure, Category = "Waypoint")
+	FName GetLastWaypointID() const;
+
+	/**
+	 * Load support: finds a placed ASOWaypoint in World whose GetStableID()
+	 * matches StableID and discovers it silently. Returns false if no match
+	 * is found in the current level.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Waypoint")
+	bool RestoreDiscoveredWaypointByID(FName StableID, UWorld* World);
+
+	/** Load support: re-points LastWaypoint at the already-discovered waypoint with StableID, without teleporting. */
+	UFUNCTION(BlueprintCallable, Category = "Waypoint")
+	void RestoreLastWaypointByID(FName StableID);
 
 	UFUNCTION(BlueprintPure, Category = "Waypoint")
 	const TArray<ASOWaypoint*>& GetDiscoveredWaypoints() const { return DiscoveredWaypoints; }

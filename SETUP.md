@@ -585,9 +585,35 @@ The HUD auto-detects any `ASOEnemySpawner` in the level and draws a
 ## 24. Quick save / quick load (F5 / F9)
 
 `USOSaveGame` snapshots the persistent parts of the player state:
-level, XP-in-level, gold, STR/INT/VIT + unspent points, current +
-max HP/Mana, PrimaryAttackDamage / ShadowBoltBaseDamage, and the
-equipped weapon (by asset path).
+
+- Level, XP-in-level, gold, STR/INT/VIT + unspent points, current +
+  max HP/Mana, PrimaryAttackDamage / ShadowBoltBaseDamage.
+- **Full equipment loadout** (all 9 slots, not just the weapon) —
+  each equipped item's source template, rarity, item level, rolled
+  affixes, and socketed gems round-trip via
+  `USOLootRoller::ReconstructItemInstance`, which replays the exact
+  same affix rolls rather than re-randomizing them.
+- **Crafting materials** — every material and its stack count.
+- **Talents** — every unlocked node plus banked talent points, via
+  `USOTalentComponent::RestoreFromSave` (respecs any current unlocks
+  first, then reapplies the saved set from scratch).
+- **Quests** — active quest objective progress and the completed
+  quest list, via `USOQuestComponent::RestoreQuestState`.
+- **Bestiary** — kill counts per enemy species.
+- **Achievements** — every unlocked achievement ID (restored silently,
+  no toast replay on load).
+- **Potion charges**.
+- **Waypoints** — every discovered waypoint plus the last-traveled-to
+  one. Waypoints are matched back up by `ASOWaypoint::GetStableID()`
+  (an explicit `WaypointID`, or the actor's own internal name if
+  unset) rather than by position, so this survives minor level edits.
+- **Difficulty tier** (New Game+) and the **corruption meter**.
+
+Item instances (drops, crafted results) carry a new
+`USOItemData::SourceTemplate` soft pointer back to the template asset
+they were rolled from — that's what makes an item with random affixes
++ sockets fully reconstructable from a save file instead of only
+round-tripping hand-authored template assets.
 
 - **F5** = QuickSave to `DefaultSaveSlot` (default
   `"SupremeOverlordSlot"`).
@@ -596,9 +622,9 @@ equipped weapon (by asset path).
 - `OnSaveGameCompleted(bSaved, bSuccess, Slot)` is a BP hook for
   save/load toasts.
 
-Note: level state (dropped orbs, wave progress, corpses) is
-intentionally *not* persisted — this is a walk-out-of-town save, not a
-full world snapshot.
+Note: level state (dropped orbs, wave/spawner progress, corpses,
+other actors' positions) is intentionally *not* persisted — this is a
+walk-out-of-town save, not a full world snapshot.
 
 ## 25. Boss encounter (`ASOBossCharacter`)
 

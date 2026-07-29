@@ -47,6 +47,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Bestiary")
 	void ToggleCodex();
 
+	/** Save support: every recorded species + kill count. */
+	UFUNCTION(BlueprintPure, Category = "Bestiary")
+	const TMap<TSubclassOf<ASOEnemyCharacter>, int32>& GetAllKillCounts() const { return KillCounts; }
+
+	/** Load support: sets a species' kill count directly without broadcasting the per-kill delegate. */
+	UFUNCTION(BlueprintCallable, Category = "Bestiary")
+	void RestoreKillCount(TSubclassOf<ASOEnemyCharacter> EnemyClass, int32 Count);
+
 	UPROPERTY(BlueprintAssignable, Category = "Bestiary")
 	FSOOnBestiaryEntryUpdated OnBestiaryEntryUpdated;
 

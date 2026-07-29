@@ -125,4 +125,13 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Item|Sockets")
 	int32 GetFreeSocketCount() const { return FMath::Max(0, MaxSockets - SocketedGems.Num()); }
+
+	/**
+	 * The editor-authored template this instance was duplicated from (see
+	 * USOLootRoller::RollItemInstance). Empty for hand-placed template assets
+	 * themselves. Lets save/load reconstruct a dropped instance's base stats
+	 * before re-applying RolledAffixes and SocketedGems.
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Item|Meta", Transient)
+	TSoftObjectPtr<USOItemData> SourceTemplate;
 };

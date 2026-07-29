@@ -50,6 +50,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Corruption")
 	void AddCorruption(float Amount);
 
+	/** Load support: sets the meter directly (clamped to [0, MaxCorruption]), bypassing the Overlord-Mode-active guard AddCorruption has. */
+	UFUNCTION(BlueprintCallable, Category = "Corruption")
+	void SetCorruption(float Amount);
+
 	/**
 	 * Activates Overlord Mode. No-op if corruption is not full or already active.
 	 * Corruption is consumed (set to 0) when the mode expires.
