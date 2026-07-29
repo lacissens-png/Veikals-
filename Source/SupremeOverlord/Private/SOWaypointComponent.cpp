@@ -1,5 +1,6 @@
 #include "SOWaypointComponent.h"
 
+#include "EngineUtils.h"
 #include "SOCharacter.h"
 #include "SOConsumableComponent.h"
 #include "SOWaypoint.h"
@@ -9,7 +10,7 @@ USOWaypointComponent::USOWaypointComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-bool USOWaypointComponent::DiscoverWaypoint(ASOWaypoint* Waypoint)
+bool USOWaypointComponent::DiscoverWaypoint(ASOWaypoint* Waypoint, bool bSilent)
 {
 	if (!Waypoint || DiscoveredWaypoints.Contains(Waypoint))
 	{
@@ -18,9 +19,61 @@ bool USOWaypointComponent::DiscoverWaypoint(ASOWaypoint* Waypoint)
 
 	DiscoveredWaypoints.Add(Waypoint);
 	LastWaypoint = Waypoint;
-	OnWaypointDiscovered.Broadcast(Waypoint);
-	OnWaypointDiscoveredBP(Waypoint);
+
+	if (!bSilent)
+	{
+		OnWaypointDiscovered.Broadcast(Waypoint);
+		OnWaypointDiscoveredBP(Waypoint);
+	}
 	return true;
+}
+
+TArray<FName> USOWaypointComponent::GetDiscoveredWaypointIDs() const
+{
+	TArray<FName> IDs;
+	IDs.Reserve(DiscoveredWaypoints.Num());
+	for (const ASOWaypoint* Waypoint : DiscoveredWaypoints)
+	{
+		if (Waypoint)
+		{
+			IDs.Add(Waypoint->GetStableID());
+		}
+	}
+	return IDs;
+}
+
+FName USOWaypointComponent::GetLastWaypointID() const
+{
+	return LastWaypoint ? LastWaypoint->GetStableID() : NAME_None;
+}
+
+bool USOWaypointComponent::RestoreDiscoveredWaypointByID(FName StableID, UWorld* World)
+{
+	if (StableID.IsNone() || !World)
+	{
+		return false;
+	}
+
+	for (TActorIterator<ASOWaypoint> It(World); It; ++It)
+	{
+		if (It->GetStableID() == StableID)
+		{
+			return DiscoverWaypoint(*It, true);
+		}
+	}
+	return false;
+}
+
+void USOWaypointComponent::RestoreLastWaypointByID(FName StableID)
+{
+	for (ASOWaypoint* Waypoint : DiscoveredWaypoints)
+	{
+		if (Waypoint && Waypoint->GetStableID() == StableID)
+		{
+			LastWaypoint = Waypoint;
+			return;
+		}
+	}
 }
 
 void USOWaypointComponent::ToggleMap()

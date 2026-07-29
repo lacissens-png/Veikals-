@@ -184,6 +184,20 @@ int32 USOQuestComponent::GetObjectiveProgress(USOQuestData* Quest, int32 Objecti
 	return 0;
 }
 
+void USOQuestComponent::RestoreQuestState(const TArray<FSOActiveQuest>& InActiveQuests, const TArray<USOQuestData*>& InCompletedQuests)
+{
+	ActiveQuests = InActiveQuests;
+
+	CompletedQuests.Reset();
+	for (USOQuestData* Quest : InCompletedQuests)
+	{
+		if (Quest)
+		{
+			CompletedQuests.Add(Quest);
+		}
+	}
+}
+
 void USOQuestComponent::NotifyEnemyKilled(AActor* EnemyActor)
 {
 	if (!EnemyActor)

@@ -109,6 +109,28 @@ bool USOTalentComponent::RespecAll()
 	return true;
 }
 
+void USOTalentComponent::RestoreFromSave(const TArray<USOTalentNode*>& Nodes, int32 Points)
+{
+	if (UnlockedNodes.Num() > 0)
+	{
+		RespecAll();
+	}
+
+	for (USOTalentNode* Node : Nodes)
+	{
+		if (!Node || UnlockedNodes.Contains(Node))
+		{
+			continue;
+		}
+		UnlockedNodes.Add(Node);
+		ApplyNodeEffects(Node);
+		OnTalentUnlocked.Broadcast(Node);
+	}
+
+	AvailableTalentPoints = FMath::Max(0, Points);
+	OnTalentPointsChanged.Broadcast(AvailableTalentPoints, 0);
+}
+
 void USOTalentComponent::ApplyNodeEffects(USOTalentNode* Node)
 {
 	if (!Node)

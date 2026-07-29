@@ -19,6 +19,7 @@ USOItemData* USOLootRoller::RollItemInstance(const USOItemData* Template, UObjec
 	{
 		return nullptr;
 	}
+	NewItem->SourceTemplate = const_cast<USOItemData*>(Template);
 
 	// Hand-authored legendaries/uniques are final as designed — no rarity reroll, no affixes.
 	if (Template->bIsLegendaryUnique)
@@ -61,6 +62,35 @@ USOItemData* USOLootRoller::RollItemInstance(const USOItemData* Template, UObjec
 		Affix.Value       = RollAffixMagnitude(Stat, NewItem->ItemLevel);
 		Affix.Description = BuildAffixDescription(Stat, Affix.Value);
 
+		ApplyAffix(NewItem, Affix);
+		NewItem->RolledAffixes.Add(Affix);
+	}
+
+	return NewItem;
+}
+
+USOItemData* USOLootRoller::ReconstructItemInstance(const USOItemData* Template, UObject* Outer, ESOItemRarity Rarity,
+                                                      int32 ItemLevel, const TArray<FSOItemAffix>& Affixes)
+{
+	if (!Template)
+	{
+		return nullptr;
+	}
+
+	UObject* DupeOuter = Outer ? Outer : GetTransientPackage();
+	USOItemData* NewItem = DuplicateObject<USOItemData>(Template, DupeOuter);
+	if (!NewItem)
+	{
+		return nullptr;
+	}
+
+	NewItem->SourceTemplate = const_cast<USOItemData*>(Template);
+	NewItem->Rarity         = Rarity;
+	NewItem->ItemLevel      = FMath::Max(1, ItemLevel);
+	NewItem->RolledAffixes.Reset();
+
+	for (const FSOItemAffix& Affix : Affixes)
+	{
 		ApplyAffix(NewItem, Affix);
 		NewItem->RolledAffixes.Add(Affix);
 	}

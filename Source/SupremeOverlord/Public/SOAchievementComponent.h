@@ -37,6 +37,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Achievements")
 	TArray<FName> GetUnlockedAchievements() const { return UnlockedAchievements.Array(); }
 
+	/** Load support: marks IDs unlocked directly, with no toast/SFX/delegate for any of them. */
+	UFUNCTION(BlueprintCallable, Category = "Achievements")
+	void RestoreUnlockedAchievements(const TArray<FName>& IDs);
+
 	// ---------- Toast (read by SOHUD each frame) ----------
 
 	UFUNCTION(BlueprintPure, Category = "Achievements")

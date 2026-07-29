@@ -70,6 +70,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Talents")
 	bool RespecAll();
 
+	/**
+	 * Load support: clears any current unlocks, then unlocks exactly Nodes (in
+	 * order, applying their stat effects) and sets AvailableTalentPoints to
+	 * Points directly. Skips CanUnlock's prerequisite/cost checks since a
+	 * save file is assumed to represent a previously-valid state.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Talents")
+	void RestoreFromSave(const TArray<USOTalentNode*>& Nodes, int32 Points);
+
 private:
 	void ApplyNodeEffects(USOTalentNode* Node);
 	void RevertNodeEffects(USOTalentNode* Node);

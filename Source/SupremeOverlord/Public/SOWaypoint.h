@@ -64,6 +64,18 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Waypoint")
 	bool IsDiscovered() const { return bDiscovered; }
 
+	/**
+	 * Stable save/load identifier. Leave unset to fall back to the actor's own
+	 * internal FName (stable across sessions as long as the placed instance
+	 * isn't renamed) — set explicitly if you ever need to rename the actor
+	 * without invalidating existing save files.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Waypoint")
+	FName WaypointID;
+
+	UFUNCTION(BlueprintPure, Category = "Waypoint")
+	FName GetStableID() const { return WaypointID.IsNone() ? GetFName() : WaypointID; }
+
 	/** BP hook for VFX/SFX the moment this waypoint is first discovered. */
 	UFUNCTION(BlueprintImplementableEvent, Category = "Waypoint")
 	void OnDiscovered(class ASOCharacter* Discoverer);

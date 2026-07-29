@@ -33,6 +33,16 @@ public:
 	static USOItemData* RollItemInstance(const USOItemData* Template, UObject* Outer, int32 ItemLevel = 1);
 
 	/**
+	 * Rebuilds a drop instance from saved state: duplicates Template, then
+	 * replays the given Rarity/ItemLevel/Affixes exactly as they were rolled
+	 * (rather than rolling new ones). Used by ASOCharacter::LoadGameFromSlotName
+	 * to restore equipped/inventory items without re-randomizing them.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Loot")
+	static USOItemData* ReconstructItemInstance(const USOItemData* Template, UObject* Outer, ESOItemRarity Rarity,
+	                                             int32 ItemLevel, const TArray<FSOItemAffix>& Affixes);
+
+	/**
 	 * Applies one stat bonus directly to Item's own fields (PrimaryDamageBonus
 	 * for weapons, MaxHealthBonus for armor, etc. — routes on the item's
 	 * dynamic type). Shared by the random-affix roll above and by
