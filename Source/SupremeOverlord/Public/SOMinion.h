@@ -70,6 +70,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|AI", meta = (ClampMin = "100.0"))
 	float AggroRange = 2000.0f;
 
+	/**
+	 * With no target to fight, the minion follows the summoning character once
+	 * farther than this away, so it doesn't get left behind while the player
+	 * explores. 0 disables follow-when-idle.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|AI", meta = (ClampMin = "0.0"))
+	float FollowOwnerDistance = 400.0f;
+
 	/** How long the minion lives before auto-dissipating (0 = permanent until killed). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minion|Lifetime", meta = (ClampMin = "0.0"))
 	float LifetimeDuration = 0.0f;
@@ -145,6 +153,9 @@ private:
 	TWeakObjectPtr<AActor> CurrentTarget;
 
 	AActor* FindBestTarget() const;
+
+	/** Walks back to the summoning character once idle and too far away. No-op if already close or unsummoned. */
+	void FollowOwner();
 
 	/** Advances CurrentTier one step and applies the stat/scale bumps. */
 	void Evolve();

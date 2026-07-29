@@ -83,6 +83,7 @@ void ASOMinion::Tick(float DeltaTime)
 
 	if (!CurrentTarget.IsValid())
 	{
+		FollowOwner();
 		return;
 	}
 
@@ -153,6 +154,26 @@ AActor* ASOMinion::FindBestTarget() const
 		}
 	}
 	return Best;
+}
+
+void ASOMinion::FollowOwner()
+{
+	if (FollowOwnerDistance <= 0.0f || !OwnerSummonComponent.IsValid())
+	{
+		return;
+	}
+
+	AActor* Owner = OwnerSummonComponent->GetOwner();
+	if (!Owner)
+	{
+		return;
+	}
+
+	const float DistSq = FVector::DistSquared(GetActorLocation(), Owner->GetActorLocation());
+	if (DistSq > FollowOwnerDistance * FollowOwnerDistance)
+	{
+		UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), Owner);
+	}
 }
 
 int32 ASOMinion::GetKillsUntilEvolve() const

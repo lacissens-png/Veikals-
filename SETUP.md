@@ -1058,6 +1058,11 @@ Overlord" power fantasy.
   `AggroRange` (2000 cm default), chases via
   `UAIBlueprintHelperLibrary::SimpleMoveToActor`, attacks when within
   `AttackRange` on an `AttackCooldown` timer.
+- **Follows the summoner when idle**: with no enemy target, a minion
+  more than `FollowOwnerDistance` (400 cm default) from the caster
+  walks back to them via `SimpleMoveToActor`, so the army doesn't get
+  stranded behind while the player explores. Set `FollowOwnerDistance`
+  to 0 to disable (minions then hold position when idle, as before).
 - Optional `LifetimeDuration` (0 = permanent) — minion auto-dissipates
   after the set number of seconds.
 - On death: broadcasts back to the owning `SummonComponent` via
