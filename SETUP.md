@@ -2334,6 +2334,37 @@ found:
   AoE genuinely gets more dangerous in later phases, matching what the
   class's own doc comment already promised.
 
+## 71. Vassal audit: pay-on-success summon ordering
+
+Correctness pass over `USOVassalComponent`, `ASOVassalActor`, and the
+quest/dialogue recruitment hooks (the newest systems added this
+session, not yet given a dedicated audit):
+
+- **`SummonSelectedVassal()` paid the mana cost and destroyed the
+  previously active vassal *before* spawning the new one.** With
+  `SpawnActor`'s collision handling set to `AdjustIfPossibleButAlwaysSpawn`
+  this practically never fails, but if it ever did (invalid class,
+  world tearing down, etc.) the caster would lose their mana *and*
+  their active vassal for a summon that never happened. Reordered so
+  the new actor is spawned first, and only on success is the old
+  vassal dismissed and the mana consumed.
+- Everything else checked out: `RecruitVassal` already dedupes against
+  `RecruitedVassals`, so the quest-reward and dialogue-choice
+  recruitment hooks can't double-grant even if triggered twice; the
+  buff getters correctly gate on `HasActiveVassal()` before reading
+  `ActiveVassalData`; `HandleVassalDied` cleanly clears the active
+  reference so buffs fall back to neutral with nothing to revert; and
+  the save/load round-trip (`RecruitedVassals` as
+  `TArray<TSoftObjectPtr<USOVassalData>>`, restored via
+  `RestoreRecruitedVassals` with no per-entry delegate replay) follows
+  the same "set final state directly" rule established for every other
+  system this session.
+- Also re-verified `USOCorruptionComponent` (Overlord Mode) end to end
+  — decay, fill, activate, and save/load via `SetCorruption` (which
+  correctly bypasses the "can't add corruption while active" guard
+  that only makes sense for the live `AddCorruption` path) are all
+  consistent; no changes needed there.
+
 ### Updated input table
 
 | Key   | Action                          |

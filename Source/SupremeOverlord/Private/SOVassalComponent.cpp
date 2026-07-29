@@ -101,13 +101,6 @@ bool USOVassalComponent::SummonSelectedVassal()
 		return false;
 	}
 
-	DismissVassal();
-
-	if (ManaCostPerSummon > 0.0f)
-	{
-		Owner->ManaComponent->Consume(ManaCostPerSummon);
-	}
-
 	FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 150.0f;
 	if (UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld()))
 	{
@@ -121,10 +114,19 @@ bool USOVassalComponent::SummonSelectedVassal()
 	FActorSpawnParameters Params;
 	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
+	// Spawn before paying any cost: if spawning were ever to fail, the caster
+	// keeps their mana and their previously active vassal instead of losing both.
 	ASOVassalActor* Spawned = GetWorld()->SpawnActor<ASOVassalActor>(Data->ActorClass, SpawnLocation, FRotator::ZeroRotator, Params);
 	if (!Spawned)
 	{
 		return false;
+	}
+
+	DismissVassal();
+
+	if (ManaCostPerSummon > 0.0f)
+	{
+		Owner->ManaComponent->Consume(ManaCostPerSummon);
 	}
 
 	Spawned->OwnerVassalComponent = this;
