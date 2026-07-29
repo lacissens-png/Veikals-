@@ -24,6 +24,10 @@ class SUPREMEOVERLORD_API USOWaypointComponent : public UActorComponent
 public:
 	USOWaypointComponent();
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	// ---------- Runtime API ----------
 
 	/**

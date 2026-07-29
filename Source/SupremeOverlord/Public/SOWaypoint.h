@@ -64,6 +64,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Waypoint")
 	bool IsDiscovered() const { return bDiscovered; }
 
+	UFUNCTION(BlueprintPure, Category = "Waypoint")
+	bool GetStartDiscovered() const { return bStartDiscovered; }
+
 	/**
 	 * Stable save/load identifier. Leave unset to fall back to the actor's own
 	 * internal FName (stable across sessions as long as the placed instance

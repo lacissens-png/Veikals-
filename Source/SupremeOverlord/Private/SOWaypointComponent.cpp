@@ -10,6 +10,27 @@ USOWaypointComponent::USOWaypointComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void USOWaypointComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Silently register every placed "home base" waypoint (bStartDiscovered)
+	// so it's on the map from the very first frame, without needing to walk
+	// into it first. Scanning here (rather than from the waypoint actor's own
+	// BeginPlay) sidesteps any actor BeginPlay ordering hazard against the
+	// player pawn being possessed yet.
+	if (UWorld* World = GetWorld())
+	{
+		for (TActorIterator<ASOWaypoint> It(World); It; ++It)
+		{
+			if (It->GetStartDiscovered())
+			{
+				DiscoverWaypoint(*It, /*bSilent=*/ true);
+			}
+		}
+	}
+}
+
 bool USOWaypointComponent::DiscoverWaypoint(ASOWaypoint* Waypoint, bool bSilent)
 {
 	if (!Waypoint || DiscoveredWaypoints.Contains(Waypoint))

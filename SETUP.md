@@ -2392,6 +2392,33 @@ given a dedicated audit this session:
   replacement weapon or crafting an armor piece never double-counts
   stat bonuses.
 
+## 73. Waypoint audit: `bStartDiscovered` "home base" flag was inert
+
+Correctness pass over the Bestiary, Achievement, and Waypoint systems
+(the remaining meta-progression trackers not yet audited this
+session):
+
+- **`ASOWaypoint::bStartDiscovered` never actually did anything.** Its
+  own doc comment promises "already discovered by every character that
+  begins play (a 'home base' waypoint)," but `BeginPlay()` only set the
+  waypoint's *own* private `bDiscovered` bool — it never touched any
+  character's `USOWaypointComponent`. A home-base waypoint marked this
+  way was silently absent from the waypoint map (and un-travelable-to)
+  until the player happened to physically walk into its
+  `DiscoverySphere` once. Fixed by adding a `BeginPlay()` override to
+  `USOWaypointComponent` that scans the world for every placed
+  `ASOWaypoint` with the flag set and silently discovers it
+  (`GetStartDiscovered()` added as the accessor). Doing the scan from
+  the component's own `BeginPlay` — rather than from
+  `ASOWaypoint::BeginPlay` reaching for `GetPlayerCharacter` — avoids
+  depending on actor `BeginPlay` ordering against player-pawn
+  possession, and composes safely with the existing save/load restore
+  path since `DiscoverWaypoint` already dedupes.
+- `USOBestiaryComponent` and `USOAchievementComponent` checked out with
+  no changes needed: both dedupe correctly, and their `Restore*`
+  load-support methods already followed the established
+  "set-directly, no delegate replay" rule.
+
 ### Updated input table
 
 | Key   | Action                          |
