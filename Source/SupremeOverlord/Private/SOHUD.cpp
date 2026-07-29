@@ -461,17 +461,35 @@ void ASOHUD::DrawHUD()
 		const float CurrentManaVal = SO->ManaComponent ? SO->ManaComponent->GetCurrentMana() : 0.0f;
 
 		// Primary attack: no mana cost, cooldown scales with weapon.
-		DrawSkillTile(
-			Canvas,
-			FVector2D(RowStartX + 0 * (SkillTileSize.X + SkillTileGap), RowY),
-			TEXT("RMB"),
-			TEXT("Strike"),
-			0.0f,
-			CurrentManaVal,
-			SO->GetPrimaryAttackCooldownRemaining(),
-			SO->GetEffectivePrimaryAttackCooldown(),
-			FLinearColor(0.85f, 0.10f, 0.10f, 1.0f),
-			MediumFont);
+		{
+			const FVector2D TileOrigin(RowStartX + 0 * (SkillTileSize.X + SkillTileGap), RowY);
+			DrawSkillTile(
+				Canvas,
+				TileOrigin,
+				TEXT("RMB"),
+				TEXT("Strike"),
+				0.0f,
+				CurrentManaVal,
+				SO->GetPrimaryAttackCooldownRemaining(),
+				SO->GetEffectivePrimaryAttackCooldown(),
+				FLinearColor(0.85f, 0.10f, 0.10f, 1.0f),
+				MediumFont);
+
+			// Combo stage badge below the tile (only while the chain is still live).
+			if (SO->IsComboWindowActive())
+			{
+				const FString ComboStr = FString::Printf(TEXT("Combo x%d"), SO->GetComboStage() + 1);
+				float CW = 0.0f, CH = 0.0f;
+				Canvas->TextSize(MediumFont, ComboStr, CW, CH);
+				FCanvasTextItem ComboItem(
+					FVector2D(TileOrigin.X + (SkillTileSize.X - CW) * 0.5f, TileOrigin.Y + SkillTileSize.Y + 22.0f),
+					FText::FromString(ComboStr),
+					MediumFont,
+					FLinearColor(1.0f, 0.75f, 0.25f, 1.0f));
+				ComboItem.EnableShadow(FLinearColor::Black);
+				Canvas->DrawItem(ComboItem);
+			}
+		}
 
 		// Shadow Bolt
 		DrawSkillTile(

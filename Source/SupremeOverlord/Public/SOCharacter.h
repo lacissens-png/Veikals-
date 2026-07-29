@@ -300,20 +300,26 @@ public:
 	void OnCharacterRespawned();
 
 	// -----------------------------------------------------------------------
-	// Primary attack — melee sphere overlap in front of the character.
+	// Primary attack — melee cone overlap in front of the character, with a
+	// 3-stage combo chain and a per-weapon-type swing arc.
 	// -----------------------------------------------------------------------
 
-	/** Damage dealt per primary swing. */
+	/** Damage dealt per primary swing, before the combo stage multiplier. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "1000.0"))
 	float PrimaryAttackDamage = 15.0f;
 
-	/** How far in front of the character the hit sphere is centered (cm). */
+	/** Maximum reach (cm) from the character's own location — the overlap sphere's radius. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "50.0", UIMin = "50.0", UIMax = "800.0"))
-	float PrimaryAttackRange = 220.0f;
+	float PrimaryAttackRange = 250.0f;
 
-	/** Sphere radius (cm) used for the overlap check. */
+	/**
+	 * "Point-blank" radius (cm) around the character that's always hit
+	 * regardless of facing — so an enemy standing right next to you can never
+	 * be facing-missed. Beyond this (and up to PrimaryAttackRange), whether a
+	 * target is struck depends on GetPrimaryAttackArcDegrees().
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "20.0", UIMin = "20.0", UIMax = "500.0"))
-	float PrimaryAttackRadius = 140.0f;
+	float PrimaryAttackRadius = 100.0f;
 
 	/** Seconds between primary attacks. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary", meta = (ClampMin = "0.05", UIMin = "0.05", UIMax = "5.0"))
@@ -331,6 +337,61 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary")
 	bool bFaceAttackDirection = true;
 
+	// ---------- Weapon swing arc (full cone width, in degrees) ----------
+
+	/** Swing arc for Sword/Staff/Wand/Orb — a precise, forward-focused thrust. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary|Arc", meta = (ClampMin = "10.0", UIMin = "10.0", UIMax = "360.0"))
+	float ThrustWeaponArcDegrees = 70.0f;
+
+	/** Swing arc for Axe — a wide cleave that can catch flanking enemies. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary|Arc", meta = (ClampMin = "10.0", UIMin = "10.0", UIMax = "360.0"))
+	float CleaveWeaponArcDegrees = 150.0f;
+
+	/** Swing arc for Mace — a moderate crushing swing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary|Arc", meta = (ClampMin = "10.0", UIMin = "10.0", UIMax = "360.0"))
+	float CrushWeaponArcDegrees = 110.0f;
+
+	/** Swing arc used with no weapon equipped (bare fists). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary|Arc", meta = (ClampMin = "10.0", UIMin = "10.0", UIMax = "360.0"))
+	float UnarmedAttackArcDegrees = 90.0f;
+
+	/** The swing arc (full cone width, in degrees) for the currently equipped weapon type. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Primary|Arc")
+	float GetPrimaryAttackArcDegrees() const;
+
+	// ---------- Combo chain ----------
+
+	/**
+	 * Damage multiplier per combo stage, applied on top of
+	 * GetEffectivePrimaryAttackDamage(). The stage index wraps (0 again after
+	 * the last entry), so more entries make a longer chain. A swing landing
+	 * within ComboWindowSeconds of the previous one advances to the next
+	 * stage; letting the window lapse resets to stage 0.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary|Combo")
+	TArray<float> ComboDamageMultipliers = { 1.0f, 1.15f, 1.35f };
+
+	/** Maximum seconds between consecutive swings for the combo to keep advancing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary|Combo", meta = (ClampMin = "0.1", UIMin = "0.1", UIMax = "5.0"))
+	float ComboWindowSeconds = 1.4f;
+
+	/** Extra swing-arc width (degrees) granted on the final combo stage — a wider finishing cleave. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Primary|Combo", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "180.0"))
+	float ComboFinisherArcBonusDegrees = 40.0f;
+
+	/** Current combo stage (0-based). Only meaningfully non-zero while IsComboWindowActive() is true. */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Primary|Combo")
+	int32 GetComboStage() const { return ComboStage; }
+
+	/**
+	 * True if the combo chain is still "live" (stage > 0 and ComboWindowSeconds
+	 * hasn't lapsed since the last swing yet). Unlike GetComboStage(), this
+	 * reflects the window expiring in real time rather than only updating on
+	 * the next swing attempt — the right check for a HUD combo counter.
+	 */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Primary|Combo")
+	bool IsComboWindowActive() const;
+
 	/** Debug: draws the attack sphere every time a swing is performed. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Debug")
 	bool bDrawPrimaryAttackDebug = false;
@@ -340,9 +401,12 @@ public:
 	bool CanPrimaryAttack() const;
 
 	/**
-	 * Executes a primary swing aimed at TargetLocation.
-	 * Applies PrimaryAttackDamage to every ACharacter with a live USOHealthComponent
-	 * inside the sphere. Fires OnPrimaryAttackPerformed on success.
+	 * Executes a primary swing aimed at TargetLocation. Hits every live
+	 * ACharacter within PrimaryAttackRange of the caster that's either inside
+	 * PrimaryAttackRadius (always hit, point-blank) or within the equipped
+	 * weapon's swing arc of the caster's forward vector. Damage is
+	 * GetEffectivePrimaryAttackDamage() scaled by the current combo stage's
+	 * multiplier. Fires OnPrimaryAttackPerformed on success.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Combat|Primary")
 	void PerformPrimaryAttack(FVector TargetLocation);
@@ -350,10 +414,11 @@ public:
 	/**
 	 * BP hook for animation, VFX, and SFX. Called every time a swing goes off
 	 * (before the overlap is evaluated). ImpactActors lists everything the
-	 * overlap touched — plug into it to spawn per-hit VFX/SFX.
+	 * overlap touched — plug into it to spawn per-hit VFX/SFX. Stage is this
+	 * swing's 0-based combo stage, handy for picking a different swing anim.
 	 */
 	UFUNCTION(BlueprintImplementableEvent, Category = "SupremeOverlord|Combat|Primary")
-	void OnPrimaryAttackPerformed(const FVector& AttackCenter, const TArray<AActor*>& ImpactActors);
+	void OnPrimaryAttackPerformed(const FVector& AttackCenter, const TArray<AActor*>& ImpactActors, int32 Stage);
 
 	// -----------------------------------------------------------------------
 	// Shadow Bolt — ranged spell projectile.
@@ -820,6 +885,9 @@ private:
 
 	FTimerHandle PrimaryAttackCooldownHandle;
 	bool bPrimaryAttackOnCooldown = false;
+
+	int32 ComboStage = 0;
+	float LastPrimaryAttackTimestamp = -1000.0f;
 
 	FTimerHandle ShadowBoltCooldownHandle;
 	bool bShadowBoltOnCooldown = false;

@@ -2532,6 +2532,43 @@ far, in `USOQuestComponent`:
 - `USOQuestData`, `USOGemData`, and `USODialogueNode` (pure data
   assets) checked out with no issues.
 
+## 78. Primary Attack overhaul: point-blank fix, weapon swing arcs, 3-stage combo
+
+Requested feature work (not a bug audit): "improve the attack style."
+Since animation/VFX can't be touched from this environment, this is a
+pure hit-detection and gameplay-feel rework of `PerformPrimaryAttack`.
+
+- **Fixed a real melee dead zone.** The old hit check centered a
+  `PrimaryAttackRadius` (140) sphere at a point `PrimaryAttackRange`
+  (220) directly in front of the character. That sphere's *nearest*
+  edge was 80cm out — meaning an enemy standing right next to the
+  character (touching them) fell entirely outside the hit volume and
+  simply couldn't be hit by Primary Attack. Redesigned around the
+  character's own location instead: `PrimaryAttackRadius` is now a
+  "point-blank" bubble that's *always* hit regardless of facing, and
+  `PrimaryAttackRange` is the true maximum reach (matching how
+  `AttackRange` already works for every enemy in the game) — no more
+  dead zone, and defaults adjusted to 250/100 to keep overall reach
+  feeling the same.
+- **Per-weapon-type swing arc.** Beyond the point-blank bubble, a hit
+  now also needs to fall within a cone in front of the character —
+  width driven by the equipped weapon: Sword/Staff/Wand/Orb get a
+  precise 70° thrust, Axe gets a wide 150° cleave that can catch
+  flanking enemies, Mace a 110° crushing swing, and bare fists 90°.
+  `GetPrimaryAttackArcDegrees()` exposes the current value.
+- **3-stage combo chain.** Landing a swing within `ComboWindowSeconds`
+  (1.4s default) of the previous one advances a combo stage (wrapping
+  through `ComboDamageMultipliers` — default `{1.0, 1.15, 1.35}`);
+  letting the window lapse resets to stage 0. The final stage also
+  gets `ComboFinisherArcBonusDegrees` (default +40°) added to the
+  swing arc, so the finisher feels like a bigger, more generous hit. A
+  new `IsComboWindowActive()` getter reflects the window expiring in
+  real time (not just on the next swing attempt), used to drive a
+  "Combo x2/x3" badge under the Strike skill tile in the HUD.
+- `OnPrimaryAttackPerformed`'s BP hook gained a `Stage` parameter so
+  animation Blueprints can pick a different swing per combo stage once
+  animations exist.
+
 ### Updated input table
 
 | Key   | Action                          |

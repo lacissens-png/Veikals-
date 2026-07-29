@@ -421,6 +421,30 @@ bool ASOCharacter::CanPrimaryAttack() const
 	return IsAlive() && !bPrimaryAttackOnCooldown;
 }
 
+bool ASOCharacter::IsComboWindowActive() const
+{
+	if (ComboStage <= 0)
+	{
+		return false;
+	}
+	const UWorld* World = GetWorld();
+	return World && (World->GetTimeSeconds() - LastPrimaryAttackTimestamp <= ComboWindowSeconds);
+}
+
+float ASOCharacter::GetPrimaryAttackArcDegrees() const
+{
+	if (!EquippedWeapon)
+	{
+		return UnarmedAttackArcDegrees;
+	}
+	switch (EquippedWeapon->WeaponType)
+	{
+	case ESOWeaponType::Axe:  return CleaveWeaponArcDegrees;
+	case ESOWeaponType::Mace: return CrushWeaponArcDegrees;
+	default:                  return ThrustWeaponArcDegrees; // Sword, Staff, Wand, Orb
+	}
+}
+
 void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 {
 	if (!CanPrimaryAttack())
@@ -444,19 +468,34 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 		SetActorRotation(FRotator(0.0f, DesiredRot.Yaw, 0.0f));
 	}
 
-	// Center the hit sphere in front of the character regardless of how far away the click was.
-	const FVector Forward      = GetActorForwardVector();
-	const FVector AttackCenter = MyLocation + Forward * PrimaryAttackRange;
+	// Advance the combo chain if this swing landed inside the window since the
+	// last one, otherwise the gap was too long and the chain resets to stage 0.
+	const float Now             = World->GetTimeSeconds();
+	const int32 NumComboStages  = FMath::Max(1, ComboDamageMultipliers.Num());
+	ComboStage = (Now - LastPrimaryAttackTimestamp > ComboWindowSeconds)
+		? 0
+		: (ComboStage + 1) % NumComboStages;
+	LastPrimaryAttackTimestamp = Now;
+	const bool bIsFinisher = (ComboStage == NumComboStages - 1);
+
+	// Cone check in front of the character: anything inside PrimaryAttackRadius
+	// is always hit (point-blank), everything else out to PrimaryAttackRange
+	// needs to be within the equipped weapon's swing arc - widened further on
+	// the combo finisher for a bigger finishing cleave.
+	const FVector Forward    = GetActorForwardVector();
+	const float   ArcDegrees = FMath::Clamp(GetPrimaryAttackArcDegrees() + (bIsFinisher ? ComboFinisherArcBonusDegrees : 0.0f), 0.0f, 360.0f);
+	const float   CosHalfArc = FMath::Cos(FMath::DegreesToRadians(ArcDegrees * 0.5f));
+	const float   RadiusSq   = FMath::Square(PrimaryAttackRadius);
 
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(SOPrimaryAttack), /*bTraceComplex=*/ false, /*Ignore=*/ this);
 
 	TArray<FOverlapResult> Overlaps;
 	World->OverlapMultiByChannel(
 		Overlaps,
-		AttackCenter,
+		MyLocation,
 		FQuat::Identity,
 		PrimaryAttackChannel,
-		FCollisionShape::MakeSphere(PrimaryAttackRadius),
+		FCollisionShape::MakeSphere(PrimaryAttackRange),
 		Params);
 
 	TArray<AActor*> UniqueHitActors;
@@ -469,6 +508,7 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 	AController* InstigatorController = GetController();
 
 	float TotalDamageDealt = 0.0f;
+	const float ComboMult  = ComboDamageMultipliers.IsValidIndex(ComboStage) ? ComboDamageMultipliers[ComboStage] : 1.0f;
 
 	for (const FOverlapResult& Result : Overlaps)
 	{
@@ -490,9 +530,22 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 		{
 			continue;
 		}
+
+		const FVector ToActor = HitActor->GetActorLocation() - MyLocation;
+		if (ToActor.SizeSquared() > RadiusSq)
+		{
+			FVector FlatToActor = ToActor;
+			FlatToActor.Z        = 0.0f;
+			const FVector DirToActor = FlatToActor.GetSafeNormal();
+			if (!DirToActor.IsNearlyZero() && FVector::DotProduct(Forward, DirToActor) < CosHalfArc)
+			{
+				continue; // outside the weapon's swing arc, and outside the point-blank bubble
+			}
+		}
+
 		UniqueHitActors.Add(HitActor);
 
-		const float SwingDamage = GetEffectivePrimaryAttackDamage();
+		const float SwingDamage = GetEffectivePrimaryAttackDamage() * ComboMult;
 		UGameplayStatics::ApplyDamage(HitActor, SwingDamage, InstigatorController, this, DTClass);
 		TotalDamageDealt += SwingDamage;
 	}
@@ -512,12 +565,12 @@ void ASOCharacter::PerformPrimaryAttack(FVector TargetLocation)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, PrimaryAttackSFX, GetActorLocation());
 	}
-	OnPrimaryAttackPerformed(AttackCenter, UniqueHitActors);
+	OnPrimaryAttackPerformed(MyLocation, UniqueHitActors, ComboStage);
 
 	if (bDrawPrimaryAttackDebug)
 	{
-		DrawDebugSphere(World, AttackCenter, PrimaryAttackRadius, 20, FColor::Green, false, 0.6f, 0, 2.0f);
-		DrawDebugLine  (World, MyLocation, AttackCenter, FColor::Green, false, 0.6f, 0, 2.0f);
+		DrawDebugSphere(World, MyLocation, PrimaryAttackRange, 24, FColor::Green, false, 0.6f, 0, 1.5f);
+		DrawDebugSphere(World, MyLocation, PrimaryAttackRadius, 16, FColor::Cyan, false, 0.6f, 0, 1.5f);
 	}
 
 	bPrimaryAttackOnCooldown = true;
