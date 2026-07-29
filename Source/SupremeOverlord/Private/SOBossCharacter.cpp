@@ -116,7 +116,7 @@ bool ASOBossCharacter::PerformAttack(AActor* Target)
 
 	// Every (AoECadence+1)-th swing is an AoE. AoECadence = 2 → hit, hit, AoE, repeat.
 	const int32 Cadence = FMath::Max(0, AoECadence);
-	if (SwingsSinceLastAoE > Cadence)
+	if (SwingsSinceLastAoE >= Cadence)
 	{
 		SwingsSinceLastAoE = 0;
 		PerformTelegraphedAoE(Target);
