@@ -1,15 +1,30 @@
 #include "SOVassalComponent.h"
 
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
 #include "SOCharacter.h"
 #include "SOExperienceComponent.h"
+#include "SOManaComponent.h"
 #include "SOVassalActor.h"
 #include "SOVassalData.h"
 
 USOVassalComponent::USOVassalComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick          = true;
+	PrimaryComponentTick.bStartWithTickEnabled = true;
+	PrimaryComponentTick.TickInterval          = 0.1f;
+}
+
+void USOVassalComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                       FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (SummonCooldownRemaining > 0.0f)
+	{
+		SummonCooldownRemaining = FMath::Max(0.0f, SummonCooldownRemaining - DeltaTime);
+	}
 }
 
 bool USOVassalComponent::RecruitVassal(USOVassalData* Vassal)
@@ -58,6 +73,11 @@ USOVassalData* USOVassalComponent::GetSelectedVassal() const
 
 bool USOVassalComponent::SummonSelectedVassal()
 {
+	if (SummonCooldownRemaining > 0.0f)
+	{
+		return false;
+	}
+
 	USOVassalData* Data = GetSelectedVassal();
 	if (!Data || !Data->ActorClass)
 	{
@@ -76,7 +96,17 @@ bool USOVassalComponent::SummonSelectedVassal()
 		return false;
 	}
 
+	if (ManaCostPerSummon > 0.0f && (!Owner->ManaComponent || !Owner->ManaComponent->HasEnough(ManaCostPerSummon)))
+	{
+		return false;
+	}
+
 	DismissVassal();
+
+	if (ManaCostPerSummon > 0.0f)
+	{
+		Owner->ManaComponent->Consume(ManaCostPerSummon);
+	}
 
 	FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 150.0f;
 	if (UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld()))
@@ -100,8 +130,14 @@ bool USOVassalComponent::SummonSelectedVassal()
 	Spawned->OwnerVassalComponent = this;
 	Spawned->InitializeFromData(Data);
 
-	ActiveVassalData  = Data;
-	ActiveVassalActor = Spawned;
+	ActiveVassalData        = Data;
+	ActiveVassalActor       = Spawned;
+	SummonCooldownRemaining = SummonCooldown;
+
+	if (SummonSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, SummonSFX, SpawnLocation);
+	}
 
 	OnVassalSummoned.Broadcast(Data);
 	return true;

@@ -318,8 +318,11 @@ void ASOHUD::DrawHUD()
 				{
 					if (USOVassalData* Selected = SO->VassalComponent->GetSelectedVassal())
 					{
-						DrawLine(FString::Printf(TEXT("Vassal ready: %s   (N: summon, A: cycle)"), *Selected->VassalName.ToString()),
-						         FLinearColor(0.6f, 0.5f, 0.75f, 1.0f));
+						const float CD = SO->VassalComponent->GetSummonCooldownRemaining();
+						const FString Status = CD > 0.0f
+							? FString::Printf(TEXT("Vassal: %s   (ready in %ds)"), *Selected->VassalName.ToString(), FMath::CeilToInt(CD))
+							: FString::Printf(TEXT("Vassal ready: %s   (N: summon, A: cycle)"), *Selected->VassalName.ToString());
+						DrawLine(Status, FLinearColor(0.6f, 0.5f, 0.75f, 1.0f));
 					}
 				}
 			}

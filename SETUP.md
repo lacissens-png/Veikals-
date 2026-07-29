@@ -2145,6 +2145,11 @@ grants the player a passive buff.
 - `SummonSelectedVassal()` / `DismissVassal()` — spawns/destroys the
   active vassal (nav-mesh snapped near the player, mirroring
   `SummonMinion`'s spawn pattern).
+- Summoning costs `ManaCostPerSummon` (default 25) and gates behind
+  `SummonCooldown` (default 4s) — matching every other player ability
+  in this game (minions, Blink, Dodge Roll all cost mana/have a
+  cooldown); without this, dismiss-then-resummon would be a free,
+  instant reset. Dismissing itself stays free.
 - Recruited roster round-trips through save/load (`SOSaveGame::RecruitedVassals`).
 
 ### Key bindings
@@ -2158,8 +2163,10 @@ grants the player a passive buff.
 ### HUD changes
 
 Below the attribute panel: `"Vassal: <Name> [HP%]   (D: dismiss)"`
-while one is active, or `"Vassal ready: <Name>   (N: summon, A: cycle)"`
-once at least one vassal is recruited but none is summoned.
+while one is active; `"Vassal ready: <Name>   (N: summon, A: cycle)"`
+once at least one is recruited and the cooldown is clear; or
+`"Vassal: <Name>   (ready in Ns)"` while `SummonCooldown` is still
+counting down.
 
 ### Recruitment hooks (native — no BP wiring needed)
 

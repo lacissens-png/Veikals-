@@ -32,6 +32,25 @@ class SUPREMEOVERLORD_API USOVassalComponent : public UActorComponent
 public:
 	USOVassalComponent();
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	// ---------- Config ----------
+
+	/** Mana drained from the caster's ManaComponent per summon. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vassal|Config", meta = (ClampMin = "0.0"))
+	float ManaCostPerSummon = 25.0f;
+
+	/** Minimum seconds between consecutive summons — prevents instant dismiss-and-resummon spam. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vassal|Config", meta = (ClampMin = "0.0"))
+	float SummonCooldown = 4.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vassal|Config|Audio")
+	TObjectPtr<class USoundBase> SummonSFX;
+
+	UFUNCTION(BlueprintPure, Category = "Vassal")
+	float GetSummonCooldownRemaining() const { return SummonCooldownRemaining; }
+
 	// ---------- Recruitment ----------
 
 	/** Adds Vassal to the recruited roster (deduped). Returns false if already recruited or null. */
@@ -104,6 +123,8 @@ private:
 	TArray<TObjectPtr<USOVassalData>> RecruitedVassals;
 
 	int32 CurrentSelectionIndex = 0;
+
+	float SummonCooldownRemaining = 0.0f;
 
 	UPROPERTY(Transient)
 	TObjectPtr<USOVassalData> ActiveVassalData;
