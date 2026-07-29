@@ -964,18 +964,20 @@ void ASOHUD::DrawHUD()
 				BG.BlendMode = SE_BLEND_Translucent;
 				Canvas->DrawItem(BG);
 			}
-			if (Pct > 0.0f)
+			if (BossPct > 0.0f)
 			{
 				FCanvasTileItem Fill(FVector2D(BX, BY),
-				                     FVector2D(BossBarSize.X * Pct, BossBarSize.Y),
+				                     FVector2D(BossBarSize.X * BossPct, BossBarSize.Y),
 				                     BossBarFillColor);
 				Fill.BlendMode = SE_BLEND_Translucent;
 				Canvas->DrawItem(Fill);
 			}
 
-			const FString Name = Closest->BossDisplayName.IsEmpty()
+			const int32 PhaseNumber = static_cast<int32>(Closest->GetCurrentPhase()) + 1;
+			const FString BaseName = Closest->BossDisplayName.IsEmpty()
 				? FString(TEXT("Boss"))
 				: Closest->BossDisplayName.ToString();
+			const FString Name = FString::Printf(TEXT("%s   (Phase %d/3)"), *BaseName, PhaseNumber);
 			float TW = 0.0f, TH = 0.0f;
 			Canvas->TextSize(MediumFont, Name, TW, TH, BossNameScale, BossNameScale);
 			FCanvasTextItem NameItem(FVector2D((ScreenW - TW) * 0.5f, BY - TH - 4.0f),
@@ -1375,7 +1377,11 @@ void ASOHUD::DrawHUD()
 		Canvas->DrawItem(CloseHint);
 	}
 
-	// -- Achievement toast (top-center, brief) --------------------------------
+	// -- Stacked top-center toasts: achievement, legendary drop, vendor -------
+	// Each block draws at ToastY then advances the cursor, so any subset that
+	// happens to fire together stacks cleanly instead of overlapping.
+	float ToastY = 70.0f;
+
 	if (SO->AchievementComponent && SO->AchievementComponent->IsToastActive() && LargeFont)
 	{
 		const FString ToastText = FString::Printf(TEXT("ACHIEVEMENT UNLOCKED: %s"),
@@ -1384,16 +1390,33 @@ void ASOHUD::DrawHUD()
 		float TW = 0.0f, TH = 0.0f;
 		Canvas->TextSize(LargeFont, ToastText, TW, TH, 1.1f, 1.1f);
 
-		FCanvasTextItem Toast(FVector2D((ScreenW - TW) * 0.5f, 70.0f),
+		FCanvasTextItem Toast(FVector2D((ScreenW - TW) * 0.5f, ToastY),
 		                      FText::FromString(ToastText),
 		                      LargeFont,
 		                      FLinearColor(1.0f, 0.85f, 0.35f, 1.0f));
 		Toast.Scale = FVector2D(1.1f, 1.1f);
 		Toast.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(Toast);
+		ToastY += TH * 1.1f + 8.0f;
 	}
 
-	// -- Vendor transaction toast (top-center, brief) -------------------------
+	if (SO->IsLegendaryDropToastActive() && LargeFont)
+	{
+		const FString& ToastText = SO->GetLegendaryDropToastText();
+
+		float TW = 0.0f, TH = 0.0f;
+		Canvas->TextSize(LargeFont, ToastText, TW, TH, 1.1f, 1.1f);
+
+		FCanvasTextItem Toast(FVector2D((ScreenW - TW) * 0.5f, ToastY),
+		                      FText::FromString(ToastText),
+		                      LargeFont,
+		                      FLinearColor(1.0f, 0.55f, 0.0f, 1.0f)); // legendary-orange
+		Toast.Scale = FVector2D(1.1f, 1.1f);
+		Toast.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(Toast);
+		ToastY += TH * 1.1f + 8.0f;
+	}
+
 	if (SO->IsTransactionToastActive() && MediumFont)
 	{
 		const FString& ToastText = SO->GetTransactionToastText();
@@ -1401,12 +1424,13 @@ void ASOHUD::DrawHUD()
 		float TW = 0.0f, TH = 0.0f;
 		Canvas->TextSize(MediumFont, ToastText, TW, TH, 1.0f, 1.0f);
 
-		FCanvasTextItem Toast(FVector2D((ScreenW - TW) * 0.5f, 108.0f),
+		FCanvasTextItem Toast(FVector2D((ScreenW - TW) * 0.5f, ToastY),
 		                      FText::FromString(ToastText),
 		                      MediumFont,
 		                      FLinearColor(0.75f, 0.95f, 0.55f, 1.0f));
 		Toast.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(Toast);
+		ToastY += TH + 8.0f;
 	}
 
 	// -- Pause overlay (drawn last so it sits over everything) ---------------

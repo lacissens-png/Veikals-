@@ -1609,3 +1609,22 @@ bool ASOCharacter::IsTransactionToastActive() const
 	const UWorld* World = GetWorld();
 	return World && World->GetTimeSeconds() < TransactionToastExpireTime;
 }
+
+// ---------------------------------------------------------------------------
+// Legendary/Set drop toast
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::ShowLegendaryDropToast(const FString& Message, float Duration)
+{
+	LegendaryDropToastText = Message;
+	if (UWorld* World = GetWorld())
+	{
+		LegendaryDropToastExpireTime = World->GetTimeSeconds() + Duration;
+	}
+}
+
+bool ASOCharacter::IsLegendaryDropToastActive() const
+{
+	const UWorld* World = GetWorld();
+	return World && World->GetTimeSeconds() < LegendaryDropToastExpireTime;
+}

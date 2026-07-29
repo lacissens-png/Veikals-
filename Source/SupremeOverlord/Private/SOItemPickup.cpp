@@ -130,6 +130,17 @@ void ASOItemPickup::HandleOverlap(UPrimitiveComponent* /*OverlappedComp*/, AActo
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, PickupSFX, GetActorLocation());
 	}
+
+	if (CarriedItem && (CarriedItem->Rarity == ESOItemRarity::Legendary
+	                 || CarriedItem->Rarity == ESOItemRarity::Unique
+	                 || CarriedItem->Rarity == ESOItemRarity::Set))
+	{
+		const TCHAR* Kind = TEXT("LEGENDARY");
+		if (CarriedItem->Rarity == ESOItemRarity::Unique) Kind = TEXT("UNIQUE");
+		else if (CarriedItem->Rarity == ESOItemRarity::Set) Kind = TEXT("SET ITEM");
+		Picker->ShowLegendaryDropToast(FString::Printf(TEXT("%s ACQUIRED: %s"), Kind, *CarriedItem->DisplayName.ToString()));
+	}
+
 	OnPickedUp(Picker);
 	Destroy();
 }

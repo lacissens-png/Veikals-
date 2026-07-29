@@ -757,6 +757,20 @@ public:
 	const FString& GetTransactionToastText() const { return TransactionToastText; }
 
 	// -----------------------------------------------------------------------
+	// Legendary/Set drop toast — set by ASOItemPickup when a rare drop is
+	// picked up, for the Diablo-style "LEGENDARY DROPPED: X" HUD banner.
+	// -----------------------------------------------------------------------
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Loot")
+	void ShowLegendaryDropToast(const FString& Message, float Duration = 4.0f);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Loot")
+	bool IsLegendaryDropToastActive() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Loot")
+	const FString& GetLegendaryDropToastText() const { return LegendaryDropToastText; }
+
+	// -----------------------------------------------------------------------
 	// SFX slots for the new abilities.
 	// -----------------------------------------------------------------------
 
@@ -778,6 +792,9 @@ public:
 private:
 	FString TransactionToastText;
 	float   TransactionToastExpireTime = -1.0f;
+
+	FString LegendaryDropToastText;
+	float   LegendaryDropToastExpireTime = -1.0f;
 
 	FTimerHandle PrimaryAttackCooldownHandle;
 	bool bPrimaryAttackOnCooldown = false;

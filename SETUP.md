@@ -2047,6 +2047,26 @@ This pass wires all of them in:
 
 No new input bindings from this pass.
 
+## 65. Boss bar fix, boss phase indicator, and Legendary/Unique/Set drop banner
+
+**Bug fix**: the boss HP bar (§48) was filling using the *player's*
+own health percent (a stray `Pct` left over from the player HP bar
+higher up in `ASOHUD::DrawHUD`) instead of the boss's own `BossPct`,
+which was computed correctly but never actually used. The boss bar
+now genuinely tracks the boss's health.
+
+**New**: the boss name line now shows `"<Name>   (Phase N/3)"` next to
+the existing enrage tag/countdown, using `ASOBossCharacter::GetCurrentPhase()`.
+
+**New**: picking up a Legendary, Unique, or Set item now flashes a
+Diablo-style banner — `"LEGENDARY ACQUIRED: <name>"` — via
+`ASOCharacter::ShowLegendaryDropToast`, triggered from
+`ASOItemPickup::HandleOverlap`. This shares the same top-center toast
+stack as the achievement toast (§60) and the new vendor-transaction
+toast (§64): each block draws at a running `ToastY` cursor and pushes
+it down by its own height, so any subset that happens to fire at once
+stacks instead of overlapping.
+
 ### Updated input table
 
 | Key   | Action                          |
