@@ -111,7 +111,7 @@ bool USODodgeRollComponent::Roll(FVector CursorLocation, ASOCharacter* Caster)
 
 	if (Caster->HealthComponent)
 	{
-		Caster->HealthComponent->bInvulnerable = true;
+		Caster->HealthComponent->AddTemporaryInvulnerability();
 	}
 
 	const FVector FromLocation = Caster->GetActorLocation();
@@ -129,7 +129,7 @@ void USODodgeRollComponent::EndRoll()
 	{
 		if (Caster->HealthComponent)
 		{
-			Caster->HealthComponent->bInvulnerable = false;
+			Caster->HealthComponent->RemoveTemporaryInvulnerability();
 		}
 	}
 

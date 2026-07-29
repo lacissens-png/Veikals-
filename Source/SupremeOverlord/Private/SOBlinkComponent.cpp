@@ -29,7 +29,14 @@ void USOBlinkComponent::EndPlay(const EEndPlayReason::Type Reason)
 {
 	if (UWorld* World = GetWorld())
 	{
-		World->GetTimerManager().ClearTimer(InvulnHandle);
+		if (World->GetTimerManager().IsTimerActive(InvulnHandle))
+		{
+			World->GetTimerManager().ClearTimer(InvulnHandle);
+			// Cancelling the pending timer means ClearInvulnerability() will
+			// never fire to undo the increment Blink() added - do it here
+			// instead so the counter can't be left stuck above zero.
+			ClearInvulnerability();
+		}
 	}
 	Super::EndPlay(Reason);
 }
@@ -94,11 +101,22 @@ bool USOBlinkComponent::Blink(FVector CursorLocation, ASOCharacter* Caster)
 
 	if (InvulnerabilityDuration > 0.0f && Caster->HealthComponent)
 	{
-		// A blink mid-iframe would otherwise leave the flag stuck on.
-		GetWorld()->GetTimerManager().ClearTimer(InvulnHandle);
-
-		InvulnTarget = Caster->HealthComponent;
-		Caster->HealthComponent->bInvulnerable = true;
+		// Re-blinking while a previous invuln window is still running should
+		// refresh the timer to the new full duration, not stack a second
+		// AddTemporaryInvulnerability() on top - the eventual single
+		// ClearInvulnerability() call only removes one, so stacking here
+		// would leave the counter (and the character) stuck invulnerable
+		// forever. Only add a fresh increment if there's no pending timer to
+		// take over for.
+		if (GetWorld()->GetTimerManager().IsTimerActive(InvulnHandle))
+		{
+			GetWorld()->GetTimerManager().ClearTimer(InvulnHandle);
+		}
+		else
+		{
+			InvulnTarget = Caster->HealthComponent;
+			Caster->HealthComponent->AddTemporaryInvulnerability();
+		}
 
 		GetWorld()->GetTimerManager().SetTimer(
 			InvulnHandle,
@@ -118,7 +136,7 @@ void USOBlinkComponent::ClearInvulnerability()
 {
 	if (USOHealthComponent* Health = InvulnTarget.Get())
 	{
-		Health->bInvulnerable = false;
+		Health->RemoveTemporaryInvulnerability();
 	}
 	InvulnTarget.Reset();
 }

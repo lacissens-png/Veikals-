@@ -55,9 +55,32 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health", meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float StartingHealth = 0.0f;
 
-	/** When true, incoming damage is discarded. Useful for cinematics, iframes, or debug god-mode. */
+	/**
+	 * When true, incoming damage is discarded. Useful for cinematics or debug
+	 * god-mode. NOTE: gameplay systems granting a *temporary* i-frame window
+	 * (Dodge Roll, Blink, ...) should use AddTemporaryInvulnerability() /
+	 * RemoveTemporaryInvulnerability() instead of toggling this flag directly
+	 * - two independent timed sources both flipping the same bool would let
+	 * whichever one finishes first clear invulnerability out from under the
+	 * other's still-active window.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health")
 	bool bInvulnerable = false;
+
+	/**
+	 * Registers one temporary i-frame source (e.g. a Dodge Roll or Blink
+	 * window starting). Incoming damage is discarded while the count is above
+	 * zero. Always pair with a matching RemoveTemporaryInvulnerability() when
+	 * that source's window ends, regardless of how many other sources are
+	 * also active — the counter, not any single caller, decides when
+	 * invulnerability actually turns off.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health")
+	void AddTemporaryInvulnerability();
+
+	/** Ends one temporary i-frame source added via AddTemporaryInvulnerability(). No-op (clamped) if already at zero. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health")
+	void RemoveTemporaryInvulnerability();
 
 	/** Multiplier applied to all incoming damage (before clamping). 1.0 = normal, 0.5 = resistant, 2.0 = vulnerable. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Health", meta = (ClampMin = "0.0", UIMin = "0.0", UIMax = "10.0"))
@@ -144,4 +167,6 @@ private:
 	bool bIsDead = false;
 
 	float LastHitReactStrength = 0.5f;
+
+	int32 TemporaryInvulnerabilityCount = 0;
 };

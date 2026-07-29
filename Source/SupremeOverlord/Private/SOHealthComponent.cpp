@@ -28,7 +28,7 @@ void USOHealthComponent::BeginPlay()
 
 void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (bIsDead || bInvulnerable || Damage <= 0.0f)
+	if (bIsDead || bInvulnerable || TemporaryInvulnerabilityCount > 0 || Damage <= 0.0f)
 	{
 		return;
 	}
@@ -110,6 +110,16 @@ void USOHealthComponent::Kill(AController* InstigatedBy, AActor* DamageCauser)
 
 	// Bypass invulnerability by hand-writing the transition.
 	ApplyHealthDelta(-CurrentHealth, InstigatedBy, DamageCauser);
+}
+
+void USOHealthComponent::AddTemporaryInvulnerability()
+{
+	++TemporaryInvulnerabilityCount;
+}
+
+void USOHealthComponent::RemoveTemporaryInvulnerability()
+{
+	TemporaryInvulnerabilityCount = FMath::Max(0, TemporaryInvulnerabilityCount - 1);
 }
 
 void USOHealthComponent::ClampCurrentHealthToMax()

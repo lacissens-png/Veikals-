@@ -2569,6 +2569,43 @@ pure hit-detection and gameplay-feel rework of `PerformPrimaryAttack`.
   animation Blueprints can pick a different swing per combo stage once
   animations exist.
 
+## 79. Fixed shared invulnerability flag stomped by overlapping i-frames
+
+Follow-up "uzlabo visu" pass found a real bug while re-checking
+`SODodgeRollComponent` and `SOBlinkComponent`: both independently
+toggle `USOHealthComponent::bInvulnerable` as a plain bool to grant a
+timed i-frame window. Nothing stops a player from triggering both
+abilities with overlapping windows (Dodge Roll while a Blink's
+i-frame is still running, or vice versa) — whichever ability's timer
+finishes first sets `bInvulnerable = false` unconditionally, clearing
+invulnerability out from under the *other* ability's still-active
+window. The player becomes vulnerable mid-roll or mid-blink instead of
+staying safe for the full advertised duration.
+
+Fixed by adding a reference-counted alternative:
+`USOHealthComponent::AddTemporaryInvulnerability()` /
+`RemoveTemporaryInvulnerability()`, backed by a private
+`TemporaryInvulnerabilityCount`; damage is discarded while the count is
+above zero (`bInvulnerable` still works too, for cinematics/debug
+god-mode). Both `SODodgeRollComponent` and `SOBlinkComponent` now call
+these instead of touching the bool directly, so two overlapping
+sources compose correctly — whichever one finishes first only removes
+its own increment, and the other's window keeps the target safe until
+it, too, finishes.
+
+Fixing this also surfaced a second-order bug in the fix itself, caught
+before committing: `Blink()`'s existing "re-blinking mid-iframe
+refreshes the timer" logic used to `ClearTimer` the old countdown and
+unconditionally re-grant invulnerability — harmless with a plain bool,
+but with a counter it would silently add a second increment that the
+single eventual `ClearInvulnerability()` call could never fully undo,
+permanently stranding the character invulnerable. Fixed by only adding
+a fresh increment when no timer is currently pending; a re-blink while
+one is still running just extends the existing timer without stacking
+the count. `USOBlinkComponent::EndPlay()` was adjusted the same way,
+calling `ClearInvulnerability()` (not just cancelling the timer) if a
+window was still pending when the component is torn down.
+
 ### Updated input table
 
 | Key   | Action                          |

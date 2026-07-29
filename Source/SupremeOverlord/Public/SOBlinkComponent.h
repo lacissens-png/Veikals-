@@ -13,8 +13,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSOOnBlinked, FVector, FromLocation
  *
  * The destination is clamped to BlinkRange, snapped to the navmesh when one is
  * available, and validated with TeleportTo so the character never lands inside
- * geometry.  While InvulnerabilityDuration is running the owner's
- * USOHealthComponent::bInvulnerable is set, making the dash a defensive tool.
+ * geometry. While InvulnerabilityDuration is running, the owner's
+ * USOHealthComponent has a temporary invulnerability source registered via
+ * AddTemporaryInvulnerability() (not a direct bInvulnerable toggle, so it
+ * composes correctly with other i-frame sources like Dodge Roll), making the
+ * dash a defensive tool.
  */
 UCLASS(ClassGroup = "SupremeOverlord", meta = (BlueprintSpawnableComponent))
 class SUPREMEOVERLORD_API USOBlinkComponent : public UActorComponent
