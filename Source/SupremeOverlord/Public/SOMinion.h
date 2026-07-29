@@ -142,7 +142,7 @@ private:
 	int32 KillCount = 0;
 
 	UPROPERTY(Transient)
-	TObjectPtr<AActor> CurrentTarget;
+	TWeakObjectPtr<AActor> CurrentTarget;
 
 	AActor* FindBestTarget() const;
 

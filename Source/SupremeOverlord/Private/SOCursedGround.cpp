@@ -60,10 +60,10 @@ void ASOCursedGround::ApplyGroundEffects()
 
 	AController* InstigatorCtrl = nullptr;
 	AActor*      DamageCauser   = this;
-	if (ASOCharacter* Owner = OwnerCharacter.Get())
+	if (ASOCharacter* OwnerChar = OwnerCharacter.Get())
 	{
-		InstigatorCtrl = Owner->GetController();
-		DamageCauser   = Owner;
+		InstigatorCtrl = OwnerChar->GetController();
+		DamageCauser   = OwnerChar;
 	}
 
 	int32 Affected    = 0;

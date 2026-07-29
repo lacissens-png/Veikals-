@@ -35,7 +35,7 @@ void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage,
 
 	float ScaledDamage = bIgnoreResists ? Damage : (Damage * IncomingDamageMultiplier);
 
-	if (SODamageType && !bIgnoreResists && SODamageType->Category != ESODamageCategory::True)
+	if (SODamageType && !bIgnoreResists && SODamageType->Category != ESODamageCategory::TrueDamage)
 	{
 		ScaledDamage *= FMath::Max(0.0f, 1.0f - GetResistance(SODamageType->Category));
 	}

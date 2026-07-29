@@ -309,7 +309,7 @@ void USOQuestComponent::GrantReward(const FSOQuestReward& Reward)
 		{
 			if (Character->EquipmentComponent)
 			{
-				Character->EquipmentComponent->EquipItem(Item);
+				Character->EquipmentComponent->Equip(Item);
 			}
 		}
 	}

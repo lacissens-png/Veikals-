@@ -52,7 +52,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Talents")
 	bool CanUnlock(USOTalentNode* Node, FString& OutReason) const;
 
-	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Talents")
 	const TArray<TObjectPtr<USOTalentNode>>& GetUnlockedNodes() const { return UnlockedNodes; }
 
 	/** Called by ASOCharacter on level-up (and by save/load) to add points. */

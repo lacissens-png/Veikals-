@@ -108,7 +108,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Vendor")
 	bool IsPlayerInRange(ASOCharacter* Player) const { return PlayersInRange.Contains(Player); }
 
-	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Vendor")
 	const TArray<TWeakObjectPtr<ASOCharacter>>& GetPlayersInRange() const { return PlayersInRange; }
 
 private:

@@ -45,7 +45,7 @@ bool USOSummonComponent::SummonMinion(FVector TargetLocation, ASOCharacter* Cast
 	}
 	if (ManaCostPerSummon > 0.0f && Caster->ManaComponent)
 	{
-		if (!Caster->ManaComponent->UseMana(ManaCostPerSummon))
+		if (!Caster->ManaComponent->Consume(ManaCostPerSummon))
 		{
 			return false;
 		}
@@ -104,7 +104,7 @@ bool USOSummonComponent::ResurrectAtLocation(FVector CursorLocation, ASOCharacte
 	}
 	if (ManaCostPerResurrect > 0.0f && Caster->ManaComponent)
 	{
-		if (!Caster->ManaComponent->UseMana(ManaCostPerResurrect))
+		if (!Caster->ManaComponent->Consume(ManaCostPerResurrect))
 		{
 			return false;
 		}

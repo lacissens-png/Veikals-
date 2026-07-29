@@ -49,7 +49,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Equipment")
 	USOItemData* GetItemInSlot(ESOEquipSlot Slot) const;
 
-	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Equipment")
 	const TMap<ESOEquipSlot, TObjectPtr<USOItemData>>& GetAllEquipped() const { return EquippedItems; }
 
 	/**

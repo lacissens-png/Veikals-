@@ -53,7 +53,7 @@ bool USORealitySlashComponent::Cast(FVector CursorLocation, ASOCharacter* Caster
 
 	for (AActor* A : All)
 	{
-		ASOEnemyCharacter* Enemy = Cast<ASOEnemyCharacter>(A);
+		ASOEnemyCharacter* Enemy = ::Cast<ASOEnemyCharacter>(A);
 		if (!Enemy || !Enemy->IsAlive())
 		{
 			continue;

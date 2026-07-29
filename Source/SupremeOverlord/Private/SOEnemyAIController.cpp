@@ -81,13 +81,13 @@ void ASOEnemyAIController::EnterState(ESOEnemyAIState NewState)
 
 void ASOEnemyAIController::ThinkTick()
 {
-	ASOEnemyCharacter* Owner = Cast<ASOEnemyCharacter>(GetPawn());
-	if (!Owner)
+	ASOEnemyCharacter* EnemyOwner = Cast<ASOEnemyCharacter>(GetPawn());
+	if (!EnemyOwner)
 	{
 		return;
 	}
 
-	if (!Owner->IsAlive())
+	if (!EnemyOwner->IsAlive())
 	{
 		EnterState(ESOEnemyAIState::Dead);
 		if (UWorld* World = GetWorld())
@@ -104,20 +104,20 @@ void ASOEnemyAIController::ThinkTick()
 		return;
 	}
 
-	const float DistSq   = FVector::DistSquared(Owner->GetActorLocation(), Target->GetActorLocation());
-	const float SightSq  = FMath::Square(Owner->SightRadius);
-	const float LoseSq   = FMath::Square(Owner->LoseSightRadius);
-	const float AttackSq = FMath::Square(Owner->AttackRange);
+	const float DistSq   = FVector::DistSquared(EnemyOwner->GetActorLocation(), Target->GetActorLocation());
+	const float SightSq  = FMath::Square(EnemyOwner->SightRadius);
+	const float LoseSq   = FMath::Square(EnemyOwner->LoseSightRadius);
+	const float AttackSq = FMath::Square(EnemyOwner->AttackRange);
 
-	if (Owner->bFleeFromPlayer)
+	if (EnemyOwner->bFleeFromPlayer)
 	{
 		if (DistSq <= SightSq)
 		{
 			EnterState(ESOEnemyAIState::Fleeing);
 
-			const FVector AwayDir = (Owner->GetActorLocation() - Target->GetActorLocation()).GetSafeNormal2D();
-			const FVector FleeDir = AwayDir.IsNearlyZero() ? Owner->GetActorForwardVector() : AwayDir;
-			const FVector FleeDestination = Owner->GetActorLocation() + FleeDir * Owner->FleeDistance;
+			const FVector AwayDir = (EnemyOwner->GetActorLocation() - Target->GetActorLocation()).GetSafeNormal2D();
+			const FVector FleeDir = AwayDir.IsNearlyZero() ? EnemyOwner->GetActorForwardVector() : AwayDir;
+			const FVector FleeDestination = EnemyOwner->GetActorLocation() + FleeDir * EnemyOwner->FleeDistance;
 
 			MoveToLocation(FleeDestination, /*AcceptanceRadius=*/ 50.0f, /*bStopOnOverlap=*/ false, /*bUsePathfinding=*/ true);
 		}
@@ -130,9 +130,9 @@ void ASOEnemyAIController::ThinkTick()
 
 	if (bDrawDebug)
 	{
-		DrawDebugSphere(GetWorld(), Owner->GetActorLocation(), Owner->AttackRange, 16, FColor::Red,   false, ThinkInterval * 1.1f, 0, 1.5f);
-		DrawDebugSphere(GetWorld(), Owner->GetActorLocation(), Owner->SightRadius, 24, FColor::Yellow, false, ThinkInterval * 1.1f, 0, 1.0f);
-		DrawDebugLine  (GetWorld(), Owner->GetActorLocation(), Target->GetActorLocation(), FColor::Cyan, false, ThinkInterval * 1.1f, 0, 1.0f);
+		DrawDebugSphere(GetWorld(), EnemyOwner->GetActorLocation(), EnemyOwner->AttackRange, 16, FColor::Red,   false, ThinkInterval * 1.1f, 0, 1.5f);
+		DrawDebugSphere(GetWorld(), EnemyOwner->GetActorLocation(), EnemyOwner->SightRadius, 24, FColor::Yellow, false, ThinkInterval * 1.1f, 0, 1.0f);
+		DrawDebugLine  (GetWorld(), EnemyOwner->GetActorLocation(), Target->GetActorLocation(), FColor::Cyan, false, ThinkInterval * 1.1f, 0, 1.0f);
 	}
 
 	switch (CurrentState)
@@ -153,10 +153,10 @@ void ASOEnemyAIController::ThinkTick()
 		if (DistSq <= AttackSq)
 		{
 			EnterState(ESOEnemyAIState::Attacking);
-			DoAttack(Owner, Target);
+			DoAttack(EnemyOwner, Target);
 			break;
 		}
-		MoveToActor(Target, /*AcceptanceRadius=*/ Owner->AttackRange * 0.9f, /*bStopOnOverlap=*/ true, /*bUsePathfinding=*/ true);
+		MoveToActor(Target, /*AcceptanceRadius=*/ EnemyOwner->AttackRange * 0.9f, /*bStopOnOverlap=*/ true, /*bUsePathfinding=*/ true);
 		break;
 
 	case ESOEnemyAIState::Attacking:
@@ -175,7 +175,7 @@ void ASOEnemyAIController::ThinkTick()
 				MyPawn->SetActorRotation(FRotator(0.0f, DesiredRot.Yaw, 0.0f));
 			}
 		}
-		DoAttack(Owner, Target);
+		DoAttack(EnemyOwner, Target);
 		break;
 
 	case ESOEnemyAIState::Dead:
@@ -184,14 +184,14 @@ void ASOEnemyAIController::ThinkTick()
 	}
 }
 
-void ASOEnemyAIController::DoAttack(ASOEnemyCharacter* Owner, APawn* Target)
+void ASOEnemyAIController::DoAttack(ASOEnemyCharacter* EnemyOwner, APawn* Target)
 {
-	if (bAttackOnCooldown || !Owner || !Target)
+	if (bAttackOnCooldown || !EnemyOwner || !Target)
 	{
 		return;
 	}
 
-	if (Owner->PerformAttack(Target))
+	if (EnemyOwner->PerformAttack(Target))
 	{
 		bAttackOnCooldown = true;
 		if (UWorld* World = GetWorld())
@@ -199,7 +199,7 @@ void ASOEnemyAIController::DoAttack(ASOEnemyCharacter* Owner, APawn* Target)
 			World->GetTimerManager().SetTimer(
 				AttackCooldownHandle,
 				FTimerDelegate::CreateLambda([this]() { bAttackOnCooldown = false; }),
-				Owner->AttackCooldown,
+				EnemyOwner->AttackCooldown,
 				false);
 		}
 	}

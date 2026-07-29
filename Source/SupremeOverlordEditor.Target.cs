@@ -6,7 +6,7 @@ public class SupremeOverlordEditorTarget : TargetRules
 	public SupremeOverlordEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.Add("SupremeOverlord");
 	}

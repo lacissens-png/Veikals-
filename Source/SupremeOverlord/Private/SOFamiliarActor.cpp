@@ -54,16 +54,16 @@ void ASOFamiliarActor::Tick(float DeltaTime)
 
 	TimeAlive += DeltaTime;
 
-	ASOCharacter* Owner = OwnerCharacter.Get();
-	if (!Owner)
+	ASOCharacter* OwnerChar = OwnerCharacter.Get();
+	if (!OwnerChar)
 	{
 		return;
 	}
 
-	const FVector Forward = Owner->GetActorForwardVector();
-	const FVector Right   = Owner->GetActorRightVector();
+	const FVector Forward = OwnerChar->GetActorForwardVector();
+	const FVector Right   = OwnerChar->GetActorRightVector();
 
-	FVector TargetLocation = Owner->GetActorLocation()
+	FVector TargetLocation = OwnerChar->GetActorLocation()
 		+ Forward * FollowOffset.X
 		+ Right   * FollowOffset.Y
 		+ FVector(0.0f, 0.0f, FollowOffset.Z);
@@ -79,8 +79,8 @@ void ASOFamiliarActor::Tick(float DeltaTime)
 
 void ASOFamiliarActor::PerformZap()
 {
-	ASOCharacter* Owner = OwnerCharacter.Get();
-	if (!Owner || !Owner->IsAlive())
+	ASOCharacter* OwnerChar = OwnerCharacter.Get();
+	if (!OwnerChar || !OwnerChar->IsAlive())
 	{
 		return;
 	}
@@ -115,7 +115,7 @@ void ASOFamiliarActor::PerformZap()
 		? ZapDamageType
 		: TSubclassOf<UDamageType>(USODamageType::StaticClass());
 
-	UGameplayStatics::ApplyDamage(Target, ZapDamage, Owner->GetController(), this, DTClass);
+	UGameplayStatics::ApplyDamage(Target, ZapDamage, OwnerChar->GetController(), this, DTClass);
 
 	if (ZapSFX)
 	{

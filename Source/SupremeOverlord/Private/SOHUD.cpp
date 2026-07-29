@@ -943,7 +943,7 @@ void ASOHUD::DrawHUD()
 		{
 			const float BX = (ScreenW - BossBarSize.X) * 0.5f;
 			const float BY = BossBarTopOffset;
-			const float Pct = FMath::Clamp(Closest->HealthComponent->GetHealthPercent(), 0.0f, 1.0f);
+			const float BossPct = FMath::Clamp(Closest->HealthComponent->GetHealthPercent(), 0.0f, 1.0f);
 
 			{
 				FCanvasTileItem BorderItem(FVector2D(BX - Border, BY - Border),

@@ -53,7 +53,7 @@ USOItemData* USOEquipmentComponent::Unequip(ESOEquipSlot Slot)
 		return nullptr;
 	}
 
-	USOItemData* OldItem = nullptr;
+	TObjectPtr<USOItemData> OldItem = nullptr;
 	if (EquippedItems.RemoveAndCopyValue(Slot, OldItem))
 	{
 		OnSlotChanged.Broadcast(Slot, OldItem, nullptr);

@@ -24,6 +24,9 @@ protected:
 	/** Called every frame while "MoveTo" is held so hold-to-move works Diablo-style. */
 	void OnMoveToHeld();
 
+	/** Called when the "MoveTo" input action is released. */
+	void OnMoveToReleased();
+
 	/** Issues the actual navigation move to the given world location and spawns the click FX. */
 	void MovePawnToLocation(const FVector& WorldLocation);
 

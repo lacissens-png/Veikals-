@@ -15,6 +15,7 @@
 #include "SODifficultySubsystem.h"
 #include "SOHealthComponent.h"
 #include "SODialogueComponent.h"
+#include "SODialogueNode.h"
 #include "SODialogueNPC.h"
 #include "SOVendorNPC.h"
 
@@ -48,7 +49,7 @@ void ASOPlayerController::SetupInputComponent()
 
 	// Bind to the "MoveTo" action mapping (defined in DefaultInput.ini / Project Settings > Input).
 	InputComponent->BindAction("MoveTo", IE_Pressed,  this, &ASOPlayerController::OnMoveToPressed);
-	InputComponent->BindAction("MoveTo", IE_Released, this, [this]() { bMoveToHeld = false; });
+	InputComponent->BindAction("MoveTo", IE_Released, this, &ASOPlayerController::OnMoveToReleased);
 	InputComponent->BindAction("MoveTo", IE_Repeat,   this, &ASOPlayerController::OnMoveToHeld);
 
 	// Debug helper - defaults to the K key, remap under Project Settings > Input.
@@ -167,6 +168,11 @@ void ASOPlayerController::OnMoveToHeld()
 		// While held we re-issue the move without re-spawning the decal so we don't flood the world.
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.ImpactPoint);
 	}
+}
+
+void ASOPlayerController::OnMoveToReleased()
+{
+	bMoveToHeld = false;
 }
 
 void ASOPlayerController::CommandMoveTo(FVector WorldLocation)

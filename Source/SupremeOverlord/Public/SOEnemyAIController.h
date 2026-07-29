@@ -65,7 +65,7 @@ private:
 	APawn* ResolveTargetPawn() const;
 
 	void EnterState(ESOEnemyAIState NewState);
-	void DoAttack(ASOEnemyCharacter* Owner, APawn* Target);
+	void DoAttack(ASOEnemyCharacter* EnemyOwner, APawn* Target);
 
 	FTimerHandle ThinkTimerHandle;
 	FTimerHandle AttackCooldownHandle;

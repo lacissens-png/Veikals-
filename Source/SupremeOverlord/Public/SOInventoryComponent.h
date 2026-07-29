@@ -62,7 +62,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Inventory|Crafting")
 	bool Craft(USORecipeData* Recipe);
 
-	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Inventory")
 	const TMap<TObjectPtr<USOMaterialData>, int32>& GetAllMaterials() const { return Materials; }
 
 private:

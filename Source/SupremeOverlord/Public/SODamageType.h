@@ -14,7 +14,7 @@ enum class ESODamageCategory : uint8
 	Frost    UMETA(DisplayName = "Frost"),
 	Necrotic UMETA(DisplayName = "Necrotic"),
 	Holy     UMETA(DisplayName = "Holy"),
-	True     UMETA(DisplayName = "True")
+	TrueDamage UMETA(DisplayName = "True")
 };
 
 /**
