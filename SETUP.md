@@ -2688,6 +2688,44 @@ wired both into `SaveGameToSlotName`/`LoadGameFromSlotName` alongside
 `PrimaryAttackDamage`/`ShadowBoltBaseDamage`/`MovementSpeed`, which
 already followed this exact pattern.
 
+## 83. Completed the talent-effect ⇄ save-schema audit (mana regen was also lost)
+
+Section 82's `LifeDrainHealFraction` discovery implied a whole *class*
+of bug rather than a one-off, so this pass walked every entry in
+`ESOTalentEffect` and traced what field it mutates through to whether
+that field survives a save/load round-trip. One more gap turned up:
+
+- **`FlatManaRegen` → `USOManaComponent::RegenPerSecond` was never
+  saved.** Exactly the same failure as `LifeDrainHealFraction`:
+  talent points invested in mana regeneration silently reverted to the
+  10.0 base on every load, while the talent node itself stayed listed
+  as unlocked — so the player kept the spent point *and* lost the
+  benefit, with nothing in the UI to hint at it. Added
+  `USOSaveGame::ManaRegenPerSecond` and wired it into both the save and
+  load paths next to `MaxMana`/`CurrentMana`.
+
+The mapping is now complete and verified in both directions — all
+eight `ESOTalentEffect` entries have a symmetric Apply/Revert pair
+*and* a corresponding save field:
+
+| Talent effect | Mutates | Save field |
+|---|---|---|
+| `FlatMaxHealth` | `HealthComponent->MaxHealth` | `MaxHealth` |
+| `FlatMaxMana` | `ManaComponent->MaxMana` | `MaxMana` |
+| `FlatPrimaryDamage` | `PrimaryAttackDamage` | `PrimaryAttackDamage` |
+| `FlatShadowBoltDamage` | `ShadowBoltBaseDamage` | `ShadowBoltBaseDamage` |
+| `FlatLifeDrainHealFrac` | `LifeDrainHealFraction` | `LifeDrainHealFraction` |
+| `FlatManaRegen` | `ManaComponent->RegenPerSecond` | `ManaRegenPerSecond` |
+| `MultMovementSpeed` | `MovementSpeed` | `MovementSpeed` |
+| `FlatCritChance` | `CritChance` | `CritChance` |
+
+Worth keeping in mind for future work: **adding a new
+`ESOTalentEffect` entry means adding a matching `USOSaveGame` field**,
+or the talent silently stops persisting. The three cases above all
+failed the same way and none of them produced a crash, a warning, or
+any visible symptom other than a stat quietly being lower than the
+character sheet implied.
+
 ### Updated input table
 
 | Key   | Action                          |

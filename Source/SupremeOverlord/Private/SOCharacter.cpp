@@ -899,8 +899,9 @@ bool ASOCharacter::SaveGameToSlotName(const FString& Slot)
 
 	if (ManaComponent)
 	{
-		Save->MaxMana     = ManaComponent->MaxMana;
-		Save->CurrentMana = ManaComponent->GetCurrentMana();
+		Save->MaxMana            = ManaComponent->MaxMana;
+		Save->CurrentMana        = ManaComponent->GetCurrentMana();
+		Save->ManaRegenPerSecond = ManaComponent->RegenPerSecond;
 	}
 
 	Save->PrimaryAttackDamage  = PrimaryAttackDamage;
@@ -1057,7 +1058,8 @@ bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
 	}
 	if (ManaComponent)
 	{
-		ManaComponent->MaxMana = Save->MaxMana;
+		ManaComponent->MaxMana        = Save->MaxMana;
+		ManaComponent->RegenPerSecond = Save->ManaRegenPerSecond;
 		const float Delta = Save->CurrentMana - ManaComponent->GetCurrentMana();
 		if (Delta > 0.0f)
 		{

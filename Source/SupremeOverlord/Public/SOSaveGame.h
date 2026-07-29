@@ -155,6 +155,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Pools")
 	float CritChance = 0.05f;
 
+	/** Final, bonus-inclusive mana regen per second (base + FlatManaRegen talent nodes). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Pools")
+	float ManaRegenPerSecond = 10.0f;
+
 	// -- Equipment ------------------------------------------------------------
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Equipment")
