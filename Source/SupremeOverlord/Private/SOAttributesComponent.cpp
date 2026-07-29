@@ -117,6 +117,12 @@ void USOAttributesComponent::ApplyAttributeChange(ESOAttribute Attribute, int32 
 			{
 				Mana->Restore(MaxManaPerIntellect * Delta);
 			}
+			else
+			{
+				// A negative Delta (point removed/reallocated) can drop MaxMana
+				// below CurrentMana, otherwise leaving a lingering overmana shield.
+				Mana->ClampCurrentManaToMax();
+			}
 		}
 		break;
 
@@ -127,6 +133,10 @@ void USOAttributesComponent::ApplyAttributeChange(ESOAttribute Attribute, int32 
 			if (Delta > 0)
 			{
 				Health->Heal(MaxHealthPerVitality * Delta);
+			}
+			else
+			{
+				Health->ClampCurrentHealthToMax();
 			}
 		}
 		break;

@@ -112,6 +112,14 @@ void USOHealthComponent::Kill(AController* InstigatedBy, AActor* DamageCauser)
 	ApplyHealthDelta(-CurrentHealth, InstigatedBy, DamageCauser);
 }
 
+void USOHealthComponent::ClampCurrentHealthToMax()
+{
+	if (CurrentHealth > MaxHealth)
+	{
+		ApplyHealthDelta(MaxHealth - CurrentHealth, nullptr, nullptr);
+	}
+}
+
 void USOHealthComponent::Revive(float ReviveHealth)
 {
 	const float OldHealth = CurrentHealth;

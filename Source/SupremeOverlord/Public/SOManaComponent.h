@@ -71,6 +71,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Mana")
 	void RefillToMax();
 
+	/**
+	 * Call after mutating MaxMana downward (unequipping a mana-bonus item,
+	 * respec'ing away a mana talent, etc). Same overheal-style gap as
+	 * USOHealthComponent::ClampCurrentHealthToMax - MaxMana has no automatic
+	 * clamp of its own. No-op if CurrentMana is already at or below MaxMana.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Mana")
+	void ClampCurrentManaToMax();
+
 private:
 	void ApplyManaDelta(float Delta);
 

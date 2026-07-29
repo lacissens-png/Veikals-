@@ -122,6 +122,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health")
 	void Revive(float ReviveHealth = -1.0f);
 
+	/**
+	 * Call after mutating MaxHealth downward (unequipping a health-bonus item,
+	 * respec'ing away a health talent, etc). MaxHealth itself is a plain field
+	 * with no automatic clamp, so without this CurrentHealth can be left above
+	 * the new, lower MaxHealth - an unintended "overheal shield" that persists
+	 * until the next damage/heal event. No-op if CurrentHealth is already at
+	 * or below MaxHealth.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Health")
+	void ClampCurrentHealthToMax();
+
 private:
 	/** Applies the actual delta and broadcasts. Handles the death transition when Health hits 0. */
 	void ApplyHealthDelta(float Delta, AController* InstigatedBy, AActor* DamageCauser);

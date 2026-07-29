@@ -68,6 +68,14 @@ void USOManaComponent::RefillToMax()
 	}
 }
 
+void USOManaComponent::ClampCurrentManaToMax()
+{
+	if (CurrentMana > MaxMana)
+	{
+		ApplyManaDelta(MaxMana - CurrentMana);
+	}
+}
+
 void USOManaComponent::ApplyManaDelta(float Delta)
 {
 	const float OldMana = CurrentMana;

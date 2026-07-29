@@ -146,10 +146,14 @@ void USOEquipmentComponent::RecomputeAggregateStats()
 	if (USOHealthComponent* HP = Owner->HealthComponent)
 	{
 		HP->MaxHealth += (NewHealthBonus - AppliedMaxHealthBonus);
+		// Unequipping/swapping to a lower-bonus piece can drop MaxHealth below
+		// CurrentHealth; without this, that would linger as a free overheal.
+		HP->ClampCurrentHealthToMax();
 	}
 	if (USOManaComponent* MP = Owner->ManaComponent)
 	{
 		MP->MaxMana += (NewManaBonus - AppliedMaxManaBonus);
+		MP->ClampCurrentManaToMax();
 	}
 
 	if (AppliedSpeedMultiplier > KINDA_SMALL_NUMBER)

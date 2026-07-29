@@ -223,6 +223,9 @@ void USOTalentComponent::RevertNodeEffects(USOTalentNode* Node)
 			if (USOHealthComponent* HP = Owner->HealthComponent)
 			{
 				HP->MaxHealth = FMath::Max(1.0f, HP->MaxHealth - Effect.Magnitude);
+				// A respec dropping MaxHealth below the character's current
+				// health would otherwise leave a lingering overheal shield.
+				HP->ClampCurrentHealthToMax();
 			}
 			break;
 
@@ -230,6 +233,7 @@ void USOTalentComponent::RevertNodeEffects(USOTalentNode* Node)
 			if (USOManaComponent* MP = Owner->ManaComponent)
 			{
 				MP->MaxMana = FMath::Max(0.0f, MP->MaxMana - Effect.Magnitude);
+				MP->ClampCurrentManaToMax();
 			}
 			break;
 

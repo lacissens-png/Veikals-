@@ -2467,6 +2467,35 @@ found one real bug:
   stops (it did physically hit something solid), it just deals no
   damage to a friendly target instead of continuing to apply it.
 
+## 76. Overheal/overmana shield fix: MaxHealth/MaxMana never reclamped downward
+
+Audit of `USOTalentComponent`'s node-effect resolver and `USOTalentNode`
+led to spotting a systemic gap shared by three different systems:
+`USOHealthComponent::MaxHealth` and `USOManaComponent::MaxMana` are
+plain fields with no automatic reclamp of `CurrentHealth`/`CurrentMana`
+when they go down. Three real (not merely theoretical) paths can
+reduce them at runtime:
+
+- `USOEquipmentComponent::RecomputeAggregateStats()` - unequipping or
+  swapping to a lower-bonus armor piece.
+- `USOTalentComponent::RevertNodeEffects()` - respec'ing away a
+  `FlatMaxHealth`/`FlatMaxMana` talent node.
+- `USOAttributesComponent`'s Vitality/Intellect allocation - a negative
+  `Delta` (a point removed/reallocated) shrinking the pool.
+
+Without a reclamp, a character at or near full health/mana when one of
+these fires would be left with `CurrentHealth > MaxHealth` (or the
+mana equivalent) - a lingering overheal "shield" that persists,
+visually and functionally (harder to kill, more free spell-slinging),
+until the next unrelated damage/heal/consume event happens to
+re-clamp it. Added `USOHealthComponent::ClampCurrentHealthToMax()` and
+`USOManaComponent::ClampCurrentManaToMax()` (both no-ops if already
+within range) and called them at all three sites. Every other
+`MaxHealth`/`MaxMana` mutation site in the codebase was checked too -
+they either only ever increase the pool, or run before
+`Super::BeginPlay()`/`Revive()` has established `CurrentHealth` in the
+first place, so they needed no change.
+
 ### Updated input table
 
 | Key   | Action                          |
