@@ -2216,6 +2216,32 @@ Content Browser → **Create Blueprint Class** if you want a visual.
 3. Press **N** to summon, **A** to cycle if more than one is
    recruited, **D** to dismiss.
 
+## 68. Movement fixes: speed buffs surviving Slow/Frozen, Dodge Roll canceling stale moves
+
+A focused audit of movement + attack code (player move/attack, enemy
+attack, Dodge Roll, Blink) found two real bugs, both in
+`SOStatusEffectComponent.cpp` and `SODodgeRollComponent.cpp`:
+
+- **Equipment/talent/elite speed bonuses were silently erased the
+  moment a Slow or Frozen effect wore off.** `USOStatusEffectComponent`
+  cached `BaseWalkSpeed` exactly once, in `BeginPlay()` — so any speed
+  change picked up *after* spawn (a +10% speed armor piece, a talent,
+  an Elite "Swift" affix) was invisible to the debuff system. The
+  instant a Slow/Frozen expired, `ApplyMovementModifiers()` reset
+  `MaxWalkSpeed` back to that stale spawn-time value, quietly
+  discarding the bonus. Fixed by snapshotting `BaseWalkSpeed` lazily —
+  only on the transition from "no movement debuff" into
+  Frozen/Slowed — so it always captures whatever the *current*
+  un-debuffed speed actually is.
+- **Dodge Roll didn't cancel an active click-to-move order before
+  dashing.** The roll directly overwrites `Velocity` every tick, but
+  if the player was still mid-move when Space was pressed, the
+  PathFollowing/CharacterMovementComponent kept steering `Acceleration`
+  toward the old destination on its own tick, which could bend the
+  roll off its intended direction. `Roll()` now calls
+  `Caster->GetController()->StopMovement()` before starting the dash,
+  mirroring how `HandleDeath` already cancels movement on death.
+
 ### Updated input table
 
 | Key   | Action                          |

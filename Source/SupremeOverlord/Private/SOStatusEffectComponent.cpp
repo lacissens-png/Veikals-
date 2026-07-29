@@ -11,20 +11,6 @@ USOStatusEffectComponent::USOStatusEffectComponent()
 	PrimaryComponentTick.TickInterval = 0.05f; // 20 Hz is fine for status ticking
 }
 
-void USOStatusEffectComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// Cache the owner's base walk speed so we can restore it after movement debuffs.
-	if (ACharacter* Char = Cast<ACharacter>(GetOwner()))
-	{
-		if (UCharacterMovementComponent* Move = Char->GetCharacterMovement())
-		{
-			BaseWalkSpeed = Move->MaxWalkSpeed;
-		}
-	}
-}
-
 void USOStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                               FActorComponentTickFunction* ThisTickFunction)
 {
@@ -229,16 +215,27 @@ void USOStatusEffectComponent::ApplyMovementModifiers()
 		return;
 	}
 
-	float TargetSpeed = BaseWalkSpeed;
+	const bool bDebuffed = HasEffect(ESOStatusEffectType::Frozen) || HasEffect(ESOStatusEffectType::Slowed);
 
-	if (HasEffect(ESOStatusEffectType::Frozen))
+	if (bDebuffed)
 	{
-		TargetSpeed = 0.0f;
-	}
-	else if (HasEffect(ESOStatusEffectType::Slowed))
-	{
-		TargetSpeed = BaseWalkSpeed * (1.0f - SlowFraction);
-	}
+		// Snapshot the current (un-debuffed) speed only on the transition into
+		// Frozen/Slowed — capturing it here (rather than once at BeginPlay)
+		// means any equipment/talent/elite speed change picked up since the
+		// last debuff still restores correctly when this one wears off.
+		if (!bMovementModifierActive)
+		{
+			BaseWalkSpeed           = Move->MaxWalkSpeed;
+			bMovementModifierActive = true;
+		}
 
-	Move->MaxWalkSpeed = TargetSpeed;
+		Move->MaxWalkSpeed = HasEffect(ESOStatusEffectType::Frozen)
+			? 0.0f
+			: BaseWalkSpeed * (1.0f - SlowFraction);
+	}
+	else if (bMovementModifierActive)
+	{
+		Move->MaxWalkSpeed      = BaseWalkSpeed;
+		bMovementModifierActive = false;
+	}
 }

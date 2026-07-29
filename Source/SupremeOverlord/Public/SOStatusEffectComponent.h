@@ -68,7 +68,6 @@ class SUPREMEOVERLORD_API USOStatusEffectComponent : public UActorComponent
 public:
 	USOStatusEffectComponent();
 
-	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -150,8 +149,17 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category = "StatusEffects", Transient)
 	TArray<FSOStatusEffect> ActiveEffects;
 
-	/** Walk speed cached from the CharacterMovementComponent on BeginPlay. */
+	/**
+	 * Un-debuffed walk speed, snapshotted from the CharacterMovementComponent
+	 * the moment Frozen/Slowed first becomes active (not at BeginPlay) — so
+	 * any equipment/talent/elite speed change acquired *after* that snapshot
+	 * still restores correctly when the debuff wears off, instead of always
+	 * resetting to a value frozen at spawn time.
+	 */
 	float BaseWalkSpeed = 0.0f;
+
+	/** True while BaseWalkSpeed holds a live snapshot (i.e. Frozen or Slowed is currently applying). */
+	bool bMovementModifierActive = false;
 
 	FSOStatusEffect* FindEffect(ESOStatusEffectType Type);
 	void ApplyMovementModifiers();

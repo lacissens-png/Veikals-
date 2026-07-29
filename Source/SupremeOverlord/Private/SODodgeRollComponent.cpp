@@ -2,6 +2,7 @@
 
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Controller.h"
 #include "SOCharacter.h"
 #include "SOHealthComponent.h"
 #include "SOManaComponent.h"
@@ -91,6 +92,14 @@ bool USODodgeRollComponent::Roll(FVector CursorLocation, ASOCharacter* Caster)
 	if (ManaCost > 0.0f)
 	{
 		Caster->ManaComponent->Consume(ManaCost);
+	}
+
+	// Cancel any in-flight click-to-move order — otherwise the PathFollowing/
+	// CharacterMovementComponent keeps steering Acceleration toward the old
+	// destination on its own tick and can bend the roll's velocity off course.
+	if (AController* Controller = Caster->GetController())
+	{
+		Controller->StopMovement();
 	}
 
 	RollingCaster        = Caster;
