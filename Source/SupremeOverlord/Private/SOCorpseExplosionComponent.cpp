@@ -97,8 +97,16 @@ bool USOCorpseExplosionComponent::Cast(FVector CursorLocation, ASOCharacter* Cas
 			continue;
 		}
 
-		const float Damage = Enemy->HealthComponent->MaxHealth * HPFraction;
+		// Same per-target crit roll pattern as Primary Attack/Life Drain -
+		// each enemy caught in the blast gets its own independent chance.
+		const bool  bCrit  = Caster->RollCriticalHit();
+		const float Damage = Enemy->HealthComponent->MaxHealth * HPFraction * (bCrit ? Caster->GetCritDamageMultiplier() : 1.0f);
 		UGameplayStatics::ApplyDamage(Enemy, Damage, InstigatorCtrl, Caster, USODamageType::StaticClass());
+
+		if (bCrit)
+		{
+			Caster->OnCriticalHit.Broadcast(Enemy, Damage);
+		}
 
 		++EnemiesHit;
 		TotalDamage += Damage;

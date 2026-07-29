@@ -817,7 +817,17 @@ void ASOCharacter::CastLifeDrain()
 		}
 		UniqueHitActors.Add(HitActor);
 
-		TotalDamage += UGameplayStatics::ApplyDamage(HitActor, LifeDrainDamage, InstigatorController, this, DTClass);
+		// Same per-target crit roll pattern as Primary Attack - each enemy
+		// caught in the drain gets its own independent chance.
+		const bool  bCrit  = RollCriticalHit();
+		const float Damage = LifeDrainDamage * (bCrit ? CritDamageMultiplier : 1.0f);
+		const float Applied = UGameplayStatics::ApplyDamage(HitActor, Damage, InstigatorController, this, DTClass);
+		TotalDamage += Applied;
+
+		if (bCrit)
+		{
+			OnCriticalHit.Broadcast(HitActor, Applied);
+		}
 	}
 
 	float HealedAmount = 0.0f;

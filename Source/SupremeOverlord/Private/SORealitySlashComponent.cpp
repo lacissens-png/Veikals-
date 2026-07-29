@@ -90,7 +90,16 @@ bool USORealitySlashComponent::Cast(FVector CursorLocation, ASOCharacter* Caster
 			? FallbackDamageType
 			: TSubclassOf<UDamageType>(USORealitySlashDamageType::StaticClass());
 
-		UGameplayStatics::ApplyDamage(Target, BossFallbackDamage, InstigatorCtrl, Caster, DTClass);
+		// The instant-kill branch below can't meaningfully "crit" - only the
+		// boss/elite fallback-damage path is a real crit candidate.
+		const bool  bCrit  = Caster->RollCriticalHit();
+		const float Damage = BossFallbackDamage * (bCrit ? Caster->GetCritDamageMultiplier() : 1.0f);
+		UGameplayStatics::ApplyDamage(Target, Damage, InstigatorCtrl, Caster, DTClass);
+
+		if (bCrit)
+		{
+			Caster->OnCriticalHit.Broadcast(Target, Damage);
+		}
 	}
 	else if (Target->HealthComponent)
 	{

@@ -2639,6 +2639,23 @@ damage-shape questions (Reality Slash is already an instant-kill,
 AoE abilities would need the same "one roll per target vs. one roll
 per cast" design decision Primary Attack/Shadow Bolt just settled).
 
+## 81. Extended Critical Hits to Life Drain, Corpse Explosion, Reality Slash
+
+Follow-up to section 80 — wired the remaining "bread and butter" AoE
+abilities into the crit system, settling the per-target-vs-per-cast
+question noted above:
+
+- **Life Drain** and **Corpse Explosion** both hit multiple enemies via
+  an overlap query, so they follow Primary Attack's per-target roll
+  pattern — every enemy caught in the drain/blast gets its own
+  independent crit chance. Corpse Explosion's damage is a percent of
+  the target's MaxHealth rather than a flat number, but the same
+  multiplier composes fine on top of that.
+- **Reality Slash** only rolls a crit on its boss/elite
+  `BossFallbackDamage` branch — the other branch is an unconditional
+  instant-kill via `HealthComponent->Kill()`, which can't meaningfully
+  "crit" (there's no harder-than-dead).
+
 ### Updated input table
 
 | Key   | Action                          |
