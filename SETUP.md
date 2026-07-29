@@ -2161,13 +2161,43 @@ Below the attribute panel: `"Vassal: <Name> [HP%]   (D: dismiss)"`
 while one is active, or `"Vassal ready: <Name>   (N: summon, A: cycle)"`
 once at least one vassal is recruited but none is summoned.
 
+### Recruitment hooks (native — no BP wiring needed)
+
+Two of the systems that already grant things now also grant vassals
+directly, so you don't need a BP event for the common cases:
+
+- **`FSOQuestReward::VassalReward`** — a soft `USOVassalData` field
+  alongside `XP`/`Gold`/`ItemReward`. `USOQuestComponent::GrantReward`
+  (`Private/SOQuestComponent.cpp`) recruits it automatically when the
+  quest completes.
+- **`FSODialogueChoice::VassalReward`** — same idea on a dialogue
+  choice. `USODialogueComponent::SelectChoice` recruits it the moment
+  the player picks that choice (the component now tracks
+  `CurrentParticipant`, set in `StartDialogue`, so it knows who to
+  grant it to).
+
+For anything else (a boss-defeat hook, a cutscene, a trigger volume),
+call `SOCharacter->VassalComponent->RecruitVassal(Data)` directly —
+it's `BlueprintCallable` too.
+
+### Example vassal recipes
+
+Concrete starting points for the first few `USOVassalData` assets —
+create these in the Content Browser (`ActorClass` = `ASOVassalActor`,
+or a BP subclass with a distinct mesh):
+
+| Asset name | VassalName | MaxHealth | AttackDamage | BuffType | BuffMagnitude | Flavor |
+|---|---|---|---|---|---|---|
+| `DA_Vassal_Aurelion` | Aurelion, Ember Sentinel | 450 | 25 | DamageReduction | 0.20 | A stoic guardian who shields the Overlord from harm |
+| `DA_Vassal_Nyx` | Nyx, the Silent Fang | 220 | 35 | AttackSpeed | 0.20 | A swift assassin whose presence quickens every strike |
+| `DA_Vassal_Grimjaw` | Grimjaw, Iron Warden | 600 | 45 | None | 0.0 | Raw muscle with no buff — recruited for the fight itself, not the aura |
+
 ### Setup
 
-1. Create a `USOVassalData` asset per companion; assign `ActorClass`
-   to `ASOVassalActor` (or a BP subclass with a distinct mesh).
-2. Call `SOCharacter->VassalComponent->RecruitVassal(Data)` from a
-   dialogue node's BP event, a quest reward hook, or anywhere else
-   the game should grant one.
+1. Create the `USOVassalData` assets above (or your own).
+2. Wire recruitment: set `VassalReward` on a quest's reward or a
+   dialogue choice, or call `RecruitVassal` directly for anything
+   else.
 3. Press **N** to summon, **A** to cycle if more than one is
    recruited, **D** to dismiss.
 

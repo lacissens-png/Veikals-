@@ -4,6 +4,8 @@
 #include "Engine/DataAsset.h"
 #include "SODialogueNode.generated.h"
 
+class USOVassalData;
+
 /**
  * One player-choice option inside a dialogue node.
  * NextNode null means the conversation ends after this choice is picked.
@@ -19,6 +21,10 @@ struct FSODialogueChoice
 	/** Node to advance to when this choice is selected. Null = end dialogue. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
 	TSoftObjectPtr<USODialogueNode> NextNode;
+
+	/** Optional vassal to recruit when this choice is selected — see USOVassalComponent::RecruitVassal. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
+	TSoftObjectPtr<USOVassalData> VassalReward;
 };
 
 /**

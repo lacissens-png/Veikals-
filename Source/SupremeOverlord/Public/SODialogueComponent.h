@@ -80,6 +80,9 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<USODialogueNode> CurrentNode;
 
+	UPROPERTY(Transient)
+	TWeakObjectPtr<ASOCharacter> CurrentParticipant;
+
 	bool bActive = false;
 
 	void SetCurrentNode(USODialogueNode* Node);

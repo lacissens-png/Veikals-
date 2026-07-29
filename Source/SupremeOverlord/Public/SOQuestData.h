@@ -5,6 +5,7 @@
 #include "SOQuestData.generated.h"
 
 class USOItemData;
+class USOVassalData;
 
 UENUM(BlueprintType)
 enum class ESOQuestObjectiveType : uint8
@@ -66,6 +67,10 @@ struct FSOQuestReward
 	/** Optional item to auto-equip on completion. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
 	TSoftObjectPtr<USOItemData> ItemReward;
+
+	/** Optional vassal to recruit on completion — see USOVassalComponent::RecruitVassal. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
+	TSoftObjectPtr<USOVassalData> VassalReward;
 };
 
 /**

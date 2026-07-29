@@ -2,6 +2,8 @@
 
 #include "SOCharacter.h"
 #include "SODialogueNode.h"
+#include "SOVassalComponent.h"
+#include "SOVassalData.h"
 
 USODialogueComponent::USODialogueComponent()
 {
@@ -15,7 +17,8 @@ void USODialogueComponent::StartDialogue(ASOCharacter* Participant)
 		return;
 	}
 
-	bActive = true;
+	bActive           = true;
+	CurrentParticipant = Participant;
 	SetCurrentNode(EntryNode);
 
 	OnDialogueStarted.Broadcast(CurrentNode);
@@ -44,6 +47,21 @@ void USODialogueComponent::SelectChoice(int32 ChoiceIndex)
 	}
 
 	const FSODialogueChoice& Chosen = Choices[ChoiceIndex];
+
+	if (!Chosen.VassalReward.IsNull())
+	{
+		if (ASOCharacter* Participant = CurrentParticipant.Get())
+		{
+			if (USOVassalData* Vassal = Chosen.VassalReward.LoadSynchronous())
+			{
+				if (Participant->VassalComponent)
+				{
+					Participant->VassalComponent->RecruitVassal(Vassal);
+				}
+			}
+		}
+	}
+
 	USODialogueNode* Next = Chosen.NextNode.LoadSynchronous();
 
 	if (!Next)
@@ -58,8 +76,9 @@ void USODialogueComponent::SelectChoice(int32 ChoiceIndex)
 
 void USODialogueComponent::EndDialogue()
 {
-	bActive     = false;
-	CurrentNode = nullptr;
+	bActive            = false;
+	CurrentNode        = nullptr;
+	CurrentParticipant = nullptr;
 	OnDialogueEnded.Broadcast();
 	OnDialogueEndedBP();
 }

@@ -11,6 +11,8 @@
 #include "SOInventoryComponent.h"
 #include "SOItemData.h"
 #include "SOMaterialData.h"
+#include "SOVassalComponent.h"
+#include "SOVassalData.h"
 
 // ---------------------------------------------------------------------------
 // FSOActiveQuest helpers
@@ -324,6 +326,17 @@ void USOQuestComponent::GrantReward(const FSOQuestReward& Reward)
 			if (Character->EquipmentComponent)
 			{
 				Character->EquipmentComponent->Equip(Item);
+			}
+		}
+	}
+
+	if (!Reward.VassalReward.IsNull())
+	{
+		if (USOVassalData* Vassal = Reward.VassalReward.LoadSynchronous())
+		{
+			if (Character->VassalComponent)
+			{
+				Character->VassalComponent->RecruitVassal(Vassal);
 			}
 		}
 	}
