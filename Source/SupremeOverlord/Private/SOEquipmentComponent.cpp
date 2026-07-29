@@ -189,7 +189,7 @@ bool USOEquipmentComponent::SocketGem(ESOEquipSlot Slot, USOGemData* Gem)
 
 	FSOItemAffix Bonus;
 	Bonus.Stat        = Gem->Stat;
-	Bonus.Value       = Gem->Value;
+	Bonus.Value       = Gem->GetEffectiveValue();
 	Bonus.Description = Gem->DisplayName.ToString();
 
 	USOLootRoller::ApplyAffix(Item, Bonus);

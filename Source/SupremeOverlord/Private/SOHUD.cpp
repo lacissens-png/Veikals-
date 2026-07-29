@@ -31,9 +31,11 @@
 #include "SOCorruptionComponent.h"
 #include "SODifficultySubsystem.h"
 #include "SODodgeRollComponent.h"
+#include "SOEliteComponent.h"
 #include "SOEquipmentComponent.h"
 #include "SORealitySlashComponent.h"
 #include "SOSummonComponent.h"
+#include "SOTalentComponent.h"
 #include "SOWaypoint.h"
 #include "SOWaypointComponent.h"
 #include "SOTrap.h"
@@ -284,6 +286,11 @@ void ASOHUD::DrawHUD()
 				DrawLine(FString::Printf(TEXT("Unspent points: %d"), Unspent), UnspentPointsColor);
 			}
 
+			if (SO->TalentComponent && SO->TalentComponent->GetTalentPoints() > 0)
+			{
+				DrawLine(FString::Printf(TEXT("Talent points: %d   (P: respec)"), SO->TalentComponent->GetTalentPoints()), UnspentPointsColor);
+			}
+
 			if (SO->EquipmentComponent)
 			{
 				const TArray<FString>& SetBonuses = SO->EquipmentComponent->GetActiveSetBonusDescriptions();
@@ -353,7 +360,7 @@ void ASOHUD::DrawHUD()
 		USOWeaponData* Weapon = SO->GetEquippedWeapon();
 
 		const FString WeaponText = Weapon
-			? FString::Printf(TEXT("%s"), *Weapon->DisplayName.ToString())
+			? FString::Printf(TEXT("%s (%s)"), *Weapon->DisplayName.ToString(), *GetWeaponTypeLabel(Weapon->WeaponType))
 			: FString(TEXT("Unarmed"));
 
 		const FLinearColor LabelColor = Weapon ? Weapon->GetRarityColor() : FLinearColor(0.6f, 0.6f, 0.6f, 1.0f);
@@ -1079,7 +1086,18 @@ void ASOHUD::DrawHUD()
 				{
 					continue;
 				}
-				const FLinearColor Color = A->IsA(ASOBossCharacter::StaticClass()) ? MinimapBossColor : MinimapEnemyColor;
+				FLinearColor Color = MinimapEnemyColor;
+				if (A->IsA(ASOBossCharacter::StaticClass()))
+				{
+					Color = MinimapBossColor;
+				}
+				else if (const USOEliteComponent* Elite = Enemy->FindComponentByClass<USOEliteComponent>())
+				{
+					if (Elite->IsElite())
+					{
+						Color = Elite->EliteAuraColor;
+					}
+				}
 				DrawMinimapDot(Canvas, MMOrigin, WorldToMinimap(Enemy->GetActorLocation()), Color);
 			}
 		}
@@ -1375,6 +1393,22 @@ void ASOHUD::DrawHUD()
 		Canvas->DrawItem(Toast);
 	}
 
+	// -- Vendor transaction toast (top-center, brief) -------------------------
+	if (SO->IsTransactionToastActive() && MediumFont)
+	{
+		const FString& ToastText = SO->GetTransactionToastText();
+
+		float TW = 0.0f, TH = 0.0f;
+		Canvas->TextSize(MediumFont, ToastText, TW, TH, 1.0f, 1.0f);
+
+		FCanvasTextItem Toast(FVector2D((ScreenW - TW) * 0.5f, 108.0f),
+		                      FText::FromString(ToastText),
+		                      MediumFont,
+		                      FLinearColor(0.75f, 0.95f, 0.55f, 1.0f));
+		Toast.EnableShadow(FLinearColor::Black);
+		Canvas->DrawItem(Toast);
+	}
+
 	// -- Pause overlay (drawn last so it sits over everything) ---------------
 	if (bShowPauseOverlay && UGameplayStatics::IsGamePaused(this))
 	{
@@ -1528,4 +1562,18 @@ void ASOHUD::DrawMinimapDot(UCanvas* InCanvas,
 	                    Color);
 	Dot.BlendMode = SE_BLEND_Translucent;
 	InCanvas->DrawItem(Dot);
+}
+
+FString ASOHUD::GetWeaponTypeLabel(ESOWeaponType Type)
+{
+	switch (Type)
+	{
+	case ESOWeaponType::Sword: return TEXT("Sword");
+	case ESOWeaponType::Axe:   return TEXT("Axe");
+	case ESOWeaponType::Mace:  return TEXT("Mace");
+	case ESOWeaponType::Staff: return TEXT("Staff");
+	case ESOWeaponType::Wand:  return TEXT("Wand");
+	case ESOWeaponType::Orb:   return TEXT("Orb");
+	default:                   return TEXT("Weapon");
+	}
 }

@@ -1590,3 +1590,22 @@ bool ASOCharacter::RespecTalents()
 
 	return true;
 }
+
+// ---------------------------------------------------------------------------
+// Vendor transaction toast
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::ShowTransactionToast(const FString& Message, float Duration)
+{
+	TransactionToastText = Message;
+	if (UWorld* World = GetWorld())
+	{
+		TransactionToastExpireTime = World->GetTimeSeconds() + Duration;
+	}
+}
+
+bool ASOCharacter::IsTransactionToastActive() const
+{
+	const UWorld* World = GetWorld();
+	return World && World->GetTimeSeconds() < TransactionToastExpireTime;
+}

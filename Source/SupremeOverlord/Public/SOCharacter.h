@@ -743,6 +743,20 @@ public:
 	bool RespecTalents();
 
 	// -----------------------------------------------------------------------
+	// Vendor transaction toast — set by ASOVendorNPC on purchase/sellback so
+	// the HUD can flash a brief "Bought/Sold X for Yg" confirmation.
+	// -----------------------------------------------------------------------
+
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Vendor")
+	void ShowTransactionToast(const FString& Message, float Duration = 2.5f);
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Vendor")
+	bool IsTransactionToastActive() const;
+
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Vendor")
+	const FString& GetTransactionToastText() const { return TransactionToastText; }
+
+	// -----------------------------------------------------------------------
 	// SFX slots for the new abilities.
 	// -----------------------------------------------------------------------
 
@@ -762,6 +776,9 @@ public:
 	TObjectPtr<class USoundBase> RespecSFX;
 
 private:
+	FString TransactionToastText;
+	float   TransactionToastExpireTime = -1.0f;
+
 	FTimerHandle PrimaryAttackCooldownHandle;
 	bool bPrimaryAttackOnCooldown = false;
 

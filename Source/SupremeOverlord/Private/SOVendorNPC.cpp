@@ -127,6 +127,7 @@ bool ASOVendorNPC::TryBuyNext(ASOCharacter* Buyer)
 		}
 		StockCursor = (Idx + 1) % Stock.Num();
 		OnPurchase.Broadcast(Buyer, Row.Item, Row.Price);
+		Buyer->ShowTransactionToast(FString::Printf(TEXT("Bought %s for %dg"), *Row.Item->DisplayName.ToString(), Row.Price));
 		return true;
 	}
 	return false;
@@ -154,5 +155,6 @@ bool ASOVendorNPC::TrySellCurrentWeapon(ASOCharacter* Seller)
 	Seller->AddGold(Price);
 
 	OnSellback.Broadcast(Seller, Weapon, Price);
+	Seller->ShowTransactionToast(FString::Printf(TEXT("Sold %s for %dg"), *Weapon->DisplayName.ToString(), Price));
 	return true;
 }

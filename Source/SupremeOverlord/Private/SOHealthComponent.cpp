@@ -2,6 +2,8 @@
 
 #include "GameFramework/Actor.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/Pawn.h"
+#include "SOStatusEffectComponent.h"
 
 USOHealthComponent::USOHealthComponent()
 {
@@ -38,6 +40,20 @@ void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage,
 	if (SODamageType && !bIgnoreResists && SODamageType->Category != ESODamageCategory::TrueDamage)
 	{
 		ScaledDamage *= FMath::Max(0.0f, 1.0f - GetResistance(SODamageType->Category));
+	}
+
+	// Shocked (defender) / Cursed (attacker) are combat-state multipliers, not
+	// elemental resistances — they apply on top regardless of damage category.
+	if (const USOStatusEffectComponent* DefenderStatus = GetOwner() ? GetOwner()->FindComponentByClass<USOStatusEffectComponent>() : nullptr)
+	{
+		ScaledDamage *= DefenderStatus->GetIncomingDamageMultiplier();
+	}
+
+	APawn* InstigatorPawn      = InstigatedBy ? InstigatedBy->GetPawn() : nullptr;
+	AActor* AttackerCandidate  = DamageCauser ? DamageCauser : static_cast<AActor*>(InstigatorPawn);
+	if (const USOStatusEffectComponent* AttackerStatus = AttackerCandidate ? AttackerCandidate->FindComponentByClass<USOStatusEffectComponent>() : nullptr)
+	{
+		ScaledDamage *= AttackerStatus->GetOutgoingDamageMultiplier();
 	}
 
 	if (ScaledDamage <= 0.0f)

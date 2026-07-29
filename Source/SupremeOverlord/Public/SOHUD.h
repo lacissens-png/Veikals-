@@ -4,6 +4,9 @@
 #include "GameFramework/HUD.h"
 #include "SOHUD.generated.h"
 
+enum class ESOWeaponType : uint8;
+
+
 /**
  * Minimal Canvas-drawn HUD:
  *  - HP bar and numeric readout in the bottom-left
@@ -408,4 +411,7 @@ private:
 	                    const FVector2D& MinimapOriginPx,
 	                    const FVector2D& OriginPx,
 	                    const FLinearColor& Color) const;
+
+	/** Short display label for a weapon type, e.g. "Axe", "Staff" — used in the weapon HUD label. */
+	static FString GetWeaponTypeLabel(ESOWeaponType Type);
 };

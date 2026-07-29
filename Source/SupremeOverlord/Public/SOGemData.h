@@ -42,7 +42,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gem")
 	ESOAffixStat Stat = ESOAffixStat::PrimaryDamage;
 
-	/** Magnitude applied on socket — same units as FSOItemAffix::Value (flat for damage/health/mana, fractional for speed/reduction/attack speed). */
+	/** Base magnitude before the Tier multiplier — same units as FSOItemAffix::Value (flat for damage/health/mana, fractional for speed/reduction/attack speed). */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gem")
 	float Value = 5.0f;
+
+	/** Value scaled by Tier (Chipped = 0.5x ... Perfect = 2x) — what USOEquipmentComponent::SocketGem actually applies. */
+	UFUNCTION(BlueprintPure, Category = "Gem")
+	float GetEffectiveValue() const;
 };

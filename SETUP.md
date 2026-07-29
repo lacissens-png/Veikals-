@@ -928,6 +928,12 @@ it by default.
 | Blessed  | Negative `DamagePerTick` = heal over time |
 | Cursed   | Outgoing damage × `CursedDamageMultiplier` (0.75) |
 
+Shocked/Cursed are read at the single damage entry point,
+`USOHealthComponent::HandleAnyDamage` — it looks up the *defender's*
+`GetIncomingDamageMultiplier()` and the *attacker's*
+`GetOutgoingDamageMultiplier()` (via `DamageCauser`, falling back to
+`InstigatedBy`'s pawn) and folds both into every hit, melee or ranged.
+
 ### API
 
 ```cpp
@@ -2010,6 +2016,36 @@ overlay using the same tile pattern as the rest of the skill bar.
 3. Set `RealitySlashSFX` on `BP_SOCharacter` for audio feedback.
 4. Slash a regular enemy (dies instantly), then a boss (takes heavy
    True damage instead) to feel the difference.
+
+## 64. Dormant-feature audit pass (Shocked/Cursed, gem tiers, elite tint, talent HUD, vendor toast)
+
+A full call-site + delegate audit turned up several fields/systems that
+were fully declared and set from data, but never actually read by any
+runtime logic — the same shape of bug as §58's elemental resistances.
+This pass wires all of them in:
+
+- **Shocked / Cursed** (§ Status Effects) now genuinely change damage
+  numbers. `USOHealthComponent::HandleAnyDamage` looks up the
+  defender's `GetIncomingDamageMultiplier()` and the attacker's
+  `GetOutgoingDamageMultiplier()` (via `DamageCauser`, falling back to
+  `InstigatedBy`'s pawn) and folds both into every hit.
+- **`ESOWeaponType`** (Sword/Axe/Mace/Staff/Wand/Orb) now shows in the
+  weapon HUD label, e.g. `"Bonecleaver (Axe)"`.
+- **`USOGemData::Tier`** now actually scales the socketed bonus —
+  `GetEffectiveValue()` applies a per-tier multiplier (Chipped ×0.5 …
+  Perfect ×2.0) that `USOEquipmentComponent::SocketGem` uses instead of
+  the raw `Value`.
+- **`USOEliteComponent::EliteAuraColor`** now tints that enemy's
+  minimap dot (bosses still take priority for the boss color).
+- **Talent points** show on the HUD next to the attribute panel
+  (`"Talent points: N   (P: respec)"`) — previously a player had no
+  in-game way to know they had points to spend.
+- **Vendor purchases/sellbacks** now flash a brief on-screen
+  confirmation (`"Bought/Sold <item> for <price>g"`) via a new
+  `ASOCharacter::ShowTransactionToast` — `OnPurchase`/`OnSellback`
+  previously broadcast with nothing listening.
+
+No new input bindings from this pass.
 
 ### Updated input table
 
