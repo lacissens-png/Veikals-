@@ -98,27 +98,24 @@ void ASOEnemySpawner::SpawnOne()
 	}
 
 	TSubclassOf<ASOEnemyCharacter> Chosen = PickWeightedEnemy();
-	if (!Chosen)
+	if (Chosen)
 	{
-		++SpawnedThisWave;
-		return;
-	}
+		// Random point on a disk around the spawner.
+		const float Angle       = FMath::FRandRange(0.0f, 2.0f * PI);
+		const float DiskR       = SpawnRadius * FMath::Sqrt(FMath::FRand());
+		const FVector Offset    = FVector(FMath::Cos(Angle) * DiskR, FMath::Sin(Angle) * DiskR, 0.0f);
+		const FVector SpawnLoc  = GetActorLocation() + Offset + FVector(0.0f, 0.0f, 50.0f);
 
-	// Random point on a disk around the spawner.
-	const float Angle       = FMath::FRandRange(0.0f, 2.0f * PI);
-	const float DiskR       = SpawnRadius * FMath::Sqrt(FMath::FRand());
-	const FVector Offset    = FVector(FMath::Cos(Angle) * DiskR, FMath::Sin(Angle) * DiskR, 0.0f);
-	const FVector SpawnLoc  = GetActorLocation() + Offset + FVector(0.0f, 0.0f, 50.0f);
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		Params.Owner = this;
 
-	FActorSpawnParameters Params;
-	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	Params.Owner = this;
-
-	AActor* Spawned = World->SpawnActor<AActor>(Chosen, SpawnLoc, FRotator(0.0f, FMath::FRandRange(0.0f, 360.0f), 0.0f), Params);
-	if (Spawned)
-	{
-		AliveEnemies.Add(TWeakObjectPtr<AActor>(Spawned));
-		Spawned->OnEndPlay.AddDynamic(this, &ASOEnemySpawner::HandleSpawnedEnemyEndPlay);
+		AActor* Spawned = World->SpawnActor<AActor>(Chosen, SpawnLoc, FRotator(0.0f, FMath::FRandRange(0.0f, 360.0f), 0.0f), Params);
+		if (Spawned)
+		{
+			AliveEnemies.Add(TWeakObjectPtr<AActor>(Spawned));
+			Spawned->OnEndPlay.AddDynamic(this, &ASOEnemySpawner::HandleSpawnedEnemyEndPlay);
+		}
 	}
 
 	++SpawnedThisWave;
@@ -126,6 +123,11 @@ void ASOEnemySpawner::SpawnOne()
 	if (SpawnedThisWave >= WaveTargetCount)
 	{
 		World->GetTimerManager().ClearTimer(SpawnTimerHandle);
+		// Covers a misconfigured/empty EnemyPool (or every roll landing on a null
+		// class): with nothing actually spawned, no enemy EndPlay will ever fire
+		// to trigger this, so the wave would otherwise stall forever with 0 alive
+		// enemies and never call OnWaveCleared/OnAllWavesCleared.
+		CheckWaveCleared();
 	}
 }
 

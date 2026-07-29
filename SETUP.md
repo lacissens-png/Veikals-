@@ -2365,6 +2365,33 @@ session, not yet given a dedicated audit):
   that only makes sense for the live `AddCorruption` path) are all
   consistent; no changes needed there.
 
+## 72. Wave spawner audit: empty-pool stall fix
+
+Correctness pass over `ASOEnemySpawner`, `ASOVendorNPC`, and
+`USOInventoryComponent`'s crafting path — three more systems not yet
+given a dedicated audit this session:
+
+- **A misconfigured or empty `EnemyPool` (or every weighted roll
+  landing on a null class) permanently stalled the spawner.**
+  `SpawnOne()`'s "nothing to spawn" branch incremented
+  `SpawnedThisWave` and returned immediately, skipping the
+  wave-completion check entirely. Since `CheckWaveCleared()` is
+  otherwise only ever triggered by a spawned enemy's own `OnEndPlay`,
+  a wave that spawned zero actual enemies had nothing left to fire
+  that event — `OnWaveCleared` and `OnAllWavesCleared` would never
+  broadcast, and `StartInterWaveTimer()` would never run. Restructured
+  `SpawnOne()` so the "no class chosen" case falls through to the same
+  shared completion check every real spawn already hits, instead of
+  returning early past it. `CheckWaveCleared()` itself is unaffected
+  and idempotent (a wave with genuinely alive enemies still no-ops).
+- Audited `ASOVendorNPC` (buy/sell cycling, gold clamping via
+  `AddGold`) and `USOInventoryComponent`'s crafting (`CanCraft`/`Craft`
+  ingredient + gold gating, `RemoveMaterial` clamping) end to end — no
+  bugs found. Both correctly lean on `USOEquipmentComponent`'s
+  diff-against-last-applied `RecomputeAggregateStats()`, so buying a
+  replacement weapon or crafting an armor piece never double-counts
+  stat bonuses.
+
 ### Updated input table
 
 | Key   | Action                          |
