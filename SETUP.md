@@ -2656,6 +2656,38 @@ question noted above:
   instant-kill via `HealthComponent->Kill()`, which can't meaningfully
   "crit" (there's no harder-than-dead).
 
+## 82. Crit Chance is now real itemization, not a fixed constant
+
+Extended the new Critical Hit stat (section 80) into the existing
+Talent and Item Affix systems, so it's a build-around stat like every
+other combat number in this game rather than a hardcoded 5%:
+
+- Added `ESOTalentEffect::FlatCritChance` (mirrors `FlatPrimaryDamage`'s
+  direct `Owner->CritChance +=` / `-=` pattern, clamped to `[0, 1]`).
+- Added `ESOAffixStat::CritChance` and `USOWeaponData::CritChanceBonus`
+  (weapons only, matching how `PrimaryDamageBonus`/`ShadowBoltDamageBonus`
+  are already weapon-only live-queried bonuses rather than aggregated
+  the way armor's MaxHealth/MaxMana/Speed/DR are). `USOLootRoller` now
+  includes it in the weapon affix pool, and it flows through
+  `USOEquipmentComponent::SocketGem` for free since gems already reuse
+  the same `ApplyAffix` routine as rolled affixes.
+- Added `ASOCharacter::GetEffectiveCritChance()` (base `CritChance` +
+  equipped weapon's `CritChanceBonus`, clamped) and pointed
+  `RollCriticalHit()` at it instead of the raw base field.
+
+**Found and fixed a real pre-existing bug while wiring this up**: making
+`CritChance` talent-mutable meant it needed a save-game slot, which
+led to checking whether every *other* talent-mutable stat already had
+one — and `LifeDrainHealFraction` (mutable via the existing
+`FlatLifeDrainHealFrac` talent node since way earlier this session)
+did not. Investing talent points into Life Drain healing was silently
+lost on every save/load round-trip, reverting to the 0.5 base value
+even though `UnlockedTalentNodes` still showed the node as unlocked.
+Added `CritChance` and `LifeDrainHealFraction` to `USOSaveGame` and
+wired both into `SaveGameToSlotName`/`LoadGameFromSlotName` alongside
+`PrimaryAttackDamage`/`ShadowBoltBaseDamage`/`MovementSpeed`, which
+already followed this exact pattern.
+
 ### Updated input table
 
 | Key   | Action                          |

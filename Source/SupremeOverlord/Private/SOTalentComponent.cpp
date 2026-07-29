@@ -195,6 +195,10 @@ void USOTalentComponent::ApplyNodeEffects(USOTalentNode* Node)
 			}
 			break;
 
+		case ESOTalentEffect::FlatCritChance:
+			Owner->CritChance = FMath::Clamp(Owner->CritChance + Effect.Magnitude, 0.0f, 1.0f);
+			break;
+
 		case ESOTalentEffect::None:
 		default:
 			break;
@@ -262,6 +266,10 @@ void USOTalentComponent::RevertNodeEffects(USOTalentNode* Node)
 			{
 				Move->MaxWalkSpeed = Owner->MovementSpeed;
 			}
+			break;
+
+		case ESOTalentEffect::FlatCritChance:
+			Owner->CritChance = FMath::Clamp(Owner->CritChance - Effect.Magnitude, 0.0f, 1.0f);
 			break;
 
 		case ESOTalentEffect::None:

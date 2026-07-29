@@ -14,6 +14,7 @@ enum class ESOAffixStat : uint8
 	MaxMana          UMETA(DisplayName = "Maximum Mana"),
 	MovementSpeed    UMETA(DisplayName = "Movement Speed"),
 	DamageReduction  UMETA(DisplayName = "Damage Reduction"),
+	CritChance       UMETA(DisplayName = "Critical Hit Chance"),
 };
 
 /** One rolled stat bonus on a specific item instance, applied directly to its stat fields. */

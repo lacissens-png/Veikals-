@@ -191,6 +191,11 @@ float ASOCharacter::GetEffectivePrimaryAttackDamage() const
 	return Base * Mult;
 }
 
+float ASOCharacter::GetEffectiveCritChance() const
+{
+	return FMath::Clamp(CritChance + (EquippedWeapon ? EquippedWeapon->CritChanceBonus : 0.0f), 0.0f, 1.0f);
+}
+
 float ASOCharacter::GetEffectivePrimaryAttackCooldown() const
 {
 	const float WeaponMult = EquippedWeapon ? FMath::Max(0.05f, EquippedWeapon->PrimaryAttackCooldownMultiplier) : 1.0f;
@@ -901,6 +906,8 @@ bool ASOCharacter::SaveGameToSlotName(const FString& Slot)
 	Save->PrimaryAttackDamage  = PrimaryAttackDamage;
 	Save->ShadowBoltBaseDamage = ShadowBoltBaseDamage;
 	Save->MovementSpeed        = MovementSpeed;
+	Save->LifeDrainHealFraction = LifeDrainHealFraction;
+	Save->CritChance            = CritChance;
 
 	if (EquipmentComponent)
 	{
@@ -1058,9 +1065,11 @@ bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
 		}
 	}
 
-	PrimaryAttackDamage  = Save->PrimaryAttackDamage;
-	ShadowBoltBaseDamage = Save->ShadowBoltBaseDamage;
-	MovementSpeed        = Save->MovementSpeed;
+	PrimaryAttackDamage    = Save->PrimaryAttackDamage;
+	ShadowBoltBaseDamage   = Save->ShadowBoltBaseDamage;
+	MovementSpeed          = Save->MovementSpeed;
+	LifeDrainHealFraction  = Save->LifeDrainHealFraction;
+	CritChance             = Save->CritChance;
 	ApplyMovementSettings();
 
 	if (ExperienceComponent)

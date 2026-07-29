@@ -307,7 +307,7 @@ public:
 	// by calling RollCriticalHit() itself.
 	// -----------------------------------------------------------------------
 
-	/** Chance [0-1] for a qualifying hit to be a critical strike. */
+	/** Base chance [0-1] for a qualifying hit to be a critical strike, before the equipped weapon's CritChanceBonus. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Critical", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 	float CritChance = 0.05f;
 
@@ -315,9 +315,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SupremeOverlord|Combat|Critical", meta = (ClampMin = "1.0", UIMin = "1.0", UIMax = "10.0"))
 	float CritDamageMultiplier = 2.0f;
 
-	/** Rolls CritChance. A true result's damage should be multiplied by GetCritDamageMultiplier(). */
+	/** CritChance plus the equipped weapon's CritChanceBonus, clamped to [0, 1]. */
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Critical")
-	bool RollCriticalHit() const { return FMath::FRand() < CritChance; }
+	float GetEffectiveCritChance() const;
+
+	/** Rolls GetEffectiveCritChance(). A true result's damage should be multiplied by GetCritDamageMultiplier(). */
+	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Critical")
+	bool RollCriticalHit() const { return FMath::FRand() < GetEffectiveCritChance(); }
 
 	UFUNCTION(BlueprintPure, Category = "SupremeOverlord|Combat|Critical")
 	float GetCritDamageMultiplier() const { return CritDamageMultiplier; }

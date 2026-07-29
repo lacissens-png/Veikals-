@@ -21,7 +21,8 @@ enum class ESOTalentEffect : uint8
 	FlatShadowBoltDamage    UMETA(DisplayName = "+X Shadow Bolt Damage"),
 	FlatLifeDrainHealFrac   UMETA(DisplayName = "+X Life Drain Heal Fraction"),
 	FlatManaRegen           UMETA(DisplayName = "+X Mana Regen / s"),
-	MultMovementSpeed       UMETA(DisplayName = "×(1+X) Movement Speed")
+	MultMovementSpeed       UMETA(DisplayName = "×(1+X) Movement Speed"),
+	FlatCritChance          UMETA(DisplayName = "+X% Critical Hit Chance")
 };
 
 USTRUCT(BlueprintType)

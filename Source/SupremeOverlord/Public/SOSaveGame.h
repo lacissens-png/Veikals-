@@ -147,6 +147,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Pools")
 	float MovementSpeed = 600.0f;
 
+	/** Final, bonus-inclusive Life Drain heal fraction (base + FlatLifeDrainHealFrac talent nodes). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Pools")
+	float LifeDrainHealFraction = 0.5f;
+
+	/** Final, bonus-inclusive base crit chance (base + FlatCritChance talent nodes; excludes the equipped weapon's own bonus). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Pools")
+	float CritChance = 0.05f;
+
 	// -- Equipment ------------------------------------------------------------
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Equipment")

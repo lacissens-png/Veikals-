@@ -42,7 +42,7 @@ USOItemData* USOLootRoller::RollItemInstance(const USOItemData* Template, UObjec
 	TArray<ESOAffixStat> Pool;
 	if (Cast<USOWeaponData>(NewItem))
 	{
-		Pool = { ESOAffixStat::PrimaryDamage, ESOAffixStat::ShadowBoltDamage, ESOAffixStat::AttackSpeed };
+		Pool = { ESOAffixStat::PrimaryDamage, ESOAffixStat::ShadowBoltDamage, ESOAffixStat::AttackSpeed, ESOAffixStat::CritChance };
 	}
 	else if (Cast<USOArmorData>(NewItem))
 	{
@@ -130,6 +130,7 @@ float USOLootRoller::RollAffixMagnitude(ESOAffixStat Stat, int32 ItemLevel)
 	case ESOAffixStat::MaxMana:          return FMath::FRandRange(3.0f, 10.0f) * Level;
 	case ESOAffixStat::MovementSpeed:    return FMath::FRandRange(0.02f, 0.08f);
 	case ESOAffixStat::DamageReduction:  return FMath::FRandRange(0.02f, 0.06f);
+	case ESOAffixStat::CritChance:       return FMath::FRandRange(0.02f, 0.06f);
 	default:                             return 0.0f;
 	}
 }
@@ -145,6 +146,7 @@ FString USOLootRoller::BuildAffixDescription(ESOAffixStat Stat, float Value)
 	case ESOAffixStat::MaxMana:          return FString::Printf(TEXT("+%.0f Maximum Mana"), Value);
 	case ESOAffixStat::MovementSpeed:    return FString::Printf(TEXT("+%.0f%% Movement Speed"), Value * 100.0f);
 	case ESOAffixStat::DamageReduction:  return FString::Printf(TEXT("+%.0f%% Damage Reduction"), Value * 100.0f);
+	case ESOAffixStat::CritChance:       return FString::Printf(TEXT("+%.0f%% Critical Hit Chance"), Value * 100.0f);
 	default:                             return FString();
 	}
 }
@@ -159,6 +161,9 @@ void USOLootRoller::ApplyAffix(USOItemData* Item, const FSOItemAffix& Affix)
 		case ESOAffixStat::ShadowBoltDamage: Weapon->ShadowBoltDamageBonus += Affix.Value; return;
 		case ESOAffixStat::AttackSpeed:
 			Weapon->PrimaryAttackCooldownMultiplier = FMath::Max(0.1f, Weapon->PrimaryAttackCooldownMultiplier - Affix.Value);
+			return;
+		case ESOAffixStat::CritChance:
+			Weapon->CritChanceBonus = FMath::Clamp(Weapon->CritChanceBonus + Affix.Value, 0.0f, 1.0f);
 			return;
 		default: return;
 		}
