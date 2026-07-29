@@ -2180,21 +2180,29 @@ For anything else (a boss-defeat hook, a cutscene, a trigger volume),
 call `SOCharacter->VassalComponent->RecruitVassal(Data)` directly —
 it's `BlueprintCallable` too.
 
-### Example vassal recipes
+### Three ready-made example vassals
 
-Concrete starting points for the first few `USOVassalData` assets —
-create these in the Content Browser (`ActorClass` = `ASOVassalActor`,
-or a BP subclass with a distinct mesh):
+Rather than just a design table, these three exist as real native
+`USOVassalData` subclasses — `SOVassalData_Aurelion.h/.cpp`,
+`SOVassalData_Nyx.h/.cpp`, `SOVassalData_Grimjaw.h/.cpp` — each setting
+its own stats/buff in its constructor. They compile and work as-is
+(`ActorClass` already defaults to `ASOVassalActor`); no Content Browser
+step is required to use them in C++/BP logic — e.g.
+`RecruitVassal(GetMutableDefault<USOVassalData_Aurelion>())` recruits
+the class's own singleton default object directly, no asset needed.
+Only give them a mesh/animations by right-clicking the class in the
+Content Browser → **Create Blueprint Class** if you want a visual.
 
-| Asset name | VassalName | MaxHealth | AttackDamage | BuffType | BuffMagnitude | Flavor |
+| Class | VassalName | MaxHealth | AttackDamage | BuffType | BuffMagnitude | Flavor |
 |---|---|---|---|---|---|---|
-| `DA_Vassal_Aurelion` | Aurelion, Ember Sentinel | 450 | 25 | DamageReduction | 0.20 | A stoic guardian who shields the Overlord from harm |
-| `DA_Vassal_Nyx` | Nyx, the Silent Fang | 220 | 35 | AttackSpeed | 0.20 | A swift assassin whose presence quickens every strike |
-| `DA_Vassal_Grimjaw` | Grimjaw, Iron Warden | 600 | 45 | None | 0.0 | Raw muscle with no buff — recruited for the fight itself, not the aura |
+| `USOVassalData_Aurelion` | Aurelion, Ember Sentinel | 450 | 25 | DamageReduction | 0.20 | A stoic guardian who shields the Overlord from harm |
+| `USOVassalData_Nyx` | Nyx, the Silent Fang | 220 | 35 | AttackSpeed | 0.20 | A swift assassin whose presence quickens every strike |
+| `USOVassalData_Grimjaw` | Grimjaw, Iron Warden | 600 | 45 | None | 0.0 | Raw muscle with no buff — recruited for the fight itself, not the aura |
 
 ### Setup
 
-1. Create the `USOVassalData` assets above (or your own).
+1. Use the three example vassals above as-is, or author your own
+   `USOVassalData` assets in the Content Browser.
 2. Wire recruitment: set `VassalReward` on a quest's reward or a
    dialogue choice, or call `RecruitVassal` directly for anything
    else.
