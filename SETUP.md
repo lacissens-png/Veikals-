@@ -2072,6 +2072,35 @@ toast (§64): each block draws at a running `ToastY` cursor and pushes
 it down by its own height, so any subset that happens to fire at once
 stacks instead of overlapping.
 
+## 66. Hazard Zone fixes: pawn filter, no damage-after-death, real elemental damage types
+
+**Files**: `SOHazardZone.h/.cpp`, `SOFireDamageType.h/.cpp` (new),
+`SOFrostDamageType.h/.cpp` (new), `SONecroticDamageType.h/.cpp` (new)
+
+An AoE-overlap audit found `ASOHazardZone` was the one area-damage
+system in the module that didn't match its siblings
+(`SOCursedGround`, `SOAuraComponent`, `SOTrap`):
+
+- **No actor-type filter.** `TriggerBox` uses collision profile
+  `OverlapAll`, and `OnBeginOverlap` tracked *any* overlapping actor,
+  not just pawns — contradicting its own doc comment. Now filtered to
+  `IsA(APawn::StaticClass())`.
+- **No alive check.** `DamageTick` kept re-damaging and spawning
+  `HitFX` on actors every tick even after they died (e.g. a corpse
+  still ragdolling inside the zone) until they physically left the
+  box. `OnEndOverlap`'s lingering-status debuff had the same gap. Both
+  now skip a target once `HealthComponent->IsDead()`.
+- **Damage type never carried a category.** `GetDamageTypeClass()`
+  always returned the base `UDamageType`, not even `USODamageType` —
+  so hazard damage skipped elemental resistances (§58) and hit-react
+  scaling (§61) entirely, regardless of `HazardType`. Added
+  `USOFireDamageType`/`USOFrostDamageType`/`USONecroticDamageType`
+  (following `USORealitySlashDamageType`'s template — see §63) and
+  `GetDamageTypeClass()` now switches on `HazardType` to return the
+  matching one. `Poison`/`Lightning` fall back to the Physical-default
+  base `USODamageType`, since `ESODamageCategory` has no dedicated
+  entry for either yet.
+
 ### Updated input table
 
 | Key   | Action                          |

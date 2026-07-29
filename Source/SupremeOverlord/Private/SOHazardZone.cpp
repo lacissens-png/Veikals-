@@ -1,8 +1,13 @@
 #include "SOHazardZone.h"
 
 #include "Components/BoxComponent.h"
+#include "SOFireDamageType.h"
+#include "SOFrostDamageType.h"
+#include "SOHealthComponent.h"
+#include "SONecroticDamageType.h"
 #include "SOStatusEffectComponent.h"
 #include "Components/DecalComponent.h"
+#include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -77,7 +82,10 @@ void ASOHazardZone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ASOHazardZone::OnBeginOverlap(UPrimitiveComponent*, AActor* OtherActor,
                                     UPrimitiveComponent*, int32, bool, const FHitResult&)
 {
-	if (OtherActor && OtherActor != this)
+	// "Any pawn inside it" per the class doc — TriggerBox uses OverlapAll so
+	// without this filter any non-pawn actor (props, other volumes) would be
+	// tracked and ticked too.
+	if (OtherActor && OtherActor != this && OtherActor->IsA(APawn::StaticClass()))
 	{
 		ActorsInside.AddUnique(OtherActor);
 	}
@@ -88,8 +96,21 @@ void ASOHazardZone::OnEndOverlap(UPrimitiveComponent*, AActor* OtherActor,
 {
 	ActorsInside.Remove(OtherActor);
 
-	// Apply a lingering debuff to actors that leave the zone.
-	if (bApplyLingeringStatus && IsValid(OtherActor))
+	if (!IsValid(OtherActor))
+	{
+		return;
+	}
+
+	// Don't apply a lingering debuff to something that died while inside the zone.
+	if (const USOHealthComponent* Health = OtherActor->FindComponentByClass<USOHealthComponent>())
+	{
+		if (Health->IsDead())
+		{
+			return;
+		}
+	}
+
+	if (bApplyLingeringStatus)
 	{
 		if (USOStatusEffectComponent* SFX = OtherActor->FindComponentByClass<USOStatusEffectComponent>())
 		{
@@ -118,6 +139,16 @@ void ASOHazardZone::DamageTick()
 			continue;
 		}
 
+		// Skip corpses lingering in the zone (death anim/ragdoll) — no point
+		// re-damaging or spawning hit FX on something already dead.
+		if (const USOHealthComponent* Health = Actor->FindComponentByClass<USOHealthComponent>())
+		{
+			if (Health->IsDead())
+			{
+				continue;
+			}
+		}
+
 		UGameplayStatics::ApplyDamage(Actor, DamagePerTick, nullptr, this, DMGClass);
 
 		if (HitFX)
@@ -133,9 +164,19 @@ void ASOHazardZone::DamageTick()
 
 TSubclassOf<UDamageType> ASOHazardZone::GetDamageTypeClass() const
 {
-	// All hazard types route through SODamageType; category is baked into the class.
-	// BP can subclass SODamageType per hazard for more granular resist checks.
-	return UDamageType::StaticClass();
+	// Routes through the matching elemental USODamageType subclass so
+	// resistances/hit-react actually respond to HazardType. Poison and
+	// Lightning have no dedicated ESODamageCategory yet, so they fall back to
+	// the Physical-default base USODamageType.
+	switch (HazardType)
+	{
+	case ESOHazardType::Fire:     return USOFireDamageType::StaticClass();
+	case ESOHazardType::Frost:    return USOFrostDamageType::StaticClass();
+	case ESOHazardType::Necrotic: return USONecroticDamageType::StaticClass();
+	case ESOHazardType::Poison:
+	case ESOHazardType::Lightning:
+	default:                      return USODamageType::StaticClass();
+	}
 }
 
 FLinearColor ASOHazardZone::GetHazardColor() const
