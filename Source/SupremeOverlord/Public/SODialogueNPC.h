@@ -24,6 +24,10 @@ class SUPREMEOVERLORD_API ASODialogueNPC : public AActor
 public:
 	ASODialogueNPC();
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dialogue")
 	TObjectPtr<USODialogueComponent> DialogueComponent;
 

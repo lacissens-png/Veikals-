@@ -2798,6 +2798,29 @@ than a bug fix — it stays on the Physical-default base type with a
 comment saying why. (`ESOHazardType::Poison`/`Lightning` fall back the
 same way for the same reason, per section 66.)
 
+## 86. Dialogue NPC's interaction sphere could lie about its real range
+
+Re-checked the remaining unread files (`ASODialogueNPC`,
+`USODialogueComponent`'s tail, `USORealitySlashDamageType`, the module
+`Build.cs`). Reality Slash's damage type turned out already correct —
+`Category = TrueDamage` with `bIgnoresResistances = true`, matching
+its "cuts through reality itself" concept — and `Build.cs` needs no
+change for the new Shadow type, since Unreal auto-discovers sources
+under `Private/`/`Public/`. One inconsistency did turn up:
+
+- **`ASODialogueNPC` hardcoded `SetSphereRadius(300.0f)`** in its
+  constructor, while the actual gameplay check
+  (`USODialogueComponent::IsPlayerInRange`) measures against that
+  component's own `InteractionRadius` property. They agree only at the
+  default; a designer raising `InteractionRadius` to 600 would leave
+  the editor's drawn sphere still showing 300, so the sphere silently
+  stops representing the range the game actually uses. Since the
+  sphere is *purely* a visualization here (nothing binds its overlap
+  events — the range test is a plain distance check), the fix is to
+  keep it honest: seed it from `DialogueComponent->InteractionRadius`
+  in the constructor and re-sync in a new `BeginPlay`, exactly the way
+  `ASOVendorNPC` already handles the same situation.
+
 ### Updated input table
 
 | Key   | Action                          |
