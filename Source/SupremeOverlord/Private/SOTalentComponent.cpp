@@ -111,20 +111,19 @@ bool USOTalentComponent::RespecAll()
 
 void USOTalentComponent::RestoreFromSave(const TArray<USOTalentNode*>& Nodes, int32 Points)
 {
-	if (UnlockedNodes.Num() > 0)
-	{
-		RespecAll();
-	}
-
+	// Deliberately does NOT call ApplyNodeEffects/RespecAll: every stat a node
+	// affects (MaxHealth, MaxMana, PrimaryAttackDamage, ShadowBoltBaseDamage,
+	// MovementSpeed, ManaRegen) is already restored to its final, bonus-
+	// inclusive value elsewhere in ASOCharacter::LoadGameFromSlotName — replaying
+	// the per-node effects here would double-count them on top of that total.
+	UnlockedNodes.Reset();
 	for (USOTalentNode* Node : Nodes)
 	{
-		if (!Node || UnlockedNodes.Contains(Node))
+		if (Node && !UnlockedNodes.Contains(Node))
 		{
-			continue;
+			UnlockedNodes.Add(Node);
+			OnTalentUnlocked.Broadcast(Node);
 		}
-		UnlockedNodes.Add(Node);
-		ApplyNodeEffects(Node);
-		OnTalentUnlocked.Broadcast(Node);
 	}
 
 	AvailableTalentPoints = FMath::Max(0, Points);

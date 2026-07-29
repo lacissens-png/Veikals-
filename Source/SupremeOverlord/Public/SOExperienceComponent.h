@@ -72,6 +72,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|XP")
 	void GainXP(int32 Amount);
 
+	/**
+	 * Load support: sets CurrentLevel/XPInCurrentLevel directly. Unlike GainXP,
+	 * this never rolls level-ups or fires OnLevelUp — it restores a state that
+	 * was already reached, not one being newly earned. Setting StartingLevel
+	 * after BeginPlay has already run is a no-op, which is why this exists.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|XP")
+	void RestoreFromSave(int32 Level, int32 XPInLevel);
+
 private:
 	int32 ComputeXPForLevel(int32 Level) const;
 

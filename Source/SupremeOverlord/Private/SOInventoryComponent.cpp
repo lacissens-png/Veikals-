@@ -11,6 +11,18 @@ USOInventoryComponent::USOInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void USOInventoryComponent::RestoreFromSave(const TMap<USOMaterialData*, int32>& SavedMaterials)
+{
+	Materials.Reset();
+	for (const TPair<USOMaterialData*, int32>& Pair : SavedMaterials)
+	{
+		if (Pair.Key && Pair.Value > 0)
+		{
+			Materials.Add(Pair.Key, Pair.Value);
+		}
+	}
+}
+
 int32 USOInventoryComponent::GetMaterialCount(USOMaterialData* Material) const
 {
 	if (!Material)

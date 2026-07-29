@@ -76,6 +76,19 @@ bool USOAttributesComponent::AllocatePoint(ESOAttribute Attribute)
 	return true;
 }
 
+void USOAttributesComponent::RestoreFromSave(int32 InStrength, int32 InIntellect, int32 InVitality, int32 InUnspentPoints)
+{
+	Strength      = FMath::Max(0, InStrength);
+	Intellect     = FMath::Max(0, InIntellect);
+	Vitality      = FMath::Max(0, InVitality);
+	UnspentPoints = FMath::Max(0, InUnspentPoints);
+
+	OnAttributeChanged.Broadcast(this, ESOAttribute::Strength,  Strength,  0);
+	OnAttributeChanged.Broadcast(this, ESOAttribute::Intellect, Intellect, 0);
+	OnAttributeChanged.Broadcast(this, ESOAttribute::Vitality,  Vitality,  0);
+	OnUnspentPointsChanged.Broadcast(this, UnspentPoints);
+}
+
 void USOAttributesComponent::ApplyAttributeChange(ESOAttribute Attribute, int32 Delta)
 {
 	if (Delta == 0)

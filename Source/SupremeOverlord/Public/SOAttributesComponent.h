@@ -87,6 +87,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Attributes")
 	bool AllocatePoint(ESOAttribute Attribute);
 
+	/**
+	 * Load support: sets Strength/Intellect/Vitality/UnspentPoints directly,
+	 * with no ApplyAttributeChange side effects — the caller (save/load code)
+	 * is expected to have already restored PrimaryAttackDamage/MaxHealth/
+	 * MaxMana etc. to their final saved (bonus-inclusive) values separately,
+	 * so replaying per-point effects here would double-count them.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Attributes")
+	void RestoreFromSave(int32 InStrength, int32 InIntellect, int32 InVitality, int32 InUnspentPoints);
+
 private:
 	void ApplyAttributeChange(ESOAttribute Attribute, int32 Delta);
 

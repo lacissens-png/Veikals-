@@ -75,3 +75,11 @@ void USOExperienceComponent::GainXP(int32 Amount)
 
 	OnExperienceChanged.Broadcast(this, XPInCurrentLevel, GetXPToNextLevel(), CurrentLevel);
 }
+
+void USOExperienceComponent::RestoreFromSave(int32 Level, int32 XPInLevel)
+{
+	CurrentLevel     = FMath::Clamp(Level, 1, MaxLevel);
+	XPInCurrentLevel = IsMaxLevel() ? 0 : FMath::Max(0, XPInLevel);
+
+	OnExperienceChanged.Broadcast(this, XPInCurrentLevel, GetXPToNextLevel(), CurrentLevel);
+}

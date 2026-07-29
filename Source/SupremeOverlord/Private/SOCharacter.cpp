@@ -824,6 +824,7 @@ bool ASOCharacter::SaveGameToSlotName(const FString& Slot)
 
 	Save->PrimaryAttackDamage  = PrimaryAttackDamage;
 	Save->ShadowBoltBaseDamage = ShadowBoltBaseDamage;
+	Save->MovementSpeed        = MovementSpeed;
 
 	if (EquipmentComponent)
 	{
@@ -983,15 +984,12 @@ bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
 
 	PrimaryAttackDamage  = Save->PrimaryAttackDamage;
 	ShadowBoltBaseDamage = Save->ShadowBoltBaseDamage;
+	MovementSpeed        = Save->MovementSpeed;
+	ApplyMovementSettings();
 
 	if (ExperienceComponent)
 	{
-		// GainXP would trigger level-up handlers and stack duplicate scaling — instead do a raw reset via new starting level.
-		ExperienceComponent->StartingLevel = FMath::Max(1, Save->CharacterLevel);
-		// The component's internal fields aren't publicly settable to avoid save-driven abuse elsewhere,
-		// so we award the banked XPInCurrentLevel through GainXP after re-parking StartingLevel.
-		// Cleanest MVP: just call GainXP with what was banked.
-		ExperienceComponent->GainXP(Save->XPInCurrentLevel);
+		ExperienceComponent->RestoreFromSave(Save->CharacterLevel, Save->XPInCurrentLevel);
 	}
 
 	Gold = FMath::Max(0, Save->Gold);
@@ -999,16 +997,7 @@ bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
 
 	if (AttributesComponent)
 	{
-		// Diff against currently-applied values so the effects apply exactly once.
-		const int32 DeltaS = Save->Strength  - AttributesComponent->GetAttribute(ESOAttribute::Strength);
-		const int32 DeltaI = Save->Intellect - AttributesComponent->GetAttribute(ESOAttribute::Intellect);
-		const int32 DeltaV = Save->Vitality  - AttributesComponent->GetAttribute(ESOAttribute::Vitality);
-
-		if (DeltaS > 0) { AttributesComponent->GrantPoints(DeltaS); for (int32 i = 0; i < DeltaS; ++i) AttributesComponent->AllocatePoint(ESOAttribute::Strength);  }
-		if (DeltaI > 0) { AttributesComponent->GrantPoints(DeltaI); for (int32 i = 0; i < DeltaI; ++i) AttributesComponent->AllocatePoint(ESOAttribute::Intellect); }
-		if (DeltaV > 0) { AttributesComponent->GrantPoints(DeltaV); for (int32 i = 0; i < DeltaV; ++i) AttributesComponent->AllocatePoint(ESOAttribute::Vitality);  }
-
-		AttributesComponent->GrantPoints(Save->UnspentAttributePoints);
+		AttributesComponent->RestoreFromSave(Save->Strength, Save->Intellect, Save->Vitality, Save->UnspentAttributePoints);
 	}
 
 	if (EquipmentComponent)
@@ -1038,17 +1027,37 @@ bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
 				}
 			}
 		}
+
+		// Equip() -> RecomputeAggregateStats() just added the full equipment
+		// bonus on top of MaxHealth/MaxMana/MovementSpeed — but those were
+		// already restored to their final, bonus-inclusive saved totals above,
+		// so this double-counts it. Snap back to the saved totals now that
+		// every item is equipped and EquipmentComponent's Applied* trackers
+		// correctly reflect the aggregate (so future equip/unequip deltas,
+		// e.g. picking up a new drop, still compute correctly from here).
+		if (HealthComponent)
+		{
+			HealthComponent->MaxHealth = Save->MaxHealth;
+		}
+		if (ManaComponent)
+		{
+			ManaComponent->MaxMana = Save->MaxMana;
+		}
+		MovementSpeed = Save->MovementSpeed;
+		ApplyMovementSettings();
 	}
 
 	if (InventoryComponent)
 	{
+		TMap<USOMaterialData*, int32> Materials;
 		for (const FSOSavedMaterialCount& SavedCount : Save->MaterialCounts)
 		{
 			if (USOMaterialData* Material = SavedCount.Material.LoadSynchronous())
 			{
-				InventoryComponent->AddMaterial(Material, SavedCount.Count);
+				Materials.Add(Material, SavedCount.Count);
 			}
 		}
+		InventoryComponent->RestoreFromSave(Materials);
 	}
 
 	if (TalentComponent)

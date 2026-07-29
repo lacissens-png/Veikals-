@@ -2242,6 +2242,64 @@ attack, Dodge Roll, Blink) found two real bugs, both in
   `Caster->GetController()->StopMovement()` before starting the dash,
   mirroring how `HandleDeath` already cancels movement on death.
 
+## 69. Save/load correctness pass: level, attributes, equipment, materials
+
+A dedicated save/load audit found the load path was replaying several
+systems' *effects* (as if they were being earned live) on top of stat
+totals that were already fully restored to their final, bonus-
+inclusive saved values — silently corrupting a loaded character in
+several ways:
+
+- **Character level never actually restored.** `LoadGameFromSlotName`
+  set `ExperienceComponent->StartingLevel` after `BeginPlay()` had
+  already consumed it once — a no-op. A save at level 10 loaded into a
+  level-1 session stayed level 1. Fixed with
+  `USOExperienceComponent::RestoreFromSave(Level, XPInLevel)`, which
+  sets `CurrentLevel`/`XPInCurrentLevel` directly.
+- **Attribute-derived stats were double-counted, and lost points never
+  rolled back.** The load code diffed saved Strength/Intellect/
+  Vitality against live values and replayed `AllocatePoint` for the
+  positive delta — but `AllocatePoint` re-adds the same per-point
+  damage/health/mana bonus that was *already* baked into the
+  just-restored `MaxHealth`/`MaxMana`/damage totals. A negative delta
+  (fewer saved points than currently live) was silently ignored,
+  permanently desyncing the attribute panel from the restored totals.
+  Fixed with `USOAttributesComponent::RestoreFromSave(Str, Int, Vit,
+  UnspentPoints)`, which sets the three attributes directly with no
+  side effects.
+- **`UnspentAttributePoints` was granted on top, every load** —
+  repeated quickloads kept adding the saved unspent-point count to
+  whatever was already banked. Fixed by the same `RestoreFromSave`
+  call setting it directly instead of via `GrantPoints`.
+- **Talent nodes had the identical bug** — `USOTalentComponent::RestoreFromSave`
+  (added earlier this session) called `ApplyNodeEffects` per node,
+  double-counting MaxHealth/MaxMana/damage/ManaRegen/MovementSpeed
+  bonuses already baked into the saved totals. Now just sets
+  `UnlockedNodes`/`AvailableTalentPoints` directly.
+- **Equipment bonuses were double-counted for the same reason** —
+  `EquipmentComponent->Equip()` → `RecomputeAggregateStats()` adds the
+  full armor/set bonus on top of `MaxHealth`/`MaxMana`/`MovementSpeed`,
+  which were already restored to their bonus-inclusive saved values.
+  Fixed by snapping `MaxHealth`/`MaxMana`/`MovementSpeed` back to the
+  saved totals once every item is re-equipped (`EquipmentComponent`'s
+  internal `Applied*Bonus` trackers are left correctly primed for
+  future in-session equip/unequip changes).
+- **`MovementSpeed` wasn't part of the save file at all** — added
+  `USOSaveGame::MovementSpeed` (final, bonus-inclusive) so equipment/
+  talent speed bonuses have something to actually round-trip through,
+  instead of either compounding (if replayed) or vanishing (if not
+  replayed and not saved).
+- **Materials were added on top of the current inventory, not
+  replaced** — quickloading a save with materials you'd since
+  re-collected duplicated the stack. Fixed with
+  `USOInventoryComponent::RestoreFromSave(...)`, which clears the
+  material map before repopulating it.
+
+Everything else — quests, bestiary, achievements, potions, waypoints,
+difficulty, corruption, and the new vassal roster — already used a
+proper direct-`Restore*` pattern with no side effects and needed no
+changes.
+
 ### Updated input table
 
 | Key   | Action                          |

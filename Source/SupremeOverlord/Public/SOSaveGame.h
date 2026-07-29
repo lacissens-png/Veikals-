@@ -139,6 +139,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Pools")
 	float ShadowBoltBaseDamage = 40.0f;
 
+	/**
+	 * Final, bonus-inclusive walk speed (base + attributes + talents +
+	 * equipment). Restored directly rather than replayed from talent/equipment
+	 * effects, which would double-count whatever's already baked into this.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Pools")
+	float MovementSpeed = 600.0f;
+
 	// -- Equipment ------------------------------------------------------------
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Equipment")

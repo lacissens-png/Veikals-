@@ -64,6 +64,10 @@ public:
 
 	const TMap<TObjectPtr<USOMaterialData>, int32>& GetAllMaterials() const { return Materials; }
 
+	/** Load support: clears all current materials before repopulating, so a load never adds on top of what's already held. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Inventory")
+	void RestoreFromSave(const TMap<USOMaterialData*, int32>& SavedMaterials);
+
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = "SupremeOverlord|Inventory", Transient)
 	TMap<TObjectPtr<USOMaterialData>, int32> Materials;
