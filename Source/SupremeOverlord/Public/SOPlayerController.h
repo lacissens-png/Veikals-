@@ -186,6 +186,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|RealitySlash")
 	void OnRealitySlashPressed();
 
+	/** Bound to "SummonVassal" (N). Summons the currently selected recruited vassal. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Vassal")
+	void OnSummonVassalPressed();
+
+	/** Bound to "DismissVassal" (D). Dismisses the active vassal, if any. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Vassal")
+	void OnDismissVassalPressed();
+
+	/** Bound to "CycleVassal" (A). Cycles which recruited vassal will be summoned next. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Vassal")
+	void OnCycleVassalPressed();
+
 	/** Dialogue choice key 1 — selects option index 0 in the active dialogue. */
 	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Dialogue")
 	void OnDialogueChoice1();

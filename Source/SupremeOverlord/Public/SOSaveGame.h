@@ -13,6 +13,7 @@ class USOMaterialData;
 class USOTalentNode;
 class USOQuestData;
 class ASOEnemyCharacter;
+class USOVassalData;
 
 /**
  * One equipped/inventoried item instance, serialized compactly enough to
@@ -194,4 +195,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Corruption")
 	float CorruptionAmount = 0.0f;
+
+	// -- Vassals ----------------------------------------------------------------------------
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Save|Vassal")
+	TArray<TSoftObjectPtr<USOVassalData>> RecruitedVassals;
 };

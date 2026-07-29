@@ -184,6 +184,28 @@ public:
 	TObjectPtr<class USoundBase> RealitySlashSFX;
 
 	// -----------------------------------------------------------------------
+	// Vassals — N key; Overlord's "Floor Guardians" fantasy. A small roster of
+	// unique, named companions (recruited elsewhere — dialogue/quests/boss
+	// defeats) with one summoned at a time, granting a passive buff while
+	// alive. Distinct from SummonComponent's disposable minion army.
+	// -----------------------------------------------------------------------
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SupremeOverlord|Vassal")
+	TObjectPtr<class USOVassalComponent> VassalComponent;
+
+	/** Summons the currently selected recruited vassal (N key). See USOVassalComponent::SummonSelectedVassal. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Vassal")
+	void SummonVassal();
+
+	/** Dismisses the active vassal, if any. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Vassal")
+	void DismissVassal();
+
+	/** Cycles which recruited vassal SummonVassal will call next. */
+	UFUNCTION(BlueprintCallable, Category = "SupremeOverlord|Vassal")
+	void CycleVassal();
+
+	// -----------------------------------------------------------------------
 	// Hit-stop / camera shake "juice" — brief time freeze + camera shake on
 	// landing or taking a hit, purely cosmetic game feel.
 	// -----------------------------------------------------------------------

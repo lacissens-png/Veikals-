@@ -36,6 +36,9 @@
 #include "SORealitySlashComponent.h"
 #include "SOSummonComponent.h"
 #include "SOTalentComponent.h"
+#include "SOVassalActor.h"
+#include "SOVassalComponent.h"
+#include "SOVassalData.h"
 #include "SOWaypoint.h"
 #include "SOWaypointComponent.h"
 #include "SOTrap.h"
@@ -297,6 +300,27 @@ void ASOHUD::DrawHUD()
 				for (const FString& Line : SetBonuses)
 				{
 					DrawLine(Line, FLinearColor(0.10f, 0.85f, 0.30f, 1.0f)); // matches USOItemData's Set rarity tint
+				}
+			}
+
+			if (SO->VassalComponent)
+			{
+				if (USOVassalData* Active = SO->VassalComponent->GetActiveVassalData())
+				{
+					const ASOVassalActor* VassalActor = SO->VassalComponent->GetActiveVassalActor();
+					const int32 HPPercent = (VassalActor && VassalActor->HealthComponent)
+						? FMath::RoundToInt(VassalActor->HealthComponent->GetHealthPercent() * 100.0f)
+						: 0;
+					DrawLine(FString::Printf(TEXT("Vassal: %s [%d%%]   (D: dismiss)"), *Active->VassalName.ToString(), HPPercent),
+					         FLinearColor(0.85f, 0.65f, 1.0f, 1.0f));
+				}
+				else if (SO->VassalComponent->GetRecruitedVassals().Num() > 0)
+				{
+					if (USOVassalData* Selected = SO->VassalComponent->GetSelectedVassal())
+					{
+						DrawLine(FString::Printf(TEXT("Vassal ready: %s   (N: summon, A: cycle)"), *Selected->VassalName.ToString()),
+						         FLinearColor(0.6f, 0.5f, 0.75f, 1.0f));
+					}
 				}
 			}
 		}

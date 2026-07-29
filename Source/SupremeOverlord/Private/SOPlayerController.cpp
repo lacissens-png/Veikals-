@@ -117,6 +117,11 @@ void ASOPlayerController::SetupInputComponent()
 	InputComponent->BindAction("UsePotion",       IE_Pressed, this, &ASOPlayerController::OnUsePotionPressed);
 	InputComponent->BindAction("RealitySlash",    IE_Pressed, this, &ASOPlayerController::OnRealitySlashPressed);
 
+	// Vassals - summon selected (N) / dismiss active (D) / cycle selection (A).
+	InputComponent->BindAction("SummonVassal", IE_Pressed, this, &ASOPlayerController::OnSummonVassalPressed);
+	InputComponent->BindAction("DismissVassal", IE_Pressed, this, &ASOPlayerController::OnDismissVassalPressed);
+	InputComponent->BindAction("CycleVassal",   IE_Pressed, this, &ASOPlayerController::OnCycleVassalPressed);
+
 	// Dialogue choice keys 1-4.
 	InputComponent->BindAction("DialogueChoice1", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice1);
 	InputComponent->BindAction("DialogueChoice2", IE_Pressed, this, &ASOPlayerController::OnDialogueChoice2);
@@ -696,4 +701,28 @@ void ASOPlayerController::OnRealitySlashPressed()
 	}
 
 	SOCharacter->CastRealitySlash(Target);
+}
+
+void ASOPlayerController::OnSummonVassalPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->SummonVassal();
+	}
+}
+
+void ASOPlayerController::OnDismissVassalPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->DismissVassal();
+	}
+}
+
+void ASOPlayerController::OnCycleVassalPressed()
+{
+	if (ASOCharacter* SOCharacter = Cast<ASOCharacter>(GetPawn()))
+	{
+		SOCharacter->CycleVassal();
+	}
 }

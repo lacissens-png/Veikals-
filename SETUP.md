@@ -2101,6 +2101,76 @@ system in the module that didn't match its siblings
   base `USODamageType`, since `ESODamageCategory` has no dedicated
   entry for either yet.
 
+## 67. Vassals (Overlord's "Floor Guardians")
+
+**Files**: `SOVassalData.h` (new), `SOVassalActor.h/.cpp` (new),
+`SOVassalComponent.h/.cpp` (new), `SOCharacter.h/.cpp`,
+`SOPlayerController.h/.cpp`, `DefaultInput.ini`, `SOHUD.h/.cpp`,
+`SOSaveGame.h`, `SOHealthComponent.cpp`
+
+A small roster of unique, **named** companions — distinct from
+`USOSummonComponent`'s anonymous, disposable minion army. Only one
+vassal is summoned ("active") at a time, and while it's alive it
+grants the player a passive buff.
+
+### Components
+
+**`USOVassalData`** (data asset — create one per vassal, e.g.
+`DA_Vassal_Bloodfang`):
+- Identity: `VassalName`, `Title`, `Description`, `Icon`.
+- `ActorClass` — the `ASOVassalActor` (or BP subclass) to spawn.
+- `RequiredLevel` — gates recruitment/summoning by player level.
+- Combat stats: `MaxHealth`, `AttackDamage`, `AttackRange`, `AttackCooldown`.
+- `BuffType` (`DamageReduction` / `AttackSpeed`) + `BuffMagnitude` —
+  the passive granted to the summoner. Queried **live** by combat
+  code (`USOVassalComponent::GetIncomingDamageMultiplier()` /
+  `GetAttackCooldownMultiplier()`) rather than mutating stored
+  stats — so the buff turns off automatically the instant the vassal
+  dies or is dismissed, with nothing to revert.
+
+**`ASOVassalActor`** (spawned actor):
+- Carries `USOHealthComponent`. Chases/attacks the nearest
+  `ASOEnemyCharacter` within `AggroRange` like `ASOMinion`, and walks
+  back to the summoner when idle and farther than
+  `FollowOwnerDistance` away (same follow-when-idle fix as §66... see
+  the Minion Summoning section).
+- `InitializeFromData(Data)` applies the data asset's stats on spawn.
+
+**`USOVassalComponent`** (on `ASOCharacter`):
+- `RecruitVassal(Data)` — adds to the roster. **Not automatic** — call
+  this from wherever the game grants a vassal (a dialogue choice's BP
+  event, a quest reward, a boss-defeat hook).
+- `CycleVassalSelection()` / `GetSelectedVassal()` — picks which
+  recruited vassal `SummonSelectedVassal()` will summon next.
+- `SummonSelectedVassal()` / `DismissVassal()` — spawns/destroys the
+  active vassal (nav-mesh snapped near the player, mirroring
+  `SummonMinion`'s spawn pattern).
+- Recruited roster round-trips through save/load (`SOSaveGame::RecruitedVassals`).
+
+### Key bindings
+
+| Key | Action |
+|-----|--------|
+| N   | Summon the currently selected recruited vassal |
+| D   | Dismiss the active vassal |
+| A   | Cycle which recruited vassal is selected |
+
+### HUD changes
+
+Below the attribute panel: `"Vassal: <Name> [HP%]   (D: dismiss)"`
+while one is active, or `"Vassal ready: <Name>   (N: summon, A: cycle)"`
+once at least one vassal is recruited but none is summoned.
+
+### Setup
+
+1. Create a `USOVassalData` asset per companion; assign `ActorClass`
+   to `ASOVassalActor` (or a BP subclass with a distinct mesh).
+2. Call `SOCharacter->VassalComponent->RecruitVassal(Data)` from a
+   dialogue node's BP event, a quest reward hook, or anywhere else
+   the game should grant one.
+3. Press **N** to summon, **A** to cycle if more than one is
+   recruited, **D** to dismiss.
+
 ### Updated input table
 
 | Key   | Action                          |
@@ -2126,6 +2196,9 @@ system in the module that didn't match its siblings
 | L     | Toggle Bestiary / Kill Codex      |
 | I     | Use Potion                        |
 | J     | Reality Slash                     |
+| N     | Summon Selected Vassal            |
+| D     | Dismiss Active Vassal             |
+| A     | Cycle Vassal Selection            |
 | F1    | Allocate Strength               |
 | F2    | Allocate Intellect              |
 | F3    | Allocate Vitality               |

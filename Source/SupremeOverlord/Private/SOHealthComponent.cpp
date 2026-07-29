@@ -4,6 +4,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/Pawn.h"
 #include "SOStatusEffectComponent.h"
+#include "SOVassalComponent.h"
 
 USOHealthComponent::USOHealthComponent()
 {
@@ -47,6 +48,11 @@ void USOHealthComponent::HandleAnyDamage(AActor* /*DamagedActor*/, float Damage,
 	if (const USOStatusEffectComponent* DefenderStatus = GetOwner() ? GetOwner()->FindComponentByClass<USOStatusEffectComponent>() : nullptr)
 	{
 		ScaledDamage *= DefenderStatus->GetIncomingDamageMultiplier();
+	}
+
+	if (const USOVassalComponent* DefenderVassals = GetOwner() ? GetOwner()->FindComponentByClass<USOVassalComponent>() : nullptr)
+	{
+		ScaledDamage *= DefenderVassals->GetIncomingDamageMultiplier();
 	}
 
 	APawn* InstigatorPawn      = InstigatedBy ? InstigatedBy->GetPawn() : nullptr;

@@ -38,6 +38,8 @@
 #include "SOSummonComponent.h"
 #include "SOTalentComponent.h"
 #include "SOTalentNode.h"
+#include "SOVassalComponent.h"
+#include "SOVassalData.h"
 #include "SODamageType.h"
 #include "SOExperienceComponent.h"
 #include "SOHealthComponent.h"
@@ -91,6 +93,7 @@ ASOCharacter::ASOCharacter()
 	ConsumableComponent      = CreateDefaultSubobject<USOConsumableComponent>(TEXT("ConsumableComponent"));
 	AchievementComponent     = CreateDefaultSubobject<USOAchievementComponent>(TEXT("AchievementComponent"));
 	RealitySlashComponent    = CreateDefaultSubobject<USORealitySlashComponent>(TEXT("RealitySlashComponent"));
+	VassalComponent          = CreateDefaultSubobject<USOVassalComponent>(TEXT("VassalComponent"));
 
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
@@ -190,8 +193,9 @@ float ASOCharacter::GetEffectivePrimaryAttackDamage() const
 
 float ASOCharacter::GetEffectivePrimaryAttackCooldown() const
 {
-	const float Mult = EquippedWeapon ? FMath::Max(0.05f, EquippedWeapon->PrimaryAttackCooldownMultiplier) : 1.0f;
-	return PrimaryAttackCooldown * Mult;
+	const float WeaponMult = EquippedWeapon ? FMath::Max(0.05f, EquippedWeapon->PrimaryAttackCooldownMultiplier) : 1.0f;
+	const float VassalMult = VassalComponent ? VassalComponent->GetAttackCooldownMultiplier() : 1.0f;
+	return PrimaryAttackCooldown * WeaponMult * VassalMult;
 }
 
 float ASOCharacter::GetEffectiveShadowBoltDamage() const
@@ -928,6 +932,17 @@ bool ASOCharacter::SaveGameToSlotName(const FString& Slot)
 		Save->CorruptionAmount = CorruptionComponent->GetCorruption();
 	}
 
+	if (VassalComponent)
+	{
+		for (USOVassalData* Vassal : VassalComponent->GetRecruitedVassals())
+		{
+			if (Vassal)
+			{
+				Save->RecruitedVassals.Add(Vassal);
+			}
+		}
+	}
+
 	const bool bOK = UGameplayStatics::SaveGameToSlot(Save, UseSlot, DefaultSaveUserIndex);
 	OnSaveGameCompleted(true, bOK, UseSlot);
 	return bOK;
@@ -1116,6 +1131,19 @@ bool ASOCharacter::LoadGameFromSlotName(const FString& Slot)
 	if (CorruptionComponent)
 	{
 		CorruptionComponent->SetCorruption(Save->CorruptionAmount);
+	}
+
+	if (VassalComponent)
+	{
+		TArray<USOVassalData*> Recruited;
+		for (const TSoftObjectPtr<USOVassalData>& VassalPath : Save->RecruitedVassals)
+		{
+			if (USOVassalData* Vassal = VassalPath.LoadSynchronous())
+			{
+				Recruited.Add(Vassal);
+			}
+		}
+		VassalComponent->RestoreRecruitedVassals(Recruited);
 	}
 
 	OnSaveGameCompleted(false, true, UseSlot);
@@ -1627,4 +1655,32 @@ bool ASOCharacter::IsLegendaryDropToastActive() const
 {
 	const UWorld* World = GetWorld();
 	return World && World->GetTimeSeconds() < LegendaryDropToastExpireTime;
+}
+
+// ---------------------------------------------------------------------------
+// Vassals
+// ---------------------------------------------------------------------------
+
+void ASOCharacter::SummonVassal()
+{
+	if (VassalComponent)
+	{
+		VassalComponent->SummonSelectedVassal();
+	}
+}
+
+void ASOCharacter::DismissVassal()
+{
+	if (VassalComponent)
+	{
+		VassalComponent->DismissVassal();
+	}
+}
+
+void ASOCharacter::CycleVassal()
+{
+	if (VassalComponent)
+	{
+		VassalComponent->CycleVassalSelection();
+	}
 }
