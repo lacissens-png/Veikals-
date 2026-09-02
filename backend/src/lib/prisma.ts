@@ -1,6 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { env } from "../config/env.js";
-import { PrismaClient } from "../generated/prisma/client.js";
+import { PrismaClient } from "../../generated/prisma/client.js";
 
 /**
  * Prisma 7 klients. Kopš 7. versijas savienojums tiek padots caur driver
