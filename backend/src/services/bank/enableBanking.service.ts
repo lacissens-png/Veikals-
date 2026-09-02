@@ -3,11 +3,12 @@ import { env } from "../../config/env.js";
 import { AppError } from "../../lib/errors.js";
 import { logger } from "../../lib/logger.js";
 import { generateMockTransactions } from "./fixtures.js";
+import { normalizeAll } from "./normalize.js";
+import type { RawTransaction } from "./normalize.js";
 import type {
   AuthorizationResult,
   AuthorizationStart,
   BankProvider,
-  BankTransaction,
 } from "./types.js";
 
 /**
@@ -91,54 +92,6 @@ function safeJsonParse(text: string): unknown {
 }
 
 /** Enable Banking summas nāk kā {amount: "12.34", currency: "EUR"}. */
-function parseAmount(value: unknown): number {
-  if (typeof value === "number") return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-  return 0;
-}
-
-interface RawTransaction {
-  entry_reference?: string;
-  transaction_id?: string;
-  booking_date?: string;
-  value_date?: string;
-  transaction_amount?: { amount?: string | number; currency?: string };
-  credit_debit_indicator?: string;
-  remittance_information?: string[];
-  creditor?: { name?: string };
-  debtor?: { name?: string };
-}
-
-/** Izvelk cilvēkam saprotamu aprakstu no dažādiem iespējamiem laukiem. */
-function extractDescription(item: RawTransaction): string {
-  const remittance = item.remittance_information?.filter(Boolean).join(" ");
-  return (
-    item.creditor?.name ??
-    item.debtor?.name ??
-    (remittance && remittance.length > 0 ? remittance : "Nezināms darījums")
-  );
-}
-
-function normalize(item: RawTransaction): BankTransaction {
-  const rawAmount = parseAmount(item.transaction_amount?.amount);
-  // DBIT = izdevums. Normalizējam uz negatīvu summu, lai visa aplikācija
-  // strādā ar vienu zīmju konvenciju.
-  const isDebit = (item.credit_debit_indicator ?? "DBIT").toUpperCase() === "DBIT";
-  const date = (item.booking_date ?? item.value_date ?? "").slice(0, 10);
-
-  return {
-    externalId: item.entry_reference ?? item.transaction_id ?? null,
-    date,
-    description: extractDescription(item),
-    amount: isDebit ? -Math.abs(rawAmount) : Math.abs(rawAmount),
-    currency: item.transaction_amount?.currency ?? "EUR",
-    raw: item,
-  };
-}
-
 const httpProvider: BankProvider = {
   name: "enable_banking",
 
@@ -193,9 +146,7 @@ const httpProvider: BankProvider = {
       `/accounts/${encodeURIComponent(accountId)}/transactions?${query.toString()}`,
     );
 
-    return (payload.transactions ?? [])
-      .map(normalize)
-      .filter((transaction) => transaction.date.length === 10);
+    return normalizeAll(payload.transactions ?? []);
   },
 };
 

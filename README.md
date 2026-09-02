@@ -262,8 +262,24 @@ Divi paralēli darbi:
 
 | Darbs | Ko pārbauda |
 |---|---|
-| `backend` | `npm ci` → tipu pārbaude → būvējums → `prisma migrate deploy` pret tīru PostgreSQL 16 → dūmu tests |
+| `backend` | `npm ci` → tipu pārbaude → testi → būvējums → `prisma migrate deploy` pret tīru PostgreSQL 16 → dūmu tests |
 | `mobile` | `npm ci` → tipu pārbaude |
+
+**Testi** (`node:test`, bez papildu atkarībām) sedz tīro loģiku:
+
+```bash
+cd backend
+npm test
+```
+
+- `src/services/bank/normalize.test.ts` — Enable Banking atbilžu apstrāde.
+  Šis ir produkcijas ceļš, ko mock režīms apiet pilnībā, tāpēc testi ir vienīgais,
+  kas to izpilda, kamēr nav īsta PSD2 savienojuma.
+- `src/services/subscriptions.summary.test.ts` — kopsummas un sadalījums pa
+  kategorijām, t.i. skaitļi, ko lietotājs redz uz pārskata ekrāna.
+- `src/services/bank/fixtures.test.ts` — testa datu īpašības: nav nākotnes
+  datumu, bankas ID ir unikāli (no tā atkarīga dedublikācija), ir gan cenas
+  izmaiņa, gan troksnis, ko AI nedrīkst atzīmēt kā abonementu.
 
 **Dūmu tests** (`backend/scripts/smoke-test.sh`) startē uzbūvēto serveri un
 izbrauc visu plūsmu mock režīmā: reģistrācija, 401 bez tokena, bankas
@@ -309,7 +325,8 @@ Mobilā aplikācija tiek būvēta ar EAS Build (`npx eas build`).
 - Abonementa maksājumu vēsture tiek sasaistīta pēc tirgotāja nosaukuma
   meklēšanas darījumu aprakstos. Precīzai sasaistei vajadzīga atsevišķa
   saite starp `transactions` un `subscriptions`.
-- Nav automatizēto testu — šis ir sākotnējās struktūras posms. Pārbaudi ar
-  `npm run typecheck` abās mapēs un ar manuālu plūsmu mock režīmā.
+- Testi sedz tīro loģiku un HTTP plūsmu (dūmu tests), bet ne AI izsaukumus —
+  tiem vajadzīga `ANTHROPIC_API_KEY`. `claude.service.ts` un maršrutu slānis
+  vēl nav pārklāts ar testiem.
 - Bankas tokeni datubāzē glabājas atklātā tekstā. Pirms produkcijas tie
   jāšifrē (piem., ar KMS vai `pgcrypto`).

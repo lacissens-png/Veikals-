@@ -9,14 +9,15 @@ import {
   type DraftActionType,
 } from "./claude.service.js";
 import { notifyPriceChanges, type PriceChangeNotice } from "./notifications.service.js";
-import { listUserTransactions } from "./transactions.service.js";
+export type { SubscriptionSummary };
 
-/** Reizinātājs, ar ko biežums tiek pārrēķināts uz mēneša izmaksām. */
-const MONTHLY_FACTOR: Record<string, number> = {
-  weekly: 52 / 12,
-  monthly: 1,
-  yearly: 1 / 12,
-};
+import {
+  monthlyCost,
+  round,
+  summarize,
+  type SubscriptionSummary,
+} from "./subscriptions.summary.js";
+import { listUserTransactions } from "./transactions.service.js";
 
 function toDate(value: string): Date {
   return new Date(`${value}T00:00:00.000Z`);
@@ -121,15 +122,6 @@ async function upsertSubscription(userId: string, item: DetectedSubscription) {
   });
 }
 
-export interface SubscriptionSummary {
-  monthlyTotal: number;
-  yearlyTotal: number;
-  count: number;
-  flaggedCount: number;
-  priceChangeCount: number;
-  byCategory: Array<{ category: string; monthlyTotal: number; count: number }>;
-}
-
 /** Abonementu saraksts kopā ar kopsavilkumu DashboardScreen vajadzībām. */
 export async function listSubscriptions(userId: string) {
   const subscriptions = await prisma.subscription.findMany({
@@ -137,36 +129,9 @@ export async function listSubscriptions(userId: string) {
     orderBy: [{ averageAmount: "desc" }, { merchantName: "asc" }],
   });
 
-  const byCategory = new Map<string, { monthlyTotal: number; count: number }>();
-  let monthlyTotal = 0;
+  const serialized = subscriptions.map(serialize);
 
-  for (const subscription of subscriptions) {
-    const monthly = monthlyCost(subscription.averageAmount, subscription.frequency);
-    monthlyTotal += monthly;
-
-    const category = subscription.category ?? "other";
-    const bucket = byCategory.get(category) ?? { monthlyTotal: 0, count: 0 };
-    bucket.monthlyTotal += monthly;
-    bucket.count += 1;
-    byCategory.set(category, bucket);
-  }
-
-  const summary: SubscriptionSummary = {
-    monthlyTotal: round(monthlyTotal),
-    yearlyTotal: round(monthlyTotal * 12),
-    count: subscriptions.length,
-    flaggedCount: subscriptions.filter((item) => item.isFlaggedUnwanted).length,
-    priceChangeCount: subscriptions.filter((item) => item.priceChangeDetected).length,
-    byCategory: [...byCategory.entries()]
-      .map(([category, bucket]) => ({
-        category,
-        monthlyTotal: round(bucket.monthlyTotal),
-        count: bucket.count,
-      }))
-      .sort((a, b) => b.monthlyTotal - a.monthlyTotal),
-  };
-
-  return { summary, subscriptions: subscriptions.map(serialize) };
+  return { summary: summarize(serialized), subscriptions: serialized };
 }
 
 /** Viena abonementa detaļas ar maksājumu vēsturi (SubscriptionDetailScreen). */
@@ -197,9 +162,13 @@ export async function getSubscriptionDetail(userId: string, id: string) {
     select: { id: true, date: true, description: true, amount: true, currency: true },
   });
 
+  const serialized = serialize(subscription);
+
   return {
-    ...serialize(subscription),
-    monthlyCost: round(monthlyCost(subscription.averageAmount, subscription.frequency)),
+    ...serialized,
+    monthlyCost: round(
+      monthlyCost(serialized.averageAmount, serialized.frequency),
+    ),
     drafts: subscription.draftActions.map((draft) => ({
       id: draft.id,
       actionType: draft.actionType,
@@ -296,19 +265,6 @@ export async function updateDraftStatus(
   });
 
   return { id: updated.id, status: updated.status };
-}
-
-function monthlyCost(
-  amount: Prisma.Decimal | null,
-  frequency: string | null,
-): number {
-  if (!amount) return 0;
-  const factor = MONTHLY_FACTOR[frequency ?? "monthly"] ?? 1;
-  return Number(amount) * factor;
-}
-
-function round(value: number): number {
-  return Math.round(value * 100) / 100;
 }
 
 type SubscriptionRow = Awaited<
