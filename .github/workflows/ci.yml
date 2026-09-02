@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Jauns push uz to pašu zaru atceļ iepriekšējo palaišanu.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: abonementi_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # DATABASE_URL jābūt spēkā jau `npm ci` solī: postinstall palaiž
+    # `prisma generate`, un prisma.config.ts to pieprasa.
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/abonementi_ci?schema=public
+      JWT_SECRET: ci-only-secret-not-used-in-production-32
+      ENABLE_BANKING_MOCK: "true"
+      NODE_ENV: test
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalēt atkarības
+        run: npm ci
+
+      - name: Tipu pārbaude
+        run: npm run typecheck
+
+      - name: Būvējums
+        run: npm run build
+
+      - name: Migrācijas uz tīras datubāzes
+        run: npx prisma migrate deploy
+
+      - name: Dūmu tests
+        run: ./scripts/smoke-test.sh
+
+  mobile:
+    name: Mobilā aplikācija
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Instalēt atkarības
+        run: npm ci
+
+      - name: Tipu pārbaude
+        run: npm run typecheck

@@ -54,7 +54,6 @@ createdb abonementi
 
 ```bash
 cd backend
-npm install                 # postinstall automātiski palaiž `prisma generate`
 cp .env.example .env
 ```
 
@@ -67,12 +66,18 @@ ANTHROPIC_API_KEY=sk-ant-...
 ENABLE_BANKING_MOCK=true
 ```
 
-Tad palaid migrācijas un serveri:
+Tikai tagad instalē atkarības un palaid serveri:
 
 ```bash
+npm install                 # postinstall palaiž `prisma generate`
 npx prisma migrate deploy   # izveido tabulas
 npm run dev                 # http://localhost:4000
 ```
+
+> **Secība ir svarīga.** `npm install` palaiž `prisma generate`, kas ielādē
+> `prisma.config.ts`, un tas pieprasa `DATABASE_URL`. Ja `.env` vēl nav
+> izveidots, instalēšana apstājas ar `PrismaConfigEnvError`. Vari arī padot
+> mainīgo tieši: `DATABASE_URL=... npm install`.
 
 Pārbaude: `curl http://localhost:4000/health`
 
@@ -249,6 +254,32 @@ npx eas init          # ieraksta projectId app.json failā
 Bez tā aplikācija strādā normāli, tikai bez push paziņojumiem.
 
 ---
+
+## CI
+
+`.github/workflows/ci.yml` palaižas katrā pull request un push uz `main`.
+Divi paralēli darbi:
+
+| Darbs | Ko pārbauda |
+|---|---|
+| `backend` | `npm ci` → tipu pārbaude → būvējums → `prisma migrate deploy` pret tīru PostgreSQL 16 → dūmu tests |
+| `mobile` | `npm ci` → tipu pārbaude |
+
+**Dūmu tests** (`backend/scripts/smoke-test.sh`) startē uzbūvēto serveri un
+izbrauc visu plūsmu mock režīmā: reģistrācija, 401 bez tokena, bankas
+savienojums, sinhronizācija, atkārtota sinhronizācija (nedrīkst dublēt),
+abonementu saraksts un 404 nezināmam ID. Tas pārbauda to, ko tipu pārbaude
+nevar — ka serveris tiešām startē un savienojas ar datubāzi.
+
+To pašu skriptu var palaist lokāli pēc `npm run build` un migrācijām:
+
+```bash
+cd backend
+./scripts/smoke-test.sh
+```
+
+AI endpointi CI netiek skarti — tiem vajadzīga `ANTHROPIC_API_KEY`, un tā
+netiek glabāta repozitorijā.
 
 ## Izvietošana (Railway / Render)
 
