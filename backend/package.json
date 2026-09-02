@@ -17,7 +17,7 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "postinstall": "prisma generate",
-    "test": "node --import tsx --test \"src/**/*.test.ts\"",
+    "test": "./scripts/run-tests.sh",
     "prebuild": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "dependencies": {
