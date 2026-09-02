@@ -67,7 +67,7 @@ const detectedSubscriptionSchema = z.object({
  * `subscriptions` laukā. Shēmu uzspiež API, tāpēc nav jāpaļaujas uz to, ka
  * modelis "atgriež tikai JSON".
  */
-const analysisSchema = z.object({
+export const analysisSchema = z.object({
   subscriptions: z.array(detectedSubscriptionSchema),
 });
 
@@ -93,7 +93,7 @@ function getClient(): Anthropic {
 }
 
 /** Pārtulko Anthropic SDK kļūdas mūsu AppError, no konkrētākās uz vispārīgāko. */
-function toAppError(error: unknown, context: string): AppError {
+export function toAppError(error: unknown, context: string): AppError {
   if (error instanceof AppError) return error;
 
   if (error instanceof Anthropic.NotFoundError) {
@@ -129,6 +129,41 @@ function toAppError(error: unknown, context: string): AppError {
 }
 
 /**
+ * Sagatavo analīzes pieprasījumu.
+ *
+ * Atdalīts no nosūtīšanas, lai to varētu pārbaudīt ar testiem — jo īpaši to,
+ * ka uz API aiziet TIKAI datums, apraksts un summa. Tas ir apsolījums, ko
+ * lietotājs redz onboarding ekrānā, tāpēc tam jābūt sargātam ar testu, nevis
+ * tikai ar koda lasīšanu.
+ */
+export function buildAnalysisRequest(transactions: TransactionForAnalysis[]) {
+  // Skaidri uzskaitām laukus, nevis padodam objektu tālāk: ja izsaucējs kādreiz
+  // atsūtīs vairāk lauku, tie šeit tiks nogriezti.
+  const payload = transactions.map((transaction) => ({
+    date: transaction.date,
+    description: transaction.description,
+    amount: transaction.amount,
+  }));
+
+  const userPrompt = [
+    `Šeit ir darījumu saraksts pēdējiem ${env.TRANSACTION_SYNC_MONTHS} mēnešiem:`,
+    "",
+    JSON.stringify(payload, null, 2),
+    "",
+    "Atrodi visus atkārtotos maksājumus un atgriez rezultātu norādītajā formātā.",
+  ].join("\n");
+
+  return {
+    model: env.ANTHROPIC_MODEL,
+    max_tokens: 16000,
+    system: SYSTEM_PROMPT,
+    thinking: { type: "adaptive" as const },
+    messages: [{ role: "user" as const, content: userPrompt }],
+    output_config: { format: zodOutputFormat(analysisSchema) },
+  };
+}
+
+/**
  * Atrod atkārtotos maksājumus darījumu sarakstā.
  * Atgriež tukšu masīvu, ja darījumu nav.
  */
@@ -141,23 +176,10 @@ export async function analyzeTransactions(
 
   const anthropic = getClient();
 
-  const userPrompt = [
-    `Šeit ir darījumu saraksts pēdējiem ${env.TRANSACTION_SYNC_MONTHS} mēnešiem:`,
-    "",
-    JSON.stringify(transactions, null, 2),
-    "",
-    "Atrodi visus atkārtotos maksājumus un atgriez rezultātu norādītajā formātā.",
-  ].join("\n");
-
   try {
-    const message = await anthropic.messages.parse({
-      model: env.ANTHROPIC_MODEL,
-      max_tokens: 16000,
-      system: SYSTEM_PROMPT,
-      thinking: { type: "adaptive" },
-      messages: [{ role: "user", content: userPrompt }],
-      output_config: { format: zodOutputFormat(analysisSchema) },
-    });
+    const message = await anthropic.messages.parse(
+      buildAnalysisRequest(transactions),
+    );
 
     if (!message.parsed_output) {
       throw AppError.upstream("AI atbilde neatbilda gaidītajam formātam");
@@ -179,15 +201,13 @@ export async function analyzeTransactions(
 export type DraftActionType = "cancel" | "negotiate";
 
 /**
- * Ģenerē atcelšanas vai pārrunāšanas e-pasta melnrakstu.
- * Melnraksts NETIEK nosūtīts — lietotājs to nokopē un nosūta pats.
+ * Sagatavo melnraksta pieprasījumu. Atdalīts no nosūtīšanas, lai promptu un
+ * parametrus varētu pārbaudīt ar testiem.
  */
-export async function generateDraft(
+export function buildDraftRequest(
   merchantName: string,
   actionType: DraftActionType,
-): Promise<string> {
-  const anthropic = getClient();
-
+) {
   const prompt =
     actionType === "cancel"
       ? `Uzraksti īsu, pieklājīgu e-pastu holandiešu vai angļu valodā (atkarībā no
@@ -204,14 +224,29 @@ profesionālu.
 
 Atgriez tikai e-pasta tekstu (temats un ķermenis), bez paskaidrojumiem.`;
 
+  return {
+    model: env.ANTHROPIC_MODEL,
+    max_tokens: 2000,
+    thinking: { type: "adaptive" as const },
+    output_config: { effort: "low" as const },
+    messages: [{ role: "user" as const, content: prompt }],
+  };
+}
+
+/**
+ * Ģenerē atcelšanas vai pārrunāšanas e-pasta melnrakstu.
+ * Melnraksts NETIEK nosūtīts — lietotājs to nokopē un nosūta pats.
+ */
+export async function generateDraft(
+  merchantName: string,
+  actionType: DraftActionType,
+): Promise<string> {
+  const anthropic = getClient();
+
   try {
-    const message = await anthropic.messages.create({
-      model: env.ANTHROPIC_MODEL,
-      max_tokens: 2000,
-      thinking: { type: "adaptive" },
-      output_config: { effort: "low" },
-      messages: [{ role: "user", content: prompt }],
-    });
+    const message = await anthropic.messages.create(
+      buildDraftRequest(merchantName, actionType),
+    );
 
     const text = message.content
       .filter((block): block is Anthropic.TextBlock => block.type === "text")

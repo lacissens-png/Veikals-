@@ -280,6 +280,9 @@ npm test
 - `src/services/bank/fixtures.test.ts` — testa datu īpašības: nav nākotnes
   datumu, bankas ID ir unikāli (no tā atkarīga dedublikācija), ir gan cenas
   izmaiņa, gan troksnis, ko AI nedrīkst atzīmēt kā abonementu.
+- `src/services/claude.service.test.ts` — **privātuma garantija** (uz API aiziet
+  tikai datums, apraksts un summa; jebkuri papildu lauki tiek nogriezti),
+  atbildes shēmas validācija un SDK kļūdu pārtulkošana.
 
 **Dūmu tests** (`backend/scripts/smoke-test.sh`) startē uzbūvēto serveri un
 izbrauc visu plūsmu mock režīmā: reģistrācija, 401 bez tokena, bankas
@@ -325,8 +328,11 @@ Mobilā aplikācija tiek būvēta ar EAS Build (`npx eas build`).
 - Abonementa maksājumu vēsture tiek sasaistīta pēc tirgotāja nosaukuma
   meklēšanas darījumu aprakstos. Precīzai sasaistei vajadzīga atsevišķa
   saite starp `transactions` un `subscriptions`.
-- Testi sedz tīro loģiku un HTTP plūsmu (dūmu tests), bet ne AI izsaukumus —
-  tiem vajadzīga `ANTHROPIC_API_KEY`. `claude.service.ts` un maršrutu slānis
-  vēl nav pārklāts ar testiem.
+- Testi sedz tīro loģiku un HTTP plūsmu (dūmu tests), bet ne faktisko izsaukumu
+  uz Claude API — tam vajadzīga `ANTHROPIC_API_KEY`. Pārbaudīts ir viss līdz
+  pieprasījuma nosūtīšanai un viss pēc atbildes saņemšanas; nepārbaudīts paliek
+  tas, cik precīzi modelis atpazīst abonementus. To var noskaidrot tikai ar īstu
+  atslēgu.
+- Maršrutu slānis nav pārklāts ar vienībtestiem — to daļēji sedz dūmu tests.
 - Bankas tokeni datubāzē glabājas atklātā tekstā. Pirms produkcijas tie
   jāšifrē (piem., ar KMS vai `pgcrypto`).
