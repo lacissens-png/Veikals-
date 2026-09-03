@@ -63,13 +63,12 @@ step "Lietotnes atkarības"
 
 cat <<'DONE'
 
-Gatavs. Palaišanai vajag divus termināļus:
+Gatavs. Palaišanai:
 
-  1. cd backend && npm run dev
-  2. cd mobile  && npm start
+  ./scripts/start.sh
 
-Tad skenē QR kodu ar Expo Go. Lietotne pati atradīs backend uz tā paša datora —
-IP nav jāmeklē.
+Tas palaiž backend un Expo, un Ctrl+C apstādina abus. Tad skenē QR kodu ar
+Expo Go — lietotne pati atradīs backend uz tā paša datora, IP nav jāmeklē.
 
 AI funkcijām ieliec ANTHROPIC_API_KEY failā backend/.env.
 DONE

@@ -27,7 +27,7 @@ darījumu vēstures un vai lietotāji uzskata šo informāciju par vērtīgu.
 
 - **Node.js 20 vai jaunāks** — visiem ceļiem
 - **Expo Go telefonā** — vajag SDK 57 versiju, sk. "Pirms sākt" zemāk
-- **PostgreSQL 14+** — tikai tad, ja backend palaid uz sava datora (B ceļš)
+- **PostgreSQL 14+** — tikai tad, ja backend palaid uz sava datora (A ceļš)
 - **Anthropic API atslēga** — [console.anthropic.com](https://console.anthropic.com);
   bez tās abonementu analīze atgriež 503
 - **Enable Banking konts** — **nav obligāts**, sk. mock režīmu zemāk
@@ -40,8 +40,8 @@ Trīs ceļi. Galvenā atšķirība ir tā, **kas paliek atkarīgs no datora**.
 
 | Ceļš | Kas vajadzīgs | Ko dod | Dators |
 |---|---|---|---|
-| **A. Expo Go + backend internetā** | Expo Go, viena komanda | Lietotne telefonā ar īstiem datiem | Ieslēgts, tajā pašā Wi-Fi |
-| **B. Viss uz sava datora** | Docker vai PostgreSQL, divi termināļi | Tas pats, bet strādā bez interneta | Tāpat |
+| **A. Viss uz sava datora** | Docker vai PostgreSQL, viena komanda | Lietotne telefonā, strādā bez interneta | Ieslēgts, tajā pašā Wi-Fi |
+| **B. Expo Go + backend internetā** | Render deploy, viena komanda | Tas pats, bet dati nāk no interneta | Tāpat |
 | **C. APK (EAS Build)** | Expo konts, backend uz Render | Ikona sākuma ekrānā | **Nevajag** |
 
 Ar `ENABLE_BANKING_MOCK=true` visa plūsma strādā ar reālistiskiem testa
@@ -70,51 +70,51 @@ taustiņš `a` uzstāda pareizo versiju pats.
 > `expo-dev-client` būvējumu. Tāpēc ceļa "tikai telefons, bez datora" ar Expo Go
 > **nav**. Bez datora strādā tikai C ceļš (APK).
 
-### A ceļš: Expo Go + backend internetā
+### A ceļš: viss uz sava datora
 
-Vieglākais. Datubāze un backend darbojas uz Render, tāpēc uz datora nevajag ne
-PostgreSQL, ne Docker, ne otru termināli — paliek viena komanda, kas apkalpo
-JS bundli.
+Viena komanda. Skripts sagatavo datubāzi, palaiž backend un Expo, un Ctrl+C
+apstādina abus.
+
+```bash
+./scripts/start.sh
+```
+
+Tad skenē QR kodu ar Expo Go. **Sava IP meklēt nevajag.** Lietotne paņem datora
+adresi no Expo izstrādes servera (`Constants.expoConfig.hostUri`) un pati atrod
+backend uz porta 4000.
+
+| Karogs | Ko dara |
+|---|---|
+| `--web` | Atver arī pārlūkā, apskatei bez telefona |
+| `--remote <adrese>` | Izlaiž lokālo datubāzi un backend, sk. B ceļu |
+| `--skip-setup` | Neizpilda sagatavošanu vēlreiz |
+
+Backend izvade iet uz `backend/dev.log`, lai tā neaizsegtu QR kodu.
+
+> Bez `ANTHROPIC_API_KEY` skripts brīdina uzreiz: darījumi ielādēsies, bet
+> analīze atgriezīs 503 un pārskats paliks tukšs.
+
+### B ceļš: Expo Go + backend internetā
+
+Datubāze un backend darbojas uz Render, tāpēc uz datora nevajag ne PostgreSQL,
+ne Docker.
 
 1. Izvieto backend — sk. sadaļu **Backend uz Render** zemāk
 2. Uz datora:
 
 ```bash
-cd mobile
-npm install
-npm run start:remote -- https://tavs-serviss.onrender.com
+./scripts/start.sh --remote https://tavs-serviss.onrender.com
 ```
 
 3. Skenē QR kodu ar Expo Go
 
-Adresi var padot arī caur vidi:
-
-```bash
-EXPO_PUBLIC_API_URL=https://tavs-serviss.onrender.com npm run start:remote
-```
-
 Telefonam un datoram jābūt vienā Wi-Fi tīklā: dators apkalpo JS bundli, bet dati
 nāk no interneta.
 
-### B ceļš: viss uz sava datora
+### Soļi pa vienam
 
-Izstrādei. Strādā arī bez interneta.
-
-```bash
-./scripts/setup.sh            # datubāze, atkarības, migrācijas — vienreiz
-cd backend && npm run dev     # 1. terminālis
-cd mobile  && npm start       # 2. terminālis
-```
-
-Tad skenē QR kodu ar Expo Go. **Sava IP meklēt nevajag.** Lietotne paņem datora
-adresi no Expo izstrādes servera (`Constants.expoConfig.hostUri`) un pati atrod
-backend uz porta 4000. Ja tomēr jāuzspiež cita adrese:
-
-```bash
-EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npm start
-```
-
-Zemāk tie paši soļi pa vienam, ja `setup.sh` neder vai gribi saprast, kas notiek.
+Ja `start.sh` neder vai gribi saprast, kas notiek. Adresi var arī uzspiest:
+`EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npm start`.
 
 #### 1. Datubāze
 
@@ -430,7 +430,7 @@ netiek glabāta repozitorijā.
 
 ## Backend uz Render
 
-Vajadzīgs **A ceļam** (Expo Go pret internetu) un **C ceļam** (APK). Repozitorijā
+Vajadzīgs **B ceļam** (Expo Go pret internetu) un **C ceļam** (APK). Repozitorijā
 ir `render.yaml`, tāpēc pietiek ar Blueprint:
 
 1. [Render](https://render.com) → **New** → **Blueprint** → norādi šo repozitoriju

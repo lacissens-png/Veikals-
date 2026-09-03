@@ -16,8 +16,10 @@ set -euo pipefail
 
 URL="${EXPO_PUBLIC_API_URL:-}"
 
-# Ja pirmais arguments ir adrese, tā uzvar; atlikušie iet tālāk uz expo.
-if [[ "${1:-}" == http://* || "${1:-}" == https://* ]]; then
+# Pirmais arguments, kas nav karogs, ir adrese; atlikušie iet tālāk uz expo.
+# Shēmu nepārbaudām šeit — to dara zemākā pārbaude, lai nederīga adrese dotu
+# ziņu par shēmu, nevis maldinošo "nav norādīta adrese".
+if [[ -n "${1:-}" && "${1}" != -* ]]; then
   URL="$1"
   shift
 fi
@@ -53,7 +55,7 @@ if [[ "${URL}" =~ ^https?://(localhost|127\.0\.0\.1)(:|$|/) ]]; then
   cat >&2 <<'MSG'
 
 Telefonam "localhost" ir pats telefons, ne šis dators. Lokālam backend lieto
-`npm start` — lietotne datora adresi atrod pati.
+`./scripts/start.sh` — lietotne datora adresi atrod pati.
 MSG
   exit 1
 fi
