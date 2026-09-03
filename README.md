@@ -91,6 +91,16 @@ npx expo start
 
 Skenē QR kodu ar Expo Go vai palaid emulatorā (`a` — Android, `i` — iOS).
 
+Ātrai apskatei bez telefona der arī pārlūks:
+
+```bash
+EXPO_PUBLIC_API_URL=http://localhost:4000 npx expo start --web
+```
+
+> **Pārlūkā sesija nesaglabājas.** `expo-secure-store` ir tikai vietējām
+> platformām, tāpēc pēc lapas pārlādes jāpiesakās no jauna. Uz telefona tas
+> strādā normāli. Web režīms ir domāts UI apskatei, nevis lietošanai.
+
 > **Uz fiziskas ierīces** `localhost` norāda uz pašu telefonu. Norādi datora IP:
 > ```bash
 > EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npx expo start
