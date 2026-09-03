@@ -130,6 +130,7 @@ pārskaitījumi starp saviem kontiem), ko AI **nedrīkst** atzīmēt kā aboneme
 | `ANTHROPIC_API_KEY` | AI funkcijām | Bez tās analīze un melnraksti atgriež 503 |
 | `ANTHROPIC_MODEL` | nē | Noklusējums `claude-opus-5` |
 | `ENABLE_BANKING_MOCK` | nē | `true` = testa dati bez īsta bankas savienojuma |
+| `TOKEN_ENCRYPTION_KEY` | ar īstu banku | 64 hex rakstzīmes; bankas tokenu šifrēšanai. Mock režīmā nav vajadzīgs |
 | `ENABLE_BANKING_CLIENT_ID` / `_SECRET` | ražošanai | Enable Banking atslēgas |
 | `ENABLE_BANKING_API_URL` | nē | Noklusējums `https://api.enablebanking.com` |
 | `ENABLE_BANKING_REDIRECT_URI` | nē | Kur banka atgriež lietotāju |
