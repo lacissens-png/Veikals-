@@ -18,7 +18,7 @@ darījumu vēstures un vai lietotāji uzskata šo informāciju par vērtīgu.
 | Mape | Kas tur ir |
 |---|---|
 | `backend/` | Node.js + Express 5 + TypeScript API, Prisma 7, PostgreSQL |
-| `mobile/` | React Native (Expo SDK 57) aplikācija ar 7 ekrāniem |
+| `mobile/` | React Native (Expo SDK 57) aplikācija ar 8 ekrāniem |
 | `Index.html`, `Style.css` | Nesaistīts agrāks online veikala demo — MVP to neizmanto |
 
 ---
@@ -130,7 +130,11 @@ pārskaitījumi starp saviem kontiem), ko AI **nedrīkst** atzīmēt kā aboneme
 | `ANTHROPIC_API_KEY` | AI funkcijām | Bez tās analīze un melnraksti atgriež 503 |
 | `ANTHROPIC_MODEL` | nē | Noklusējums `claude-opus-5` |
 | `ENABLE_BANKING_MOCK` | nē | `true` = testa dati bez īsta bankas savienojuma |
-| `TOKEN_ENCRYPTION_KEY` | ar īstu banku | 64 hex rakstzīmes; bankas tokenu šifrēšanai. Mock režīmā nav vajadzīgs |
+| `TOKEN_ENCRYPTION_KEY` | jā | 64 hex rakstzīmes; bankas un Gmail tokenu šifrēšanai. `.env.example` satur izstrādes atslēgu, ko produkcijā noraida |
+| `GMAIL_MOCK` | nē | `true` = testa vēstules bez Google Cloud projekta |
+| `GMAIL_CLIENT_ID` / `_SECRET` | īstam Gmail | Google OAuth klients |
+| `GMAIL_REDIRECT_URI` | nē | Kur Google atgriež lietotāju |
+| `EMAIL_SYNC_MONTHS` | nē | Cik mēnešus atpakaļ lasīt vēstules, noklusējums `3` |
 | `ENABLE_BANKING_CLIENT_ID` / `_SECRET` | ražošanai | Enable Banking atslēgas |
 | `ENABLE_BANKING_API_URL` | nē | Noklusējums `https://api.enablebanking.com` |
 | `ENABLE_BANKING_REDIRECT_URI` | nē | Kur banka atgriež lietotāju |
@@ -140,6 +144,38 @@ pārskaitījumi starp saviem kontiem), ko AI **nedrīkst** atzīmēt kā aboneme
 
 Konfigurācija tiek validēta ar zod aplikācijas startā — trūkstošs vai nederīgs
 mainīgais dod skaidru kļūdu uzreiz, nevis `undefined` pusceļā.
+
+---
+
+## E-pasts (Gmail)
+
+Bankas izraksts rāda tikai to, kas jau ir noticis. E-pastā ir tas, kas vēl
+notiks: bezmaksas izmēģinājumi, kas drīz sāks maksāt, cenu paziņojumi pirms
+norēķina, un gada atjaunošanas. Tur ir arī viltus rēķini.
+
+**Atļaujas:** `gmail.readonly` un `gmail.send`.
+
+`gmail.modify` apzināti **netiek** prasīts. Lietotne brīdina par krāpšanu, bet
+nekad neaiztiek pastkastīti. Nepareizi mēstulēs aizmests īsts rēķins nozīmē
+nokavētu maksājumu un soda naudu — tas ir sliktāk nekā brīdinājums, ko lietotājs
+redz un izvērtē pats.
+
+**Ko lietotne dara ar datiem:**
+
+- lasa tikai vēstules, kas atbilst šauram meklēšanas vaicājumam (abonementu un
+  rēķinu termini holandiešu un angļu valodā), nevis visu pastkastīti
+- apgriež ķermeni līdz 2000 rakstzīmēm pirms sūtīšanas uz AI
+- datubāzē glabā **tikai izvilktos faktus** — tirgotāju, summu, datumu,
+  aizdomīguma pazīmes. Vēstuļu saturs netiek glabāts.
+
+Mock režīmā (`GMAIL_MOCK=true`) visu var izmēģināt bez Google Cloud projekta.
+Testa vēstules ietver izmēģinājumu, kas beidzas, Ziggo cenas paziņojumu, gada
+atjaunošanu, un trīs krāpšanas paraugus: viltus ING rēķinu, Netflix pīķšķerēšanu
+un abonementu slazdu.
+
+Īstam Gmail: izveido Google Cloud projektu, ieslēdz Gmail API, izveido OAuth
+klientu ar abām atļaujām, iekopē `GMAIL_CLIENT_ID` un `GMAIL_CLIENT_SECRET`
+`.env` failā un iestati `GMAIL_MOCK=false`.
 
 ---
 
@@ -184,6 +220,14 @@ Visi, izņemot `/health`, `/api/auth/*` un `/api/bank/callback`, prasa
 | `POST` | `/api/subscriptions/:id/draft-cancel` | Atcelšanas melnraksts |
 | `POST` | `/api/subscriptions/:id/draft-negotiate` | Pārrunu melnraksts |
 | `PATCH` | `/api/subscriptions/drafts/:draftId` | Atzīmē melnrakstu kā nokopētu/atmestu |
+| `POST` | `/api/subscriptions/drafts/:draftId/send` | Nosūta melnrakstu no lietotāja pasta |
+| `POST` | `/api/email/connect` | Sāk Gmail OAuth plūsmu |
+| `GET` | `/api/email/callback` | Google atgriešanās punkts |
+| `GET` | `/api/email/connections` | E-pasta savienojumi |
+| `DELETE` | `/api/email/connections/:id` | Atvieno pastu |
+| `POST` | `/api/email/sync` | Lasa vēstules → AI analīze → atradumi |
+| `GET` | `/api/email/findings` | Brīdinājumi un gaidāmie maksājumi |
+| `PATCH` | `/api/email/findings/:id` | Atzīmē kā redzētu vai atmestu |
 | `POST` | `/api/notifications/token` | Expo push tokena reģistrācija |
 | `DELETE` | `/api/me` | Dzēš kontu un visus datus |
 

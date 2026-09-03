@@ -106,3 +106,55 @@ export interface BankConnection {
   lastSyncedAt: string | null;
   providerAccountId: string | null;
 }
+
+export type FindingKind =
+  | "trial_ending"
+  | "price_change"
+  | "renewal"
+  | "invoice"
+  | "suspicious";
+
+export interface EmailFinding {
+  id: string;
+  kind: FindingKind | string;
+  merchantName: string;
+  senderAddress: string | null;
+  summary: string;
+  amount: number | null;
+  currency: string | null;
+  effectiveDate: string | null;
+  confidence: number;
+  riskReasons: string[];
+  status: string;
+  subscriptionId: string | null;
+  receivedAt: string;
+}
+
+export interface FindingsResponse {
+  summary: {
+    total: number;
+    suspicious: number;
+    upcoming: number;
+    newCount: number;
+  };
+  suspicious: EmailFinding[];
+  upcoming: EmailFinding[];
+}
+
+export interface EmailConnection {
+  id: string;
+  provider: string;
+  emailAddress: string | null;
+  status: string;
+  connectedAt: string;
+  lastSyncedAt: string | null;
+}
+
+export interface SendDraftResult {
+  id: string;
+  recipient: string | null;
+  sentAt: string | null;
+  externalId: string;
+  /** Mock režīmā vēstule netiek sūtīta. */
+  simulated: boolean;
+}

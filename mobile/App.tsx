@@ -9,6 +9,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthProvider, useAuth } from "./src/auth/AuthContext";
+import { AlertsScreen } from "./src/screens/AlertsScreen";
 import { BankConnectScreen } from "./src/screens/BankConnectScreen";
 import { DashboardScreen } from "./src/screens/DashboardScreen";
 import { DraftActionScreen } from "./src/screens/DraftActionScreen";
@@ -108,6 +109,11 @@ function RootNavigator() {
             name="DraftAction"
             component={DraftActionScreen}
             options={{ title: "Melnraksts" }}
+          />
+          <Stack.Screen
+            name="Alerts"
+            component={AlertsScreen}
+            options={{ title: "Brīdinājumi" }}
           />
           <Stack.Screen
             name="Settings"

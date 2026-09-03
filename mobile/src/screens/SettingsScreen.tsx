@@ -2,18 +2,20 @@ import React, { useCallback, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
+import * as WebBrowser from "expo-web-browser";
 import { api, ApiError, API_BASE_URL } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { Badge, Button, Card, ErrorView } from "../components";
 import { registerForPushNotifications } from "../notifications";
 import { theme } from "../theme";
-import type { BankConnection } from "../api/types";
+import type { BankConnection, EmailConnection } from "../api/types";
 import type { ScreenProps } from "../navigation/types";
 
 /** 7. ekrāns: konta iestatījumi, bankas atvienošana, datu dzēšana. */
 export function SettingsScreen({ navigation }: ScreenProps<"Settings">) {
   const { user, signOut } = useAuth();
   const [connections, setConnections] = useState<BankConnection[]>([]);
+  const [emails, setEmails] = useState<EmailConnection[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [pushStatus, setPushStatus] = useState<string | null>(null);
@@ -21,8 +23,12 @@ export function SettingsScreen({ navigation }: ScreenProps<"Settings">) {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const result = await api.listConnections();
-      setConnections(result.connections);
+      const [banks, mail] = await Promise.all([
+        api.listConnections(),
+        api.listEmailConnections(),
+      ]);
+      setConnections(banks.connections);
+      setEmails(mail.connections);
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -97,6 +103,40 @@ export function SettingsScreen({ navigation }: ScreenProps<"Settings">) {
     }
   }
 
+  async function connectEmail() {
+    setBusy("email");
+    setError(null);
+    try {
+      const { authorizationUrl } = await api.connectEmail();
+      const result = await WebBrowser.openAuthSessionAsync(
+        authorizationUrl,
+        "abonementi://bank-callback",
+      );
+      if (result.type === "success") {
+        await load();
+      } else if (result.type === "cancel" || result.type === "dismiss") {
+        setError("Savienojums tika atcelts.");
+      }
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Neizdevās savienot pastu.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function disconnectEmail(id: string) {
+    setBusy(id);
+    setError(null);
+    try {
+      await api.disconnectEmail(id);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Neizdevās atvienot pastu.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function enablePush() {
     setBusy("push");
     setPushStatus(null);
@@ -159,6 +199,48 @@ export function SettingsScreen({ navigation }: ScreenProps<"Settings">) {
                   variant="secondary"
                   loading={busy === connection.id}
                   onPress={() => confirmDisconnect(connection)}
+                />
+              </View>
+            ))
+          )}
+        </Card>
+
+        <Card>
+          <Text style={styles.sectionTitle}>E-pasts</Text>
+          <Text style={styles.hint}>
+            Atrod izmēģinājumus, kas drīz sāks maksāt, un brīdina par
+            krāpnieciskām vēstulēm. Mēs tikai lasām — tavu pastkastīti
+            neaiztiekam un neko nedzēšam.
+          </Text>
+
+          {emails.length === 0 ? (
+            <View style={styles.action}>
+              <Button
+                title="Savienot e-pastu"
+                loading={busy === "email"}
+                onPress={() => void connectEmail()}
+              />
+            </View>
+          ) : (
+            emails.map((connection) => (
+              <View key={connection.id} style={styles.connectionRow}>
+                <View style={styles.connectionInfo}>
+                  <Text style={styles.value}>{connection.emailAddress ?? "Pasts"}</Text>
+                  <Text style={styles.hint}>
+                    {connection.lastSyncedAt
+                      ? `Pēdējā pārbaude: ${connection.lastSyncedAt.slice(0, 10)}`
+                      : "Vēl nav pārbaudīts"}
+                  </Text>
+                  <Badge
+                    label={connection.status}
+                    tone={connection.status === "active" ? "success" : "neutral"}
+                  />
+                </View>
+                <Button
+                  title="Atvienot"
+                  variant="secondary"
+                  loading={busy === connection.id}
+                  onPress={() => void disconnectEmail(connection.id)}
                 />
               </View>
             ))

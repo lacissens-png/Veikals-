@@ -1,6 +1,9 @@
 import { Platform } from "react-native";
 import type {
   AuthResponse,
+  EmailConnection,
+  FindingsResponse,
+  SendDraftResult,
   BankConnectResponse,
   BankConnection,
   DraftResponse,
@@ -163,6 +166,37 @@ export const api = {
     request<void>("/api/notifications/token", {
       method: "POST",
       body: { pushToken },
+    }),
+
+  connectEmail: () =>
+    request<{ emailConnectionId: string; authorizationUrl: string }>(
+      "/api/email/connect",
+      { method: "POST" },
+    ),
+
+  listEmailConnections: () =>
+    request<{ connections: EmailConnection[] }>("/api/email/connections"),
+
+  disconnectEmail: (id: string) =>
+    request<void>(`/api/email/connections/${id}`, { method: "DELETE" }),
+
+  syncEmail: () =>
+    request<{ fetched: number; analyzed: number; stored: number }>(
+      "/api/email/sync",
+      { method: "POST" },
+    ),
+
+  listFindings: () => request<FindingsResponse>("/api/email/findings"),
+
+  setFindingStatus: (id: string, status: "acknowledged" | "dismissed") =>
+    request<unknown>(`/api/email/findings/${id}`, {
+      method: "PATCH",
+      body: { status },
+    }),
+
+  sendDraft: (draftId: string) =>
+    request<SendDraftResult>(`/api/subscriptions/drafts/${draftId}/send`, {
+      method: "POST",
     }),
 
   deleteAccount: () => request<void>("/api/me", { method: "DELETE" }),

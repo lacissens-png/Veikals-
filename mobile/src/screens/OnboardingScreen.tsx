@@ -80,12 +80,21 @@ export function OnboardingScreen() {
               tavus bankas datus mēs neredzam.
             </Text>
             <Text style={styles.securityItem}>
-              • Analīzei uz AI tiek sūtīts tikai datums, apraksts un summa. Tavs
-              vārds, e-pasts un konta numurs nekad neatstāj mūsu serveri.
+              • No bankas uz AI tiek sūtīts tikai datums, apraksts un summa. Tavs
+              vārds un konta numurs nekad neatstāj mūsu serveri.
             </Text>
             <Text style={styles.securityItem}>
-              • Atcelšanas vēstules mēs sagatavojam, bet nekad nesūtām bez tavas
-              ziņas — tu tās nokopē un nosūti pats.
+              • Ja savieno e-pastu, mēs lasām tikai vēstules par abonementiem un
+              rēķiniem, nevis visu pastkastīti. Vēstuļu saturu mēs neglabājam —
+              tikai to, ko no tām izlasām.
+            </Text>
+            <Text style={styles.securityItem}>
+              • Aizdomīgas vēstules mēs parādām, bet nekad nedzēšam un
+              nepārvietojam. Tava pastkastīte paliek tava.
+            </Text>
+            <Text style={styles.securityItem}>
+              • Atcelšanas vēstules mēs sagatavojam, bet nosūtām tikai tad, kad
+              tu to nospied. Vari arī nokopēt un nosūtīt pats.
             </Text>
             <Text style={styles.securityItem}>
               • Kontu un visus datus vari izdzēst jebkurā brīdī iestatījumos.

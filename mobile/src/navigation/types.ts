@@ -12,6 +12,7 @@ export type RootStackParamList = {
     merchantName: string;
     actionType: "cancel" | "negotiate";
   };
+  Alerts: undefined;
   Settings: undefined;
 };
 

@@ -12,7 +12,11 @@ import { useFocusEffect } from "@react-navigation/native";
 import { api, ApiError } from "../api/client";
 import { Badge, Button, Card, ErrorView, LoadingView } from "../components";
 import { categoryLabel, formatEur, frequencyLabel, theme } from "../theme";
-import type { Subscription, SubscriptionSummary } from "../api/types";
+import type {
+  FindingsResponse,
+  Subscription,
+  SubscriptionSummary,
+} from "../api/types";
 import type { ScreenProps } from "../navigation/types";
 
 /** 4. ekrāns: kopējā abonementu summa un saraksts pa kategorijām. */
@@ -22,6 +26,7 @@ export function DashboardScreen({ navigation }: ScreenProps<"Dashboard">) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [findings, setFindings] = useState<FindingsResponse | null>(null);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -31,6 +36,13 @@ export function DashboardScreen({ navigation }: ScreenProps<"Dashboard">) {
       const result = await api.listSubscriptions();
       setSummary(result.summary);
       setSubscriptions(result.subscriptions);
+
+      // Brīdinājumi nav obligāti — ja pasts nav savienots, pārskats strādā tāpat.
+      try {
+        setFindings(await api.listFindings());
+      } catch {
+        setFindings(null);
+      }
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -76,6 +88,25 @@ export function DashboardScreen({ navigation }: ScreenProps<"Dashboard">) {
           <View style={styles.header}>
             {error ? (
               <ErrorView message={error} onRetry={() => void load()} />
+            ) : null}
+
+            {findings && findings.summary.total > 0 ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => navigation.navigate("Alerts")}
+                style={({ pressed }) => [
+                  styles.alertBanner,
+                  findings.summary.suspicious > 0 && styles.alertBannerDanger,
+                  pressed && styles.rowPressed,
+                ]}
+              >
+                <Text style={styles.alertText}>
+                  {findings.summary.suspicious > 0
+                    ? `${findings.summary.suspicious} aizdomīgas vēstules`
+                    : `${findings.summary.upcoming} gaidāmi maksājumi`}
+                </Text>
+                <Text style={styles.alertChevron}>Skatīt</Text>
+              </Pressable>
             ) : null}
 
             <Card style={styles.totalCard}>
@@ -197,6 +228,23 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.spacing(2), gap: theme.spacing(1) },
   header: { gap: theme.spacing(2), marginBottom: theme.spacing(1) },
+  alertBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "rgba(255, 176, 32, 0.12)",
+    borderColor: theme.colors.warning,
+    borderWidth: 1,
+    borderRadius: theme.radius.md,
+    paddingVertical: theme.spacing(1.5),
+    paddingHorizontal: theme.spacing(2),
+  },
+  alertBannerDanger: {
+    backgroundColor: "rgba(255, 95, 95, 0.12)",
+    borderColor: theme.colors.danger,
+  },
+  alertText: { color: theme.colors.text, fontSize: 14, fontWeight: "600" },
+  alertChevron: { color: theme.colors.primary, fontSize: 14 },
   totalCard: { alignItems: "center", paddingVertical: theme.spacing(3) },
   totalLabel: { color: theme.colors.textMuted, fontSize: 14 },
   totalValue: {

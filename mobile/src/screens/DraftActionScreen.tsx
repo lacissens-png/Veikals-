@@ -23,6 +23,8 @@ export function DraftActionScreen({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState<{ recipient: string | null; simulated: boolean } | null>(null);
 
   const generate = useCallback(async () => {
     setLoading(true);
@@ -47,6 +49,22 @@ export function DraftActionScreen({
   useEffect(() => {
     void generate();
   }, [generate]);
+
+  async function send() {
+    if (!draftId) return;
+    setSending(true);
+    setError(null);
+    try {
+      const result = await api.sendDraft(draftId);
+      setSent({ recipient: result.recipient, simulated: result.simulated });
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Neizdevās nosūtīt vēstuli.",
+      );
+    } finally {
+      setSending(false);
+    }
+  }
 
   async function copy() {
     if (!text) return;
@@ -80,8 +98,8 @@ export function DraftActionScreen({
           {actionType === "cancel" ? "Atcelšanas vēstule" : "Pārrunu vēstule"}
         </Text>
         <Text style={styles.subtitle}>
-          Adresāts: {merchantName}. Pārlasi tekstu, nokopē to un nosūti no sava
-          e-pasta — mēs neko nesūtām tavā vārdā.
+          Adresāts: {merchantName}. Pārlasi tekstu un vai nu nosūti to no sava
+          pasta, vai nokopē un nosūti pats. Bez tavas komandas mēs neko nesūtām.
         </Text>
 
         {error ? <ErrorView message={error} onRetry={generate} /> : null}
@@ -94,6 +112,16 @@ export function DraftActionScreen({
           </Card>
         ) : null}
 
+        {sent ? (
+          <View style={styles.copiedBox}>
+            <Text style={styles.copiedText}>
+              {sent.simulated
+                ? `Mock režīms: vēstule NETIKA nosūtīta. Īstā adresāts būtu ${sent.recipient}.`
+                : `Nosūtīts uz ${sent.recipient}.`}
+            </Text>
+          </View>
+        ) : null}
+
         {copied ? (
           <View style={styles.copiedBox}>
             <Text style={styles.copiedText}>
@@ -104,7 +132,14 @@ export function DraftActionScreen({
 
         <View style={styles.actions}>
           <Button
+            title={sent ? "Nosūtīts" : "Nosūtīt no mana pasta"}
+            onPress={() => void send()}
+            loading={sending}
+            disabled={!text || sent !== null}
+          />
+          <Button
             title={copied ? "Kopēt vēlreiz" : "Kopēt tekstu"}
+            variant="secondary"
             onPress={() => void copy()}
             disabled={!text}
           />
