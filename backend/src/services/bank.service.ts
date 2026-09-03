@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { encryptToken } from "../lib/crypto.js";
 import { AppError } from "../lib/errors.js";
 import { logger } from "../lib/logger.js";
 import { prisma } from "../lib/prisma.js";
@@ -58,7 +59,8 @@ export async function completeConnection(code: string, state: string) {
         status: "active",
         providerAccountId: result.accountId,
         sessionId: result.sessionId,
-        accessToken: result.accessToken,
+        // Tokens datubāzē nonāk tikai šifrēts.
+        accessToken: encryptToken(result.accessToken),
         tokenExpiresAt: result.expiresAt,
         connectedAt: new Date(),
         // `state` derīgs vienu reizi.

@@ -10,6 +10,10 @@ set -euo pipefail
 
 PATTERN="${1:-src/**/*.test.ts}"
 
+# Fiksēta atslēga tikai testiem — crypto testi bez tās nevar strādāt.
+# Šī nekad netiek lietota ārpus testiem.
+export TOKEN_ENCRYPTION_KEY="${TOKEN_ENCRYPTION_KEY:-$(printf '0%.0s' {1..64})}"
+
 output=""
 status=0
 output="$(node --import tsx --test "${PATTERN}" 2>&1)" || status=$?

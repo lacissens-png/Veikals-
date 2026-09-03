@@ -1,4 +1,5 @@
 import { env } from "../config/env.js";
+import { decryptToken } from "../lib/crypto.js";
 import { AppError } from "../lib/errors.js";
 import { logger } from "../lib/logger.js";
 import { prisma } from "../lib/prisma.js";
@@ -46,7 +47,7 @@ export async function syncTransactions(userId: string): Promise<SyncResult> {
   const from = syncFromDate();
   const fetched = await bankProvider.fetchTransactions({
     accountId: connection.providerAccountId,
-    accessToken: connection.accessToken,
+    accessToken: decryptToken(connection.accessToken),
     from,
   });
 

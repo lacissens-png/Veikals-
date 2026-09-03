@@ -38,11 +38,34 @@ const envSchema = z.object({
     .default("true")
     .transform((value) => value.toLowerCase() === "true"),
 
+  // 32 baiti hex (64 rakstzīmes). Ģenerē ar: openssl rand -hex 32
+  TOKEN_ENCRYPTION_KEY: z
+    .string()
+    .regex(/^[0-9a-fA-F]{64}$/, "TOKEN_ENCRYPTION_KEY jābūt 64 hex rakstzīmes")
+    .optional(),
+
   TRANSACTION_SYNC_MONTHS: z.coerce.number().int().min(1).max(24).default(3),
   APP_REDIRECT_URL: z.string().default("abonementi://bank-callback"),
 });
 
-const parsed = envSchema.safeParse(process.env);
+/**
+ * Mock režīmā bankas tokena nav vispār, tāpēc šifrēšanas atslēga nav vajadzīga
+ * un ātrā palaišana strādā bez tās. Ar īstu banku tā ir obligāta — pretējā
+ * gadījumā tokens nonāktu datubāzē atklātā tekstā.
+ */
+const envSchemaChecked = envSchema.superRefine((value, ctx) => {
+  if (!value.ENABLE_BANKING_MOCK && !value.TOKEN_ENCRYPTION_KEY) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["TOKEN_ENCRYPTION_KEY"],
+      message:
+        "obligāts, kad ENABLE_BANKING_MOCK=false — bez tā bankas tokens tiktu " +
+        "glabāts atklātā tekstā. Ģenerē ar: openssl rand -hex 32",
+    });
+  }
+});
+
+const parsed = envSchemaChecked.safeParse(process.env);
 
 if (!parsed.success) {
   const issues = parsed.error.issues
