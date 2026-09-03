@@ -3,6 +3,7 @@ import { z } from "zod";
 import { pathParam } from "../lib/http.js";
 import { currentUserId, requireAuth } from "../middleware/auth.js";
 import { validateBody } from "../middleware/validate.js";
+import * as emailService from "../services/email.service.js";
 import * as subscriptionsService from "../services/subscriptions.service.js";
 
 export const subscriptionsRouter = Router();
@@ -63,6 +64,16 @@ subscriptionsRouter.post("/:id/draft-negotiate", async (req, res) => {
       pathParam(req, "id"),
       "negotiate",
     ),
+  );
+});
+
+/**
+ * Nosūta melnrakstu no lietotāja pasta. Prasa aktīvu e-pasta savienojumu —
+ * adresāts tiek ņemts no paša tirgotāja vēstulēm pastkastītē.
+ */
+subscriptionsRouter.post("/drafts/:draftId/send", async (req, res) => {
+  res.json(
+    await emailService.sendDraft(currentUserId(req), pathParam(req, "draftId")),
   );
 });
 
