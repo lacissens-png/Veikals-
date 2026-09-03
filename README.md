@@ -25,32 +25,98 @@ darījumu vēstures un vai lietotāji uzskata šo informāciju par vērtīgu.
 
 ## Priekšnosacījumi
 
-- Node.js 20 vai jaunāks
-- PostgreSQL 14+ (lokāli vai Docker)
-- Anthropic API atslēga — [console.anthropic.com](https://console.anthropic.com)
-- Enable Banking konts — **nav obligāts**, sk. mock režīmu zemāk
+- **Node.js 20 vai jaunāks** — visiem ceļiem
+- **Expo Go telefonā** — vajag SDK 57 versiju, sk. "Pirms sākt" zemāk
+- **PostgreSQL 14+** — tikai tad, ja backend palaid uz sava datora (B ceļš)
+- **Anthropic API atslēga** — [console.anthropic.com](https://console.anthropic.com);
+  bez tās abonementu analīze atgriež 503
+- **Enable Banking konts** — **nav obligāts**, sk. mock režīmu zemāk
 
 ---
 
-## Ātrā palaišana (bez bankas līguma)
+## Kā dabūt lietotni telefonā
+
+Trīs ceļi. Galvenā atšķirība ir tā, **kas paliek atkarīgs no datora**.
+
+| Ceļš | Kas vajadzīgs | Ko dod | Dators |
+|---|---|---|---|
+| **A. Expo Go + backend internetā** | Expo Go, viena komanda | Lietotne telefonā ar īstiem datiem | Ieslēgts, tajā pašā Wi-Fi |
+| **B. Viss uz sava datora** | Docker vai PostgreSQL, divi termināļi | Tas pats, bet strādā bez interneta | Tāpat |
+| **C. APK (EAS Build)** | Expo konts, backend uz Render | Ikona sākuma ekrānā | **Nevajag** |
 
 Ar `ENABLE_BANKING_MOCK=true` visa plūsma strādā ar reālistiskiem testa
 darījumiem, tāpēc projektu var palaist pirmajā dienā, negaidot PSD2 līgumu.
 
-**Ja gribi vienkārši palaist to uz sava telefona:**
+### Pirms sākt: pareizā Expo Go versija
+
+Projekts ir uz **Expo SDK 57**. Expo Go, kas nāk no Play Store, mēdz atpalikt no
+jaunākā SDK, un tad, skenējot QR kodu, parādās:
+
+```
+Project is incompatible with this version of Expo Go
+```
+
+Tas nozīmē tieši to, ko raksta — nesakrīt versijas, nevis kaut kas ir salūzis.
+Risinājums ir viena lejupielāde telefonā:
+
+**[expo.dev/go?sdkVersion=57&platform=android&device=true](https://expo.dev/go?sdkVersion=57&platform=android&device=true)**
+
+Tas ir gatavs APK, nevis būvējums, tāpēc nevajag ne Expo kontu, ne gaidīšanu
+rindā. Ja telefons pieslēgts ar USB vai lieto emulatoru, `npx expo start` un tad
+taustiņš `a` uzstāda pareizo versiju pats.
+
+> **EAS Update šeit nepalīdz.** `expo publish` tika noņemts SDK 50, un ar
+> `eas update` publicētu atjauninājumu Expo Go ielādēt nevar — tam vajag
+> `expo-dev-client` būvējumu. Tāpēc ceļa "tikai telefons, bez datora" ar Expo Go
+> **nav**. Bez datora strādā tikai C ceļš (APK).
+
+### A ceļš: Expo Go + backend internetā
+
+Vieglākais. Datubāze un backend darbojas uz Render, tāpēc uz datora nevajag ne
+PostgreSQL, ne Docker, ne otru termināli — paliek viena komanda, kas apkalpo
+JS bundli.
+
+1. Izvieto backend — sk. sadaļu **Backend uz Render** zemāk
+2. Uz datora:
+
+```bash
+cd mobile
+npm install
+npm run start:remote -- https://tavs-serviss.onrender.com
+```
+
+3. Skenē QR kodu ar Expo Go
+
+Adresi var padot arī caur vidi:
+
+```bash
+EXPO_PUBLIC_API_URL=https://tavs-serviss.onrender.com npm run start:remote
+```
+
+Telefonam un datoram jābūt vienā Wi-Fi tīklā: dators apkalpo JS bundli, bet dati
+nāk no interneta.
+
+### B ceļš: viss uz sava datora
+
+Izstrādei. Strādā arī bez interneta.
 
 ```bash
 ./scripts/setup.sh            # datubāze, atkarības, migrācijas — vienreiz
 cd backend && npm run dev     # 1. terminālis
-cd mobile  && npx expo start  # 2. terminālis
+cd mobile  && npm start       # 2. terminālis
 ```
 
-Tad skenē QR kodu ar [Expo Go](https://expo.dev/go). Telefonam un datoram
-jābūt vienā Wi-Fi tīklā; pārējo lietotne atrod pati.
+Tad skenē QR kodu ar Expo Go. **Sava IP meklēt nevajag.** Lietotne paņem datora
+adresi no Expo izstrādes servera (`Constants.expoConfig.hostUri`) un pati atrod
+backend uz porta 4000. Ja tomēr jāuzspiež cita adrese:
 
-Zemāk ir tie paši soļi pa vienam, ja gribi saprast, kas notiek.
+```bash
+EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npm start
+```
 
-### 1. Datubāze
+Zemāk tie paši soļi pa vienam, ja `setup.sh` neder vai gribi saprast, kas notiek.
+
+#### 1. Datubāze
 
 ```bash
 # Ar Docker
@@ -63,7 +129,7 @@ docker run -d --name abonementi-db \
 createdb abonementi
 ```
 
-### 2. Backend
+#### 2. Backend
 
 ```bash
 cd backend
@@ -94,36 +160,27 @@ npm run dev                 # http://localhost:4000
 
 Pārbaude: `curl http://localhost:4000/health`
 
-### 3. Mobilā aplikācija
+#### 3. Mobilā aplikācija
 
 ```bash
 cd mobile
 npm install
-npx expo start
+npm start
 ```
 
 Skenē QR kodu ar **Expo Go** vai palaid emulatorā (`a` — Android, `i` — iOS).
 
-**Sava IP meklēt nevajag.** Lietotne paņem datora adresi no Expo izstrādes
-servera (`Constants.expoConfig.hostUri`) un pati atrod backend uz porta 4000.
-Vajag tikai, lai telefons un dators būtu vienā Wi-Fi tīklā. Ja tomēr jāuzspiež
-cita adrese:
-
-```bash
-EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npx expo start
-```
-
 Ātrai apskatei bez telefona der arī pārlūks:
 
 ```bash
-npx expo start --web
+npm run web
 ```
 
 > **Pārlūkā sesija nesaglabājas.** `expo-secure-store` ir tikai vietējām
 > platformām, tāpēc pēc lapas pārlādes jāpiesakās no jauna. Uz telefona tas
 > strādā normāli. Web režīms ir domāts UI apskatei, nevis lietošanai.
 
-### 4. Plūsma aplikācijā
+### Plūsma aplikācijā
 
 1. **Sākt** → izveido kontu ar e-pastu un paroli
 2. **Savienot kontu** → mock režīmā "banka" uzreiz atgriež atpakaļ
@@ -371,15 +428,10 @@ cd backend
 AI endpointi CI netiek skarti — tiem vajadzīga `ANTHROPIC_API_KEY`, un tā
 netiek glabāta repozitorijā.
 
-## Lietotne uz telefona kā īsta aplikācija (Android)
+## Backend uz Render
 
-Expo Go der izmēģināšanai, bet tam vajag ieslēgtu datoru tajā pašā Wi-Fi. Lai
-lietotne būtu ikona sākuma ekrānā un strādātu jebkur, vajag divas lietas:
-backend internetā un uzbūvētu APK.
-
-### 1. Backend uz Render
-
-Repozitorijā ir `render.yaml`, tāpēc pietiek ar Blueprint:
+Vajadzīgs **A ceļam** (Expo Go pret internetu) un **C ceļam** (APK). Repozitorijā
+ir `render.yaml`, tāpēc pietiek ar Blueprint:
 
 1. [Render](https://render.com) → **New** → **Blueprint** → norādi šo repozitoriju
 2. Render palūgs divus noslēpumus:
@@ -390,11 +442,26 @@ Repozitorijā ir `render.yaml`, tāpēc pietiek ar Blueprint:
 Migrācijas tiek pielietotas automātiski pirms servera starta. Pārbaude:
 `curl https://<tavs-serviss>.onrender.com/health`
 
+Atbildē ir `"aiConfigured"`. Ja tur ir `false`, atslēga nav nonākusi līdz
+serverim.
+
+> **Svaigai izvietošanai datubāze ir tukša.** Pārskats būs tukšs, līdz esi
+> reģistrējies, savienojis banku un sinhronizējis darījumus. Ja
+> `ANTHROPIC_API_KEY` nav iestatīta, sinhronizācija izdodas, bet **analīze
+> atgriež 503 un abonementu saraksts paliek tukšs** — lietotne izskatās salauzta,
+> lai gan tikai trūkst atslēgas.
+
 > **Bezmaksas plāni mēdz iemigt** pēc dīkstāves, tāpēc pirmais pieprasījums pēc
 > pauzes var aizņemt ~minūti, un datubāzēm var būt derīguma termiņš. Pārbaudi
 > aktuālos noteikumus, ja plāno uz to paļauties ilgāk.
 
-### 2. APK ar EAS Build
+---
+
+## C ceļš: APK — lietotne bez datora
+
+Expo Go der izmēģināšanai, bet tam vajag ieslēgtu datoru tajā pašā Wi-Fi. Lai
+lietotne būtu ikona sākuma ekrānā un strādātu jebkur, vajag uzbūvētu APK un
+backend internetā (sk. **Backend uz Render** augstāk).
 
 Ja Render adrese atšķiras no `abonementi-api.onrender.com`, nomaini to
 `mobile/eas.json` failā (`preview` profila `EXPO_PUBLIC_API_URL`).
@@ -453,5 +520,6 @@ Xcode uz Mac.
   tas, cik precīzi modelis atpazīst abonementus. To var noskaidrot tikai ar īstu
   atslēgu.
 - Maršrutu slānis nav pārklāts ar vienībtestiem — to daļēji sedz dūmu tests.
-- Bankas tokeni datubāzē glabājas atklātā tekstā. Pirms produkcijas tie
-  jāšifrē (piem., ar KMS vai `pgcrypto`).
+- Bankas un Gmail tokeni datubāzē tiek šifrēti ar AES-256-GCM
+  (`TOKEN_ENCRYPTION_KEY`). Atslēga glabājas vidē, tāpēc produkcijā to labāk
+  turēt atslēgu pārvaldībā (piem. KMS), nevis vides mainīgajā.

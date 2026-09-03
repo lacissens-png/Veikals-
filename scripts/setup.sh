@@ -66,7 +66,7 @@ cat <<'DONE'
 Gatavs. Palaišanai vajag divus termināļus:
 
   1. cd backend && npm run dev
-  2. cd mobile  && npx expo start
+  2. cd mobile  && npm start
 
 Tad skenē QR kodu ar Expo Go. Lietotne pati atradīs backend uz tā paša datora —
 IP nav jāmeklē.
