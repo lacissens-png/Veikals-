@@ -1,0 +1,195 @@
+// Datubāzes shēma abonementu/rēķinu audita MVP.
+//
+// Tabulu un kolonnu nosaukumi ir snake_case (kā MVP specifikācijā), Prisma
+// modeļi ir camelCase — sasaiste caur @map / @@map.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  // Paplašinājums pret specifikāciju: MVP lieto pašu e-pasts+parole autentifikāciju,
+  // tāpēc nepieciešams paroles hash (bcrypt).
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  // Expo push token push paziņojumiem par cenu izmaiņām (MVP funkcija #9).
+  pushToken    String?  @map("push_token") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  bankConnections  BankConnection[]
+  subscriptions    Subscription[]
+  emailConnections EmailConnection[]
+  emailFindings    EmailFinding[]
+
+  @@map("users")
+}
+
+model BankConnection {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  provider          String?  @default("enable_banking") @db.VarChar(50)
+  providerAccountId String?  @map("provider_account_id") @db.VarChar(255)
+  connectedAt       DateTime @default(now()) @map("connected_at") @db.Timestamp(6)
+  // 'pending' -> lietotājs vēl nav pabeidzis bankas OAuth; 'active' -> savienots;
+  // 'revoked' -> lietotājs atvienojis; 'error' -> pieprasījums neizdevās.
+  status            String   @default("pending") @db.VarChar(20)
+
+  // Paplašinājumi pret specifikāciju — nepieciešami OAuth plūsmai:
+  // CSRF `state` parametrs, kas sasaista callback ar konkrēto savienojumu,
+  // un bankas sesijas identifikators/token darījumu lasīšanai.
+  authState      String?   @unique @map("auth_state") @db.VarChar(128)
+  /// Kurp novirzīt pēc OAuth. Expo Go lieto exp://, būvēta lietotne — abonementi://
+  returnUrl      String?   @map("return_url") @db.VarChar(255)
+  sessionId      String?   @map("session_id") @db.VarChar(255)
+  accessToken    String?   @map("access_token")
+  tokenExpiresAt DateTime? @map("token_expires_at") @db.Timestamp(6)
+  lastSyncedAt   DateTime? @map("last_synced_at") @db.Timestamp(6)
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([userId])
+  @@map("bank_connections")
+}
+
+model Transaction {
+  id               String   @id @default(uuid()) @db.Uuid
+  bankConnectionId String   @map("bank_connection_id") @db.Uuid
+  date             DateTime @db.Date
+  description      String
+  amount           Decimal  @db.Decimal(10, 2)
+  currency         String   @default("EUR") @db.VarChar(3)
+  rawData          Json?    @map("raw_data")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  // Paplašinājums pret specifikāciju: bankas darījuma ID, lai atkārtota
+  // sinhronizācija nedublētu ierakstus.
+  externalId String? @map("external_id") @db.VarChar(255)
+
+  bankConnection BankConnection @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  @@unique([bankConnectionId, externalId], name: "transaction_external_id")
+  @@index([bankConnectionId, date])
+  @@map("transactions")
+}
+
+model Subscription {
+  id                  String    @id @default(uuid()) @db.Uuid
+  userId              String    @map("user_id") @db.Uuid
+  merchantName        String    @map("merchant_name") @db.VarChar(255)
+  category            String?   @db.VarChar(100)
+  averageAmount       Decimal?  @map("average_amount") @db.Decimal(10, 2)
+  frequency           String?   @db.VarChar(20)
+  firstSeen           DateTime? @map("first_seen") @db.Date
+  lastSeen            DateTime? @map("last_seen") @db.Date
+  priceChangeDetected Boolean   @default(false) @map("price_change_detected")
+  priceChangePercent  Decimal?  @map("price_change_percent") @db.Decimal(5, 2)
+  isFlaggedUnwanted   Boolean   @default(false) @map("is_flagged_unwanted")
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  // Paplašinājumi pret specifikāciju — nepieciešami detaļu skatam un
+  // atkārtotai analīzei (upsert pēc tirgotāja).
+  occurrences Int?     @db.Integer
+  firstAmount Decimal? @map("first_amount") @db.Decimal(10, 2)
+  lastAmount  Decimal? @map("last_amount") @db.Decimal(10, 2)
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draftActions  DraftAction[]
+  emailFindings EmailFinding[]
+
+  @@unique([userId, merchantName], name: "subscription_user_merchant")
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model DraftAction {
+  id             String   @id @default(uuid()) @db.Uuid
+  subscriptionId String   @map("subscription_id") @db.Uuid
+  actionType     String?  @map("action_type") @db.VarChar(20)
+  draftText      String?  @map("draft_text")
+  status         String   @default("pending") @db.VarChar(20)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  // Aizpildās tikai tad, ja lietotne vēstuli tiešām nosūtīja lietotāja vārdā.
+  sentAt    DateTime? @map("sent_at") @db.Timestamp(6)
+  recipient String?   @db.VarChar(255)
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@map("draft_actions")
+}
+
+model EmailConnection {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  provider     String   @default("gmail") @db.VarChar(50)
+  emailAddress String?  @map("email_address") @db.VarChar(255)
+  status       String   @default("pending") @db.VarChar(20)
+  connectedAt  DateTime @default(now()) @map("connected_at") @db.Timestamp(6)
+
+  // Tokeni datubāzē nonāk šifrēti (skat. src/lib/crypto.ts).
+  authState      String?   @unique @map("auth_state") @db.VarChar(128)
+  /// Kurp novirzīt pēc Gmail OAuth.
+  returnUrl      String?   @map("return_url") @db.VarChar(255)
+  accessToken    String?   @map("access_token")
+  refreshToken   String?   @map("refresh_token")
+  tokenExpiresAt DateTime? @map("token_expires_at") @db.Timestamp(6)
+  lastSyncedAt   DateTime? @map("last_synced_at") @db.Timestamp(6)
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  findings EmailFinding[]
+
+  @@index([userId])
+  @@map("email_connections")
+}
+
+/// Izvilktie fakti no e-pasta. Vēstuļu saturs NETIEK glabāts — tikai tas, kas
+/// vajadzīgs, lai brīdinātu lietotāju un sasaistītu ar abonementu.
+model EmailFinding {
+  id                String @id @default(uuid()) @db.Uuid
+  userId            String @map("user_id") @db.Uuid
+  emailConnectionId String @map("email_connection_id") @db.Uuid
+
+  /// Pasta servisa ziņas ID — neļauj vienu vēstuli apstrādāt divreiz.
+  externalId String   @map("external_id") @db.VarChar(255)
+  receivedAt DateTime @map("received_at") @db.Timestamp(6)
+
+  /// trial_ending | price_change | renewal | invoice | suspicious
+  kind          String  @db.VarChar(30)
+  merchantName  String  @map("merchant_name") @db.VarChar(255)
+  /// Sūtītāja adrese — no tās tiek adresēta atcelšanas vēstule.
+  senderAddress String? @map("sender_address") @db.VarChar(255)
+  summary       String
+
+  amount        Decimal?  @db.Decimal(10, 2)
+  currency      String?   @db.VarChar(3)
+  /// Kad iestājas sekas: izmēģinājums beidzas, jaunā cena sākas, notiek atjaunošana.
+  effectiveDate DateTime? @map("effective_date") @db.Date
+
+  /// 0..1 — cik pārliecināts ir modelis.
+  confidence  Decimal @default(0) @db.Decimal(3, 2)
+  /// Aizdomīgajiem: kāpēc tas izskatās pēc krāpšanas.
+  riskReasons Json?   @map("risk_reasons")
+
+  /// new | acknowledged | dismissed
+  status         String  @default("new") @db.VarChar(20)
+  subscriptionId String? @map("subscription_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connection   EmailConnection @relation(fields: [emailConnectionId], references: [id], onDelete: Cascade)
+  subscription Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@unique([emailConnectionId, externalId], name: "finding_external_id")
+  @@index([userId, status])
+  @@map("email_findings")
+}
