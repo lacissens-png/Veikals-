@@ -1,5 +1,6 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
+import { resolveApiBaseUrl } from "./apiUrl";
 import type {
   AuthResponse,
   EmailConnection,
@@ -14,52 +15,13 @@ import type {
   SyncResult,
 } from "./types";
 
-/** Backend ports. Metro klausās 8081, backend — 4000. */
-const API_PORT = 4000;
-
-/**
- * Izvelk datora IP no Expo izstrādes servera adreses.
- *
- * Kad lietotne darbojas Expo Go, tā jau zina, no kurienes ielādējās —
- * piemēram "192.168.1.10:8081". Tas ir tas pats dators, kur darbojas backend,
- * tāpēc adresi var atvasināt un lietotājam sava IP nav jāmeklē.
- *
- * Atgriež null, ja saimniekdatora nav (produkcijas būvējums) vai tas ir
- * localhost (emulators vai pārlūks — tur der noklusējumi).
- */
-export function hostFromExpo(hostUri: string | undefined): string | null {
-  if (!hostUri) return null;
-
-  const host = hostUri.split("/")[0]?.split(":")[0];
-  if (!host || host === "localhost" || host === "127.0.0.1") return null;
-
-  return host;
-}
-
-function resolveApiBaseUrl(): string {
-  // 1. Skaidri norādīts — vienmēr uzvar.
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
-
-  // 2. Fiziska ierīce Expo Go: ņemam to pašu datoru, no kura ielādējās lietotne.
-  const expoHost = hostFromExpo(
+export const API_BASE_URL = resolveApiBaseUrl({
+  explicitUrl: process.env.EXPO_PUBLIC_API_URL,
+  expoHostUri:
     Constants.expoConfig?.hostUri ?? Constants.expoGoConfig?.debuggerHost,
-  );
-  if (expoHost) {
-    return `http://${expoHost}:${API_PORT}`;
-  }
-
-  // 3. Android emulators sasniedz resursdatoru caur šo īpašo adresi.
-  if (Platform.OS === "android") {
-    return `http://10.0.2.2:${API_PORT}`;
-  }
-
-  // 4. iOS simulators un pārlūks.
-  return `http://localhost:${API_PORT}`;
-}
-
-export const API_BASE_URL = resolveApiBaseUrl();
+  platform: Platform.OS,
+  isDev: __DEV__,
+});
 
 /** Kļūda ar backend atgriezto kodu un lietotājam paredzēto ziņojumu. */
 export class ApiError extends Error {

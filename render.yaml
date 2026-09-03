@@ -1,0 +1,54 @@
+# Render izvietošanas apraksts (Blueprint).
+#
+#   1. Render.com → New → Blueprint → norādi šo repozitoriju
+#   2. Render palūgs ievadīt TOKEN_ENCRYPTION_KEY un ANTHROPIC_API_KEY
+#   3. Deploy
+#
+# Alternatīva ir Railway — tur to pašu var izdarīt caur UI, norādot backend/
+# kā saknes mapi un tās pašas komandas.
+#
+# Piezīme par bezmaksas plāniem: tie mēdz iemigt pēc dīkstāves (pirmais
+# pieprasījums tad ir lēns) un datubāzēm var būt derīguma termiņš. Pārbaudi
+# aktuālos noteikumus pirms paļaušanās uz to ilgtermiņā.
+
+databases:
+  - name: abonementi-db
+    databaseName: abonementi
+    user: abonementi
+    plan: free
+
+services:
+  - type: web
+    name: abonementi-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    # Migrācijas tiek pielietotas pirms servera starta, lai jauna shēma
+    # nonāk datubāzē tajā pašā izvietošanā.
+    startCommand: npx prisma migrate deploy && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: abonementi-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      # 64 hex rakstzīmes. Ģenerē ar: openssl rand -hex 32
+      # Render ģenerētais formāts neder, tāpēc šo ievada ar roku.
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
+      # Bez tās lietotne strādā, bet AI analīze atgriež 503.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Mock režīms paliek ieslēgts, līdz ir PSD2 līgums un Google OAuth klients.
+      - key: ENABLE_BANKING_MOCK
+        value: "true"
+      - key: GMAIL_MOCK
+        value: "true"
+      # Lietotne atgriežas pa deep link; būvētā lietotne lieto šo shēmu.
+      - key: APP_REDIRECT_URL
+        value: abonementi://bank-callback

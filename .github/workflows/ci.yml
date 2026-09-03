@@ -93,3 +93,7 @@ jobs:
 
       - name: Tipu pārbaude
         run: npm run typecheck
+
+      - name: Testi
+        run: npm test
+

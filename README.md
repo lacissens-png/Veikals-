@@ -371,18 +371,66 @@ cd backend
 AI endpointi CI netiek skarti — tiem vajadzīga `ANTHROPIC_API_KEY`, un tā
 netiek glabāta repozitorijā.
 
-## Izvietošana (Railway / Render)
+## Lietotne uz telefona kā īsta aplikācija (Android)
 
-Backend:
+Expo Go der izmēģināšanai, bet tam vajag ieslēgtu datoru tajā pašā Wi-Fi. Lai
+lietotne būtu ikona sākuma ekrānā un strādātu jebkur, vajag divas lietas:
+backend internetā un uzbūvētu APK.
 
-1. Izveido PostgreSQL servisu, iekopē tā `DATABASE_URL`
-2. Root direktorija: `backend`
-3. Build komanda: `npm install && npm run build`
-4. Start komanda: `npx prisma migrate deploy && npm start`
-5. Pievieno visus vides mainīgos no tabulas augstāk
-6. Health check ceļš: `/health`
+### 1. Backend uz Render
 
-Mobilā aplikācija tiek būvēta ar EAS Build (`npx eas build`).
+Repozitorijā ir `render.yaml`, tāpēc pietiek ar Blueprint:
+
+1. [Render](https://render.com) → **New** → **Blueprint** → norādi šo repozitoriju
+2. Render palūgs divus noslēpumus:
+   - `TOKEN_ENCRYPTION_KEY` — ģenerē ar `openssl rand -hex 32`
+   - `ANTHROPIC_API_KEY` — no [console.anthropic.com](https://console.anthropic.com)
+3. **Apply**
+
+Migrācijas tiek pielietotas automātiski pirms servera starta. Pārbaude:
+`curl https://<tavs-serviss>.onrender.com/health`
+
+> **Bezmaksas plāni mēdz iemigt** pēc dīkstāves, tāpēc pirmais pieprasījums pēc
+> pauzes var aizņemt ~minūti, un datubāzēm var būt derīguma termiņš. Pārbaudi
+> aktuālos noteikumus, ja plāno uz to paļauties ilgāk.
+
+### 2. APK ar EAS Build
+
+Ja Render adrese atšķiras no `abonementi-api.onrender.com`, nomaini to
+`mobile/eas.json` failā (`preview` profila `EXPO_PUBLIC_API_URL`).
+
+```bash
+cd mobile
+npm install -g eas-cli
+eas login                                  # vajag Expo kontu (bezmaksas)
+eas init                                   # ieraksta projectId app.json failā
+eas build -p android --profile preview     # dažas minūtes Expo serveros
+```
+
+Kad būvējums beidzies, EAS iedod lejupielādes saiti. Atver to telefonā, lejupielādē
+APK un uzstādi — Android palūgs atļaut instalēšanu no šī avota.
+
+> **Kāpēc `preview`, nevis `production`:** `preview` profils būvē `.apk`, ko var
+> uzstādīt tieši. `production` būvē `.aab`, kas ir Play Store formāts un tieši
+> uzstādīties nevar.
+
+> **Pakotnes nosaukums ir `com.example.abonementuaudits`.** Sānielādēšanai der,
+> bet Google Play `com.example.*` noraida. Ja plāno publicēt, nomaini to
+> `app.json` failā uz savu domēnu apgrieztā secībā (piem. `lv.tavsdomens.abonementi`).
+> Maiņa nozīmē pārinstalēt lietotni; dati ir serverī, tāpēc nekas nepazūd.
+
+### Kas pagaidām paliek mock režīmā
+
+`render.yaml` iestata `ENABLE_BANKING_MOCK=true` un `GMAIL_MOCK=true`, tāpēc
+uzbūvētā lietotne strādā ar testa datiem. Īstiem bankas datiem vajag PSD2 līgumu;
+īstam Gmail — Google OAuth klientu un, publiskiem lietotājiem, `gmail.readonly`
+ierobežotās atļaujas drošības auditu. Abi ir līgumi un audits, ne kods.
+
+### iOS
+
+Tas pats EAS ceļš, bet ierīces instalēšanai vajag **Apple Developer** kontu
+(99 $/gadā) un TestFlight. Bez tā iet tikai 7 dienu pagaidu instalācija caur
+Xcode uz Mac.
 
 ---
 
