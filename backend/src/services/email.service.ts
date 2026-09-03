@@ -5,6 +5,7 @@ import { decryptToken, encryptToken } from "../lib/crypto.js";
 import { AppError } from "../lib/errors.js";
 import { logger } from "../lib/logger.js";
 import { prisma } from "../lib/prisma.js";
+import { safeReturnUrl } from "../lib/redirect.js";
 import { emailProvider } from "./email/gmail.service.js";
 import { analyzeEmails } from "./emailAnalysis.service.js";
 
@@ -16,12 +17,18 @@ function syncFromDate(): Date {
   return date;
 }
 
-export async function startConnection(userId: string) {
+export async function startConnection(userId: string, returnUrl?: string) {
   const state = randomBytes(24).toString("hex");
   const { authorizationUrl } = await emailProvider.startAuthorization(state);
 
   const connection = await prisma.emailConnection.create({
-    data: { userId, provider: emailProvider.name, status: "pending", authState: state },
+    data: {
+      userId,
+      provider: emailProvider.name,
+      status: "pending",
+      authState: state,
+      returnUrl: safeReturnUrl(returnUrl),
+    },
     select: { id: true },
   });
 
@@ -53,7 +60,7 @@ export async function completeConnection(code: string, state: string) {
         connectedAt: new Date(),
         authState: null,
       },
-      select: { id: true, userId: true, emailAddress: true },
+      select: { id: true, userId: true, emailAddress: true, returnUrl: true },
     });
   } catch (error) {
     await prisma.emailConnection.update({

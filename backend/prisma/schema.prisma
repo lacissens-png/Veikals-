@@ -44,6 +44,8 @@ model BankConnection {
   // CSRF `state` parametrs, kas sasaista callback ar konkrēto savienojumu,
   // un bankas sesijas identifikators/token darījumu lasīšanai.
   authState      String?   @unique @map("auth_state") @db.VarChar(128)
+  /// Kurp novirzīt pēc OAuth. Expo Go lieto exp://, būvēta lietotne — abonementi://
+  returnUrl      String?   @map("return_url") @db.VarChar(255)
   sessionId      String?   @map("session_id") @db.VarChar(255)
   accessToken    String?   @map("access_token")
   tokenExpiresAt DateTime? @map("token_expires_at") @db.Timestamp(6)
@@ -135,6 +137,8 @@ model EmailConnection {
 
   // Tokeni datubāzē nonāk šifrēti (skat. src/lib/crypto.ts).
   authState      String?   @unique @map("auth_state") @db.VarChar(128)
+  /// Kurp novirzīt pēc Gmail OAuth.
+  returnUrl      String?   @map("return_url") @db.VarChar(255)
   accessToken    String?   @map("access_token")
   refreshToken   String?   @map("refresh_token")
   tokenExpiresAt DateTime? @map("token_expires_at") @db.Timestamp(6)

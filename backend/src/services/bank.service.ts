@@ -3,13 +3,14 @@ import { encryptToken } from "../lib/crypto.js";
 import { AppError } from "../lib/errors.js";
 import { logger } from "../lib/logger.js";
 import { prisma } from "../lib/prisma.js";
+import { safeReturnUrl } from "../lib/redirect.js";
 import { bankProvider } from "./bank/enableBanking.service.js";
 
 /**
  * Sāk bankas OAuth plūsmu: izveido 'pending' savienojumu ar nejaušu `state`
  * un atgriež saiti, uz kuru frontend aizved lietotāju.
  */
-export async function startConnection(userId: string) {
+export async function startConnection(userId: string, returnUrl?: string) {
   const state = randomBytes(24).toString("hex");
 
   const { authorizationUrl } = await bankProvider.startAuthorization(state);
@@ -20,6 +21,7 @@ export async function startConnection(userId: string) {
       provider: bankProvider.name,
       status: "pending",
       authState: state,
+      returnUrl: safeReturnUrl(returnUrl),
     },
     select: { id: true },
   });
@@ -66,7 +68,7 @@ export async function completeConnection(code: string, state: string) {
         // `state` derīgs vienu reizi.
         authState: null,
       },
-      select: { id: true, userId: true, providerAccountId: true },
+      select: { id: true, userId: true, providerAccountId: true, returnUrl: true },
     });
 
     logger.info("Banka savienota", {

@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { Platform } from "react-native";
 import type {
   AuthResponse,
@@ -13,16 +14,52 @@ import type {
   SyncResult,
 } from "./types";
 
+/** Backend ports. Metro klausās 8081, backend — 4000. */
+const API_PORT = 4000;
+
 /**
- * Backend adrese. Uz fiziskas ierīces `localhost` norāda uz pašu ierīci,
- * tāpēc izstrādē jānorāda datora IP caur EXPO_PUBLIC_API_URL, piem.:
- *   EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npx expo start
+ * Izvelk datora IP no Expo izstrādes servera adreses.
+ *
+ * Kad lietotne darbojas Expo Go, tā jau zina, no kurienes ielādējās —
+ * piemēram "192.168.1.10:8081". Tas ir tas pats dators, kur darbojas backend,
+ * tāpēc adresi var atvasināt un lietotājam sava IP nav jāmeklē.
+ *
+ * Atgriež null, ja saimniekdatora nav (produkcijas būvējums) vai tas ir
+ * localhost (emulators vai pārlūks — tur der noklusējumi).
  */
-export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ??
-  (Platform.OS === "android"
-    ? "http://10.0.2.2:4000" // Android emulatora ceļš uz resursdatora localhost
-    : "http://localhost:4000");
+export function hostFromExpo(hostUri: string | undefined): string | null {
+  if (!hostUri) return null;
+
+  const host = hostUri.split("/")[0]?.split(":")[0];
+  if (!host || host === "localhost" || host === "127.0.0.1") return null;
+
+  return host;
+}
+
+function resolveApiBaseUrl(): string {
+  // 1. Skaidri norādīts — vienmēr uzvar.
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+
+  // 2. Fiziska ierīce Expo Go: ņemam to pašu datoru, no kura ielādējās lietotne.
+  const expoHost = hostFromExpo(
+    Constants.expoConfig?.hostUri ?? Constants.expoGoConfig?.debuggerHost,
+  );
+  if (expoHost) {
+    return `http://${expoHost}:${API_PORT}`;
+  }
+
+  // 3. Android emulators sasniedz resursdatoru caur šo īpašo adresi.
+  if (Platform.OS === "android") {
+    return `http://10.0.2.2:${API_PORT}`;
+  }
+
+  // 4. iOS simulators un pārlūks.
+  return `http://localhost:${API_PORT}`;
+}
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 /** Kļūda ar backend atgriezto kodu un lietotājam paredzēto ziņojumu. */
 export class ApiError extends Error {
@@ -121,8 +158,11 @@ export const api = {
       body: { email, password },
     }),
 
-  connectBank: () =>
-    request<BankConnectResponse>("/api/bank/connect", { method: "POST" }),
+  connectBank: (redirectUrl: string) =>
+    request<BankConnectResponse>("/api/bank/connect", {
+      method: "POST",
+      body: { redirectUrl },
+    }),
 
   listConnections: () =>
     request<{ connections: BankConnection[] }>("/api/bank/connections"),
@@ -168,10 +208,10 @@ export const api = {
       body: { pushToken },
     }),
 
-  connectEmail: () =>
+  connectEmail: (redirectUrl: string) =>
     request<{ emailConnectionId: string; authorizationUrl: string }>(
       "/api/email/connect",
-      { method: "POST" },
+      { method: "POST", body: { redirectUrl } },
     ),
 
   listEmailConnections: () =>

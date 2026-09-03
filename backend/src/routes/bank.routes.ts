@@ -1,17 +1,26 @@
 import { Router } from "express";
 import { z } from "zod";
 import { env } from "../config/env.js";
+import { withStatus } from "../lib/redirect.js";
 import { AppError } from "../lib/errors.js";
 import { pathParam } from "../lib/http.js";
 import { currentUserId, requireAuth } from "../middleware/auth.js";
+import { validateBody } from "../middleware/validate.js";
 import * as bankService from "../services/bank.service.js";
 
 export const bankRouter = Router();
 
 /** Sāk Enable Banking OAuth plūsmu. */
-bankRouter.post("/connect", requireAuth, async (req, res) => {
-  const result = await bankService.startConnection(currentUserId(req));
-  res.status(201).json(result);
+const connectSchema = z.object({
+  /** Kurp lietotne grib atgriezties. Expo Go un būvēta lietotne atšķiras. */
+  redirectUrl: z.string().optional(),
+});
+
+bankRouter.post("/connect", requireAuth, validateBody(connectSchema), async (req, res) => {
+  const { redirectUrl } = req.body as z.infer<typeof connectSchema>;
+  res.status(201).json(
+    await bankService.startConnection(currentUserId(req), redirectUrl),
+  );
 });
 
 const callbackSchema = z.object({
@@ -29,7 +38,7 @@ bankRouter.get("/callback", async (req, res) => {
 
   if (!parsed.success) {
     const error = typeof req.query.error === "string" ? req.query.error : "invalid_request";
-    res.redirect(`${env.APP_REDIRECT_URL}?status=error&reason=${encodeURIComponent(error)}`);
+    res.redirect(withStatus(env.APP_REDIRECT_URL, { status: "error", reason: error }));
     return;
   }
 
@@ -39,11 +48,14 @@ bankRouter.get("/callback", async (req, res) => {
       parsed.data.state,
     );
     res.redirect(
-      `${env.APP_REDIRECT_URL}?status=success&connectionId=${connection.id}`,
+      withStatus(connection.returnUrl ?? env.APP_REDIRECT_URL, {
+        status: "success",
+        connectionId: connection.id,
+      }),
     );
   } catch (error) {
     const reason = error instanceof AppError ? error.code : "unknown_error";
-    res.redirect(`${env.APP_REDIRECT_URL}?status=error&reason=${reason}`);
+    res.redirect(withStatus(env.APP_REDIRECT_URL, { status: "error", reason }));
   }
 });
 

@@ -1,0 +1,26 @@
+# PostgreSQL lokālai izstrādei.
+#
+#   docker compose up -d
+#
+# Dati saglabājas starp restartiem. Lai sāktu no tīras lapas:
+#   docker compose down -v
+services:
+  db:
+    image: postgres:16
+    container_name: abonementi-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: abonementi
+    ports:
+      - "5432:5432"
+    volumes:
+      - abonementi-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d abonementi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  abonementi-data:

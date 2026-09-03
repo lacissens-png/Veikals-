@@ -7,7 +7,9 @@ import type { ZodType } from "zod";
  */
 export function validateBody<T>(schema: ZodType<T>) {
   return (req: Request, _res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
+    // POST bez ķermeņa ir derīgs, ja visi lauki ir neobligāti. Bez šī
+    // `express.json()` atstātu `undefined`, un shēma to noraidītu ar 400.
+    const result = schema.safeParse(req.body ?? {});
     if (!result.success) {
       next(result.error);
       return;

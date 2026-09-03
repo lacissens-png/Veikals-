@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { api, ApiError, API_BASE_URL } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -107,11 +108,9 @@ export function SettingsScreen({ navigation }: ScreenProps<"Settings">) {
     setBusy("email");
     setError(null);
     try {
-      const { authorizationUrl } = await api.connectEmail();
-      const result = await WebBrowser.openAuthSessionAsync(
-        authorizationUrl,
-        "abonementi://bank-callback",
-      );
+      const returnUrl = Linking.createURL("email-callback");
+      const { authorizationUrl } = await api.connectEmail(returnUrl);
+      const result = await WebBrowser.openAuthSessionAsync(authorizationUrl, returnUrl);
       if (result.type === "success") {
         await load();
       } else if (result.type === "cancel" || result.type === "dismiss") {

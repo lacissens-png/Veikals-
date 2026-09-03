@@ -37,6 +37,19 @@ darījumu vēstures un vai lietotāji uzskata šo informāciju par vērtīgu.
 Ar `ENABLE_BANKING_MOCK=true` visa plūsma strādā ar reālistiskiem testa
 darījumiem, tāpēc projektu var palaist pirmajā dienā, negaidot PSD2 līgumu.
 
+**Ja gribi vienkārši palaist to uz sava telefona:**
+
+```bash
+./scripts/setup.sh            # datubāze, atkarības, migrācijas — vienreiz
+cd backend && npm run dev     # 1. terminālis
+cd mobile  && npx expo start  # 2. terminālis
+```
+
+Tad skenē QR kodu ar [Expo Go](https://expo.dev/go). Telefonam un datoram
+jābūt vienā Wi-Fi tīklā; pārējo lietotne atrod pati.
+
+Zemāk ir tie paši soļi pa vienam, ja gribi saprast, kas notiek.
+
 ### 1. Datubāze
 
 ```bash
@@ -89,23 +102,26 @@ npm install
 npx expo start
 ```
 
-Skenē QR kodu ar Expo Go vai palaid emulatorā (`a` — Android, `i` — iOS).
+Skenē QR kodu ar **Expo Go** vai palaid emulatorā (`a` — Android, `i` — iOS).
+
+**Sava IP meklēt nevajag.** Lietotne paņem datora adresi no Expo izstrādes
+servera (`Constants.expoConfig.hostUri`) un pati atrod backend uz porta 4000.
+Vajag tikai, lai telefons un dators būtu vienā Wi-Fi tīklā. Ja tomēr jāuzspiež
+cita adrese:
+
+```bash
+EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npx expo start
+```
 
 Ātrai apskatei bez telefona der arī pārlūks:
 
 ```bash
-EXPO_PUBLIC_API_URL=http://localhost:4000 npx expo start --web
+npx expo start --web
 ```
 
 > **Pārlūkā sesija nesaglabājas.** `expo-secure-store` ir tikai vietējām
 > platformām, tāpēc pēc lapas pārlādes jāpiesakās no jauna. Uz telefona tas
 > strādā normāli. Web režīms ir domāts UI apskatei, nevis lietošanai.
-
-> **Uz fiziskas ierīces** `localhost` norāda uz pašu telefonu. Norādi datora IP:
-> ```bash
-> EXPO_PUBLIC_API_URL=http://192.168.1.10:4000 npx expo start
-> ```
-> Android emulatorā backend ir pieejams kā `http://10.0.2.2:4000` (jau noklusējums).
 
 ### 4. Plūsma aplikācijā
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { api, ApiError } from "../api/client";
 import { Button, Card, ErrorView } from "../components";
@@ -24,13 +25,12 @@ export function BankConnectScreen({ navigation }: ScreenProps<"BankConnect">) {
     setLoading(true);
 
     try {
-      const { authorizationUrl } = await api.connectBank();
+      // Expo Go lieto exp://, būvēta lietotne — abonementi://. Linking to zina.
+      const returnUrl = Linking.createURL("bank-callback");
+      const { authorizationUrl } = await api.connectBank(returnUrl);
 
-      // openAuthSessionAsync atgriežas, kad banka novirza uz mūsu deep link.
-      const result = await WebBrowser.openAuthSessionAsync(
-        authorizationUrl,
-        "abonementi://bank-callback",
-      );
+      // openAuthSessionAsync atgriežas, kad banka novirza uz šo adresi.
+      const result = await WebBrowser.openAuthSessionAsync(authorizationUrl, returnUrl);
 
       if (result.type === "success") {
         const url = new URL(result.url);

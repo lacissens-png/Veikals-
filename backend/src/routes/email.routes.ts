@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { env } from "../config/env.js";
 import { AppError } from "../lib/errors.js";
+import { withStatus } from "../lib/redirect.js";
 import { pathParam } from "../lib/http.js";
 import { currentUserId, requireAuth } from "../middleware/auth.js";
 import { validateBody } from "../middleware/validate.js";
@@ -10,8 +11,13 @@ import * as emailService from "../services/email.service.js";
 export const emailRouter = Router();
 
 /** Sāk Gmail OAuth plūsmu. */
-emailRouter.post("/connect", requireAuth, async (req, res) => {
-  res.status(201).json(await emailService.startConnection(currentUserId(req)));
+const connectSchema = z.object({ redirectUrl: z.string().optional() });
+
+emailRouter.post("/connect", requireAuth, validateBody(connectSchema), async (req, res) => {
+  const { redirectUrl } = req.body as z.infer<typeof connectSchema>;
+  res.status(201).json(
+    await emailService.startConnection(currentUserId(req), redirectUrl),
+  );
 });
 
 const callbackSchema = z.object({
@@ -25,16 +31,22 @@ emailRouter.get("/callback", async (req, res) => {
 
   if (!parsed.success) {
     const reason = typeof req.query.error === "string" ? req.query.error : "invalid_request";
-    res.redirect(`${env.APP_REDIRECT_URL}?status=error&source=email&reason=${encodeURIComponent(reason)}`);
+    res.redirect(withStatus(env.APP_REDIRECT_URL, { status: "error", source: "email", reason }));
     return;
   }
 
   try {
     const connection = await emailService.completeConnection(parsed.data.code, parsed.data.state);
-    res.redirect(`${env.APP_REDIRECT_URL}?status=success&source=email&connectionId=${connection.id}`);
+    res.redirect(
+      withStatus(connection.returnUrl ?? env.APP_REDIRECT_URL, {
+        status: "success",
+        source: "email",
+        connectionId: connection.id,
+      }),
+    );
   } catch (error) {
     const reason = error instanceof AppError ? error.code : "unknown_error";
-    res.redirect(`${env.APP_REDIRECT_URL}?status=error&source=email&reason=${reason}`);
+    res.redirect(withStatus(env.APP_REDIRECT_URL, { status: "error", source: "email", reason }));
   }
 });
 
