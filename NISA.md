@@ -1,139 +1,168 @@
-# Nišas analīze — kas būs pelnošs 2027–2028
+# Nišas analīze — kas būs pelnošs 2027–2030
 
-Sagatavots: 2026-09-08. Konteksts: solo veikals no Latvijas, sākot no nulles.
-
----
-
-## 1. Kāpēc vecās "top nišu" atbildes vairs nestrādā
-
-Lielākā daļa saraksti internetā ("pārdod fitnesa lietas, mājdzīvnieku preces,
-telefonu vāciņus") ir uzrakstīti pirms diviem strukturāliem likumu grozījumiem,
-kas 2026. gadā mainīja spēles noteikumus ES:
-
-**a) 2026-07-01 — ES atcēla €150 muitas atbrīvojumu.**
-Katrai precei no trešajām valstīm tagad ir vienota €3 nodeva un normāla muitas
-procedūra; no 2026. gada novembra obligāti jādeklarē produkta identifikatori.
-Praktiskā nozīme: €4 prece no Temu tagad maksā €7 (+75%), bet €60 prece maksā
-€63 (+5%). **Lēto preču arbitrāža ir mirusi — arī tev.** Nišai jābūt tādai, kur
-vidējais pasūtījums ir pietiekami liels, lai €3 nebūtu svarīgi.
-
-**b) 2026-07-31 — stājās spēkā ES Labošanas direktīva (2024/1799).**
-Ražotājiem tagad ir juridisks pienākums labot un nodrošināt rezerves daļas par
-saprātīgu cenu — arī precēm, kas pirktas pirms šī datuma. Tas ir likumdošanas
-ceļā radīts pieprasījums, nevis mode.
-
-**c) Latvijas tirgus viens pats ir par mazu.**
-€814.6M 2026. gadā → €951.86M 2031. gadā, t.i. tikai 3.16% CAGR. Igaunijā un
-Lietuvā aug ātrāk. **Būvē latviski, bet plāno eksportu no pirmās dienas.**
+Sagatavots: 2026-09-08. Konteksts: solo bizness no Latvijas, sākot no nulles.
 
 ---
 
-## 2. Filtrs — 6 kritēriji, kas jāizpilda vienlaicīgi
+## 1. NIŠA — lēmums
 
-Pirms izvēlies nišu, izlaid to caur šo. Ja krīt kaut vienā punktā — nepelnīs.
+> **Tehnisko palīglīdzekļu noma mājās: funkcionālās gultas, ratiņkrēsli,
+> pretizgulējumu matrači un pacēlāji — ar piegādi, uzstādīšanu un dezinfekciju,
+> pieejami rīt, ne pēc gada.**
 
-| # | Kritērijs | Kāpēc |
-|---|-----------|-------|
-| 1 | Vidējais grozs ≥ €40 | Zemāk €3 nodeva + piegāde + reklāma apēd visu peļņu |
-| 2 | Patēriņa prece / atkārtots pirkums | Klienta piesaisti apmaksā vienreiz, nopelni 3–5x |
-| 3 | Nav "Temu-ojama" | Smaga, regulēta, vajag zināšanas, vai vietējs resurss |
-| 4 | Meklēšanas, nevis reklāmas pieprasījums | Nevari pārsolīt lielos zīmolus Meta reklāmās |
-| 5 | **Tu** to vari sagādāt labāk par citiem | Ģeogrāfija, kontakti vai zināšanas = vienīgais īstais grāvis |
-| 6 | Eksportējama uz ES | Latvija = 1.8M cilvēku, ar to nepietiek |
+Ne pārdošana. **Noma.** Un tas nav stila jautājums — tā ir šīs nišas būtība.
 
-Kritērijs #5 ir svarīgākais. Niša bez negodīgas priekšrocības ir tikai vēlme.
+### Viens teikums, kas ir viss bizness
 
----
+Cilvēku pēc insulta vai gūžas lūzuma šodien izraksta no slimnīcas, un funkcionālā
+gulta viņam vajadzīga **rīt**. Valsts to dod bez maksas — **ratiņkrēsla rinda ir
+no gada līdz pusotram gadam.**
 
-## 3. Ieteikums
+Starp "vajag rīt" un "būs pēc gada" ir tirgus. Tas nav teorētisks — tas ir
+Valsts kontroles konstatēts fakts.
 
-### #1 — Pirts patēriņa preces, eksports uz Vāciju un Ziemeļvalstīm
+### Kāpēc pircējs maksās
 
-**Ko:** slotiņas, pirts zāles un tējas, eļļas/uzlējumi, koka kausi, termometri,
-cepures — komplektos, nevis pa vienam.
+- **Vajadzība ir īslaicīga.** Pēc operācijas gulta vajadzīga 2–6 mēnešus. Pirkt
+  par €900 to, kas vajadzīgs uz 3 mēnešiem, ir neracionāli. Noma ir acīmredzami
+  pareizā atbilde — pircējam nav jāpārliecina.
+- **Pircējs nav vecais cilvēks — tas ir viņa bērns, 40–55 gadi.** Viņš meklē
+  Google, viņam ir nauda, viņš ir stresā un grib, lai kāds to vienkārši atrisina.
+  Cenu viņš nesalīdzina piecās vietās.
+- **Valsts alternatīva ir slikta pat tad, kad tā pienākas.** Ģimenes nevar
+  izvēlēties modeli — jāņem tas, kas nopirkts iepirkumā. Un pieejamība atšķiras
+  pa novadiem, jo pašvaldības sniedz pakalpojumus pēc budžeta, ne pēc vajadzības.
 
-**Kāpēc tieši šis:**
-- **Negodīga priekšrocība.** Bērzs, liepa, ozols, pirts tradīcija un koka
-  amatnieki ir *šeit*. Vācu konkurents to nevar atkārtot — viņam tas jāimportē.
-- **Tirgus ar naudu.** Vācijas pirts tirgus USD 55.9M (2025) → USD 93.8M (2033).
-  Somijas pirts preču eksports pārsniedz 300 000 vienību gadā; top tirgi — ASV,
-  Vācija, Japāna. Ražošanas centrs jau ir Somija/Igaunija — tu esi tajā pašā
-  klasterī.
-- **Patēriņa prece.** Slotiņa ir vienreizlietojama. Zāles beidzas. Atkārtots
-  pirkums ir iebūvēts produktā.
-- **Marža.** Izejviela ir bērza zars. Premium slotiņa Vācijā = €8–15.
-- **Viegla un lēta sūtīšana**, un jaunie muitas noteikumi aizsargā pret ķīniešu
-  analogiem.
+### Skaitļi
 
-**Riski (godīgi):** izteikta sezonalitāte (rudens–ziema), mazs absolūtais tirgus,
-un augiem/eļļām jāpārbauda marķēšanas prasības eksportā.
+| | |
+|---|---|
+| Latvijā 65+ | **22.2%** iedzīvotāju; mediānas vecums 43.8 — ātrāk novecojošā ES |
+| ES 65+ | 20% (2020) → **~30% (2050)**; 21.3% jau 2024 |
+| Valsts ratiņkrēsla rinda | **1–1.5 gadi** |
+| Tirgus cena šodien | Funkcionālā gulta **€57/mēn**, ratiņkrēsls **no €25/mēn** |
 
-### #2 — "Sudraba ekonomika": mājas drošība un ērtības senioriem
-
-Latvija noveco visātrāk Eiropā — mediānas vecums 43.8, 22.2% ir virs 65.
-Globāli šis segments ir USD 4.5 triljoni 2026. gadā ar 6.7% CAGR.
-
-Būtiskais nianse: **pircējs nav vecāka gadagājuma cilvēks — pircējs ir viņa bērns
-40–55 gadu vecumā**, kurš meklē internetā un kuram ir nauda. Preces: rokturi
-vannasistabā, dušas krēsli, ergonomiski virtuves rīki, tablešu organizatori,
-neslīdoši paklāji, labas lasāmlampas.
-
-Uzticēšanās šeit ir svarīgāka par cenu — tas ir grāvis. Uzmanies: daļa preču var
-klasificēties kā medicīnas ierīces, tad ir sertifikācijas prasības.
-
-### #3 — Rezerves daļas un remonta materiāli
-
-Vienīgā niša sarakstā ar *likumā ierakstītu* pieprasījuma pieaugumu (skat. 1b).
-Cilvēki meklē konkrētus artikulus ("Bosch WAT28 sūkņa filtrs") — tas nozīmē
-lētu, nodomu pilnu meklēšanas trafiku un gandrīz nulles reklāmas budžetu.
-
-**Kāpēc tikai #3:** vajag tūkstošiem SKU, tehniskas zināšanas un piegādātāja
-attiecības. Iesācējam bez piegādātāja tas ir par smagu — bet ja tev ir kontakts
-šajā jomā, tad tas uzreiz kļūst par #1.
+Un fonā ir ES politika: Komisija aktīvi virza **dehospitalizāciju** — pacientus
+izraksta ātrāk, kas nozīmē, ka mājām jābūt aprīkotām. Katrs šāds izrakstīts
+pacients ir tavs potenciālais klients.
 
 ---
 
-## 4. Ko NEDARĪT
+## 2. Kāpēc tieši noma, un kāpēc tas ir grāvis
 
-- Klasisks dropshipping no AliExpress — 10–15% neto marža pirms jaunās nodevas,
-  tagad vēl mazāk
-- Telefonu vāciņi, fitnesa gumijas, LED lampiņas — pilnīgi komoditizēts
-- Apģērbs — izmēri, atgriešanas, un no 2027. tekstilam nāk digitālā produkta pase
-- Uztura bagātinātāji — augsta marža, bet PVD regulējums nogalinās iesācēju
+Nomas modelī aktīvs pelna atkārtoti. Gulta par ~€900 pie €57/mēn un reālistiskas
+noslodzes atpelnās ~1.5 gados un pēc tam ir gandrīz tīra marža vēl gadiem.
+Ieņēmumi ir abonements pēc savas dabas — tev nav katru mēnesi jāatrod jauns
+klients, lai nopelnītu to pašu.
+
+Bet svarīgākais ir cits: **grāvis šeit ir fiziskā loģistika.**
+
+Piegāde kāpņu telpā, salikšana uz vietas, dezinfekcija starp klientiem, izvešana.
+Tas ir tieši tas, ko **neviens dropshiperis, Temu vai Amazon nevar atkārtot**.
+Šī niša ir strukturāli imūna pret to, kas nogalina 90% e-veikalu.
+
+### Pārbaude pret 6 kritērijiem
+
+| Kritērijs | Kā izpildās |
+|---|---|
+| Grozs ≥ €40 | €57/mēn × 3–6 mēneši + piegādes maksa = €200–400 par klientu |
+| Atkārtots pirkums | Noma **pēc definīcijas** ir atkārtots maksājums |
+| Nav "Temu-ojama" | Fiziska loģistika un dezinfekcija — neatkārtojama no attāluma |
+| Meklēšanas pieprasījums | *funkcionālās gultas noma*, *ratiņkrēsla noma Rīgā* — augsts nodoms, zema reklāmas cena |
+| **Tava priekšrocība** | Ātrums un serviss tur, kur valsts rinda ir gads |
+| Mērogojamība | Rīga → Jelgava/Ogre → Baltija; modelis jau nobriedis DE/FR/UK |
 
 ---
 
-## 5. Nākamie soļi (secībā — nebūvē veikalu pirmais)
+## 3. Konkurence — godīgi
 
-1. **Pārbaudi pieprasījumu, pirms raksti kodu.** Google Keyword Planner vācu
-   valodā: *Saunaaufguss*, *Saunazubehör*, *Sauna Birkenquast*. Ja meklējumu nav
-   — nišas nav.
-2. **Atrodi piegādātāju/ražotāju un noskaidro reālo iepirkuma cenu.** Bez šī viss
-   pārējais ir teorija.
-3. **Sarēķini vienības ekonomiku:** pārdošanas cena − prece − piegāde − maksājumu
-   komisija − reklāma. Ja neatliek ≥30%, meklē citu nišu.
-4. **Pārdod 10 pasūtījumus manuāli** (Facebook Marketplace, Etsy, draugiem) pirms
-   ieguldi veikalā.
-5. **Tikai tad būvē.** Un ņem vērā: pārdodot B2C uz citām ES valstīm virs
-   €10 000 gadā, jāreģistrējas PVN OSS režīmā.
+Tukša niša tā **nav**. Jau strādā:
+
+- **POC** (Pērnavas 62, Rīga) — gulta €57/mēn, ratiņkrēsls no €25/mēn
+- **Medilux** — palīglīdzekļu noma
+- **Hospiss Māja** — ar piegādi un uzstādīšanu klienta dzīvesvietā
+- **VSIA NRC "Vaivari"** — valsts kanāls, bez maksas, bet ar rindu
+
+**Bet:** tie gandrīz visi ir klīnikas vai hospisi, kam noma ir blakusnodarbe. Neviens
+no tiem nav uzbūvēts kā *online-first* pakalpojums ar skaidru pieejamību,
+rezervāciju un piegādi nākamajā dienā. Tur ir tava vieta — ne lētākā cenā, bet
+**ātrumā un skaidrībā**.
+
+Tas, ka konkurenti eksistē un tur cenas €57/mēn, ir laba ziņa: **niša ir
+pierādīta.** Tukšs tirgus parasti nozīmē, ka tirgus nav.
 
 ---
 
-## 6. Kas jāsalabo veikalā neatkarīgi no nišas
+## 4. Riski, ko negribu noklusēt
 
+1. **Vajag kapitālu.** Inventārs jāpērk uz priekšu. 10 gultas ≈ €9000.
+2. **Tas ir fizisks darbs.** Vajag mikroautobusu, un kāds tās gultas nesīs pa
+   kāpnēm. Tas nav bizness no datora.
+3. **Regulējums.** Medicīnas ierīču (MDR) un higiēnas/dezinfekcijas prasības —
+   tas jānoskaidro **pirms** pirmā eiro ieguldīšanas, ne pēc.
+4. **Neatgriešanas risks.** Vajag depozītu un normālu līgumu.
+5. **Ģeogrāfija.** Sāk tikai Rīgā — bez blīvuma loģistika nesanāk.
+6. **Emocionāli smagi klienti.** Bieži tā ir paliatīvā aprūpe. Tas ir jāiztur.
+
+---
+
+## 5. Nākamie soļi (nebūvē veikalu pirmais)
+
+1. **Noskaidro MDR un dezinfekcijas prasības** Zāļu valsts aģentūrā. Ja tas
+   neizdodas, viss pārējais ir nevajadzīgs.
+2. **Piezvani POC un Medilux kā klients.** Uzzini: cik ilgi jāgaida, kas ir
+   iekļauts, kāds depozīts. Tur būs redzama viņu vājā vieta.
+3. **Sarunā vienu piegādātāju** un uzzini reālo gultas iepirkuma cenu.
+4. **Nopērc 2 gultas un 2 ratiņkrēslus. Ne 10.** Izīrē tos ar roku darbu un
+   Facebook grupām.
+5. **Tikai tad būvē sistēmu** — kad zini, ko klients tiešām jautā pa telefonu.
+
+---
+
+## 6. Ko tas nozīmē kodam
+
+Pašreizējais `Index.html` ir **pirkumu groza** modelis: prece → grozs → maksājums.
+Nomai vajag citu datu modeli:
+
+- prece + **periods** (no–līdz), nevis prece + skaits
+- **pieejamības kalendārs** — vienu gultu nevar izīrēt diviem vienlaikus
+- depozīts atsevišķi no īres maksas
+- piegādes laika rezervācija un adrese ar stāvu/liftu
+- atgriešanas datums un pagarināšana
+
+Tas nav tas pats veikals ar citām precēm. Tā ir cita sistēma.
+
+Neatkarīgi no nišas, divas esošās kļūdas:
 - `Index.html:22` ielādē `script.js`, kura repozitorijā nav — nav preču, nav
   groza, `checkout()` met kļūdu
 - `Index.html:6` norāda `style.css`, bet fails ir `Style.css` — uz GitHub Pages
   (reģistrjutīga sistēma) stils neielādēsies vispār
-- Ja mērķis ir eksports — vajag valodu pārslēgu (LV/EN/DE) jau struktūrā
+
+---
+
+## 7. Konteksts: kāpēc lēto preču e-veikals vairs nav variants
+
+Divas izmaiņas 2026. gada jūlijā:
+
+- **01.07.2026** — ES atcēla €150 muitas atbrīvojumu; tagad €3 par katru preci.
+  €4 precei tas ir +75%. Lēto preču dropshipping ir beidzies.
+- **31.07.2026** — stājās spēkā ES Labošanas direktīva (2024/1799).
+
+Un Latvijas e-komercijas tirgus aug tikai 3.16% gadā (€814.6M → €951.86M līdz
+2031). Tāpēc atbilde nav "vēl viens veikals" — atbilde ir **pakalpojums ar
+fizisku komponenti**, ko no ārzemēm nevar piegādāt.
 
 ---
 
 ## Avoti
 
-- ES muitas reforma: https://taxation-customs.ec.europa.eu/news/e-commerce-150-eur-customs-duty-exemption-threshold-be-removed-2026-2025-11-13_en
-- Labošanas direktīva: https://commission.europa.eu/law/law-topic/consumer-protection-law/directive-repair-goods_en
-- Latvijas e-komercijas tirgus: https://www.mordorintelligence.com/industry-reports/latvia-ecommerce-market
 - Latvijas demogrāfija: https://www.worldometers.info/demographics/latvia-demographics/
-- Sudraba ekonomika: https://silvereconomy.com/silver-economy-markets-data/
-- Vācijas pirts tirgus: https://www.grandviewresearch.com/horizon/outlook/sauna-market/germany
+- Invaliditātes atbalsta sistēma un rindas (Valsts kontrole): https://www.lrvk.gov.lv/en/news/disability-status-a-gateway-to-a-fragmented-support-system
+- Invaliditātes politikas ziņojums: https://ppdb.mk.gov.lv/wp-content/uploads/2023/07/disability-policy-and-disability-assessment-system-in-latvia_v2-1.pdf
+- Vaivaru TPC: https://vtpc.lv/lv/content/funkcionala-gulta
+- POC nomas cenas: https://www.poc.lv/veikals/tehnisko-paliglidzeklu-noma
+- Medilux: https://medilux.lv/lv/101-paliglidzeklu-noma
+- Hospiss Māja: https://www.hospissmaja.lv/tehniskie-pal%C4%ABgl%C4%ABdzek%C4%BCi
+- Medicīnas iekārtu nomas tirgus: https://www.fortunebusinessinsights.com/medical-equipment-rental-market-103972
+- ES muitas reforma: https://taxation-customs.ec.europa.eu/news/e-commerce-150-eur-customs-duty-exemption-threshold-be-removed-2026-2025-11-13_en
+- Latvijas e-komercijas tirgus: https://www.mordorintelligence.com/industry-reports/latvia-ecommerce-market
