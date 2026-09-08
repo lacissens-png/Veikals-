@@ -1,120 +1,119 @@
-# Nišas meklējums — globāls skenējums
+# Nišas meklējums — pielāgots ierobežojumiem
 
-Sagatavots: 2026-09-08. Pārbaudītas jomas: ES regulējums, kiberdrošība,
-darbaspēks/amatniecība, AI infrastruktūra, veselības aprūpe, patēriņa preces.
+Sagatavots: 2026-09-08.
+Ierobežojumi: **kapitāls ≤ €1000 · prasmes: programmēšana · laiks: dažas stundas
+nedēļā blakus darbam.**
+
+Šie trīs punkti izslēdz gandrīz visu, kas atrodams "top nišu" sarakstos. Nav
+kapitāla inventāram, nav laika klientu zvaniem darba laikā. Paliek viena forma:
+**produkts, ko pārdod pats, kamēr tu guli.**
 
 ---
 
 ## 1. LĒMUMS
 
-> **EUDR atbilstības pakalpojums Baltijas kokrūpniecībai** — piegādes ķēdes
-> izsekojamība un Due Diligence deklarāciju sagatavošana maziem un vidējiem
-> kokapstrādes uzņēmumiem.
+> **Shopify aplikācija, kas kārto ES muitas Product Identifier (PID) datus.**
 
-Klients: zāģētava Kuldīgā, granulu ražotne, mēbeļu cehs, galdniecība. Uzņēmums ar
-15–80 darbiniekiem, bez neviena atbilstības speciālista, kuram pēkšņi ir juridisks
-pienākums, ko tas nesaprot.
+No **2026. gada 1. novembra** ES muita pieprasa PID katrā B2C sūtījumā uz ES —
+**neatkarīgi no vērtības**. Kopš 1. jūlija to pieņem brīvprātīgi; no novembra tas
+ir obligāti, un muita drīkst deklarācijas ar trūkstošu vai kļūdainu PID **noraidīt
+vai izmeklēt**.
 
-### Kāpēc tieši šī
+Prasīti ir divi:
+1. **Tirgotāja produkta identifikators** — pārdevēja SKU. To tirgotājs zina.
+2. **Ražotāja nestandartizētais produkta identifikators** — *ražotāja* preces kods.
+   **To vairums tirgotāju sistēmā vispār neglabā.**
 
-**Pulkstenis jau tikšķ.** ES Atmežošanas regula (EUDR) prasa lieliem un vidējiem
-uzņēmumiem atbilstību līdz **2026. gada 30. decembrim** — tas ir pēc ~3.5
-mēnešiem. Mazajiem un mikro: **2027. gada 30. jūnijs**. Divi pieprasījuma viļņi,
-viens pēc otra.
+Otrais punkts ir viss bizness. Tā nav klasifikācija — tā ir datu problēma:
+savākt, uzglabāt pie katra varianta un padot tālāk uz muitas deklarāciju.
 
-**Prasība ir absurdi specifiska.** Jāizseko piegādes ķēde **līdz konkrētam zemes
-gabalam**, jāpierāda, ka ieguve bija legāla un bez atmežošanas, un pirms preču
-šķērsošanas robežas jāiesniedz Due Diligence deklarācija ES TRACES sistēmā.
-Neviena zāģētava to nezina, kā darīt. Un tas nav vienreizējs — deklarācijas
-jāiesniedz nepārtraukti.
+### Kāpēc tas der tieši taviem ierobežojumiem
 
-**Latvija ir tieši šīs regulas epicentrā.** Koksne ir viena no septiņām EUDR
-precēm, un tā ir viena no Latvijas lielākajām eksporta nozarēm. Simtiem uzņēmumu,
-kas visi saskaras ar vienu un to pašu problēmu vienā un tajā pašā brīdī.
+| Ierobežojums | Kā risinās |
+|---|---|
+| €1000 kapitāls | Shopify izstrādātāja konts bez maksas, hostings dažus eiro mēnesī |
+| Dažas stundas nedēļā | Neliela aplikācija ap vienu datu lauku, ne platforma |
+| Nav laika pārdošanai | **Shopify App Store meklēšana pārdod tavā vietā** — nav zvanu, nav demo |
+| Programmēšana | Tieši tā prasme, kas vajadzīga; nekas cits nav vajadzīgs |
+| Ieņēmumi | Abonements. Uzbūvē vienreiz, pelna atkārtoti |
 
-**Kapitāls: gandrīz nulle.** Tas ir pakalpojums, ne inventārs. Dators un zināšanas.
-Salīdzini ar nomas biznesu, kur pirmajā dienā vajag €9000 gultās.
-
-**Valodas un attāluma grāvis.** Vācu konsultāciju firma nevar apkalpot Kuldīgas
-zāģētavu. Tu vari aizbraukt, parunāt latviski un saprast, kā viņi tiešām strādā.
+**Distribūcija ir īstais iemesls, kāpēc šī uzvar.** Cilvēkam ar dažām stundām
+nedēļā grūtākais nav uzbūvēt — grūtākais ir dabūt klientus. Aplikāciju veikals
+šo problēmu jau ir atrisinājis: pircēji tur meklē paši, un karte jau ir pievienota.
 
 ---
 
-## 2. Galvenais risks — un tas ir nopietns
+## 2. Konkurence — pārbaudīju, un tā maina plānu
 
-**EUDR jau vairākkārt ir atlikta, un tai ir politisku U-pagriezienu vēsture.**
-Termiņi ir bīdīti atkārtoti, un jaunākie grozījumi *samazina* slogu maziem
-operatoriem. Ir reāla iespēja, ka to atliek vēlreiz vai atšķaida.
+Shopify App Store **jau ir** HS kodu aplikācijas: *Tariff HS Code Compliance* un
+*DutyCode* (bulk klasifikācija, CN8/UK/HTS, ticamības vērtējums).
 
-Ko tas nozīmē praksē: **nebūvē biznesu, kas dzīvo tikai no viena termiņa.**
-Ja termiņš pabīdās, tavi ieņēmumi pabīdās līdzi.
+**Tāpēc HS kodu klasifikāciju netaisi. Tā vieta ir aizņemta.**
 
-Mazinošie faktori: EUTR (vecā kokmateriālu regula) paliek spēkā pārejas periodā,
-tātad izsekojamības pienākums nepazūd pilnībā; un atlikšana dod tev vairāk laika
-kļūt par ekspertu, kamēr konkurenti pamet tēmu.
+Bet PID ir cita problēma. HS kods pasaka, *kāda veida* prece šķērso robežu; PID
+pasaka, *tieši kura* — līdz SKU, ražotājam un svītrkodam. Klasifikācija pret datu
+savākšanu. Šobrīd tur ir sprauga.
 
-Citi riski: jāiemācās regula patiešām dziļi (tas ir mēnesis darba bez ieņēmumiem);
-jau eksistē programmatūras spēlētāji (Coolset, Regilient, Complir) — bet tie pārdod
-rīkus, ne roku darbu mazam uzņēmumam Latvijā.
+### Divi riski, kas var to nogalināt
 
----
+1. **Esošie spēlētāji paplašinās uz PID.** Tas ir acīmredzamākais viņu nākamais solis.
+2. **Shopify to iebūvē pats.** Tie jau pievienoja €3 ES muitas nodevas atbalstu —
+   pierādījums, ka viņi šādas lietas absorbē.
 
-## 3. Globālais skenējums — ko vēl pārbaudīju un kāpēc tie zaudē
+Tas nav teorētiski. Tas ir ticamākais iznākums 12–24 mēnešu laikā.
 
-| Vilnis | Skaitļi | Kāpēc ne tev |
-|---|---|---|
-| **AI datu centru enerģija** | Pieslēguma rindas **4–10 gadi**; ierobežojums vairs nav kapitāls vai tehnoloģija, bet tīkla jauda | Lielākais vilnis pasaulē šobrīd — un pilnībā nepieejams. Vajag simtus miljonu |
-| **NIS2 kiberdrošība** | Atbilstība 50–250 darbinieku uzņēmumam maksā **€50k–200k**; 2026 ir pirmais izpildes gads | Nauda ir lielāka nekā EUDR, bet vajag reālu kiberdrošības ekspertīzi. Nav iesācēja bizness |
-| **Amatnieku deficīts** | ES trūkst **2.1 milj. būvnieku** (FIEC, 2026); Vācijā 52 000 nepiepildītu elektriķu vakanču; Vācija sagatavo 12 000 siltuma sūkņu meistaru gadā pret vajadzīgajiem 35 000 | Milzīgs un ilgstošs. Bet bizness ir vai nu kļūt par amatnieku (gadi), vai personāla atlase (vajag kontaktu tīklu) |
-| **Veselības aprūpes noma** | Latvijā 22.2% virs 65; valsts ratiņkrēsla rinda 1–1.5 gadi | Laba niša, bet prasa kapitālu inventāram un fizisku loģistiku |
-
-**Secinājums:** lielākais vilnis (AI enerģētika) ir nepieejams. Vislabāk pieejamais
-vilnis ar reālu naudu ir regulējuma radīts pieprasījums — jo regula rada pircējus
-ar **juridisku pienākumu**, ne ar vēlmi. Cilvēks var atlikt vēlmi. Pienākumu nevar.
+**Ko ar to darīt:** neplāno mūžīgu biznesu. Plāno **2–3 gadu logu** un pieņem, ka
+prasme ir vērtīgāka par produktu. Nākamais tāds pats vilnis jau redzams —
+Digitālā produkta pase tekstilprecēm no 2027. Tas pats modelis, jauna regula.
 
 ---
 
-## 4. Kāpēc regulējuma nišas vispār ir labākas par preču nišām
+## 3. Svarīgākā atziņa par termiņu
 
-Preču veikalā tu konkurē ar visu pasauli, ieskaitot Temu. Regulējuma pakalpojumā
-tu konkurē ar dažiem cilvēkiem, kas iemācījušies to pašu tekstu.
+**Tev nav jāpaspēj līdz 1. novembrim.** Šķiet pretintuitīvi, bet:
 
-- Pircējam nav izvēles — likums prasa
-- Termiņš rada steigu, steiga rada cenu
-- Atkārtojas — deklarācijas jāiesniedz pastāvīgi, ne vienreiz
-- Nulles inventārs, nulles piegāde, nulles muita
-- Vietējā valoda un klātbūtne ir īsts grāvis
+Līdz novembrim tirgotāji par PID nedomā. **Pēc** novembra viņiem sāk atgriezties
+noraidītas deklarācijas — un tad viņi sāk meklēt risinājumu. Meklējumu pīķis ir
+*pēc* termiņa, ne pirms.
+
+Ar dažām stundām nedēļā tu 8 nedēļās neuztaisīsi neko. Bet līdz janvārim —
+uztaisīsi, un tieši tad pieprasījums būs augstākajā punktā.
+
+---
+
+## 4. Ko pārbaudīju un noraidīju
+
+| Ideja | Kāpēc krita |
+|---|---|
+| **Latvijas e-rēķinu rīks** | Termiņš **pārcelts no 2026. uz 2028. gada 1. janvāri.** Steidzamība pazuda, un līdz tam Horizon/Jumis to iebūvēs. ES ViDA prasība nāk tikai 2030 |
+| **HS kodu klasifikators** | Vieta aizņemta — DutyCode un Tariff Code Compliance |
+| **EUDR konsultācijas** | Laba niša, bet tas ir *pakalpojums* — prasa pilnu slodzi un zvanus darba laikā |
+| **Palīglīdzekļu noma** | Vajag €9000 inventārā un mikroautobusu |
+| **Pirts preces eksportam** | Vajag inventāru, noliktavu un sezonalitāti |
+| **NIS2 kiberdrošība** | Nauda liela (€50–200k projekti), bet vajag reālu ekspertīzi |
+| **AI datu centru enerģētika** | Lielākais vilnis pasaulē. Vajag simtus miljonu |
 
 ---
 
 ## 5. Nākamie soļi
 
-1. **Izlasi pašu regulu** (ES 2023/1115) un Komisijas vadlīnijas. Ne blogus. Nedēļa.
-2. **Pārbaudi, vai termiņš vēl turas** — seko Access2Markets paziņojumiem. Ja atliek
-   vēlreiz, tas maina laika grafiku, ne nišu.
-3. **Piezvani 10 zāģētavām un pajautā vienu jautājumu:** "Vai jums ir gatava EUDR
-   Due Diligence deklarācija?" Klusums telefonā ir tavs tirgus.
-4. **Uztaisi vienam uzņēmumam bez maksas.** Tas ir tavs produkts un tava atsauksme.
-5. **Cena par nākamajiem.** Ne mājaslapa. Mājaslapa ir pēdējais solis, ne pirmais.
+1. **Izlasi ES muitas PID specifikāciju** — tieši to, ne blogus. Kādi lauki, kāds
+   formāts, kā tie nonāk deklarācijā. Viens vakars.
+2. **Uzinstalē DutyCode un Tariff Code Compliance.** Saproti, ko tie dara un ko ne.
+   Otrs vakars.
+3. **Izlasi to sliktās atsauksmes App Store.** Tur būs uzrakstīts, kā trūkst.
+4. **Uztaisi mazāko iespējamo versiju:** ražotāja koda lauks pie varianta, bulk
+   imports no CSV, eksports muitas formātā. Nekā vairāk.
+5. **Publicē janvārī**, kad tirgotājiem sāk atgriezties noraidītās deklarācijas.
 
 ---
 
-## 6. Iepriekš izvērtētās nišas (noraidītas, bet dokumentētas)
+## 6. Piezīme par šo repozitoriju
 
-- **Tehnisko palīglīdzekļu noma** — funkcionālās gultas un ratiņkrēsli mājās;
-  valsts rinda 1–1.5 gadi, tirgus cena €57/mēn. Laba niša, bet prasa kapitālu un
-  fizisku darbu.
-- **Baltijas pirts preces eksportam** — īsta priekšrocība izejvielā, bet mazs
-  tirgus, sezonalitāte un spēcīga konkurence Vācijā (200+ aromātu veikali).
+Šī niša nav e-veikals. `Index.html` un `Style.css` šim mērķim nav vajadzīgi —
+Shopify aplikācijai vajag pavisam citu projektu.
 
----
-
-## 7. Piezīme par repozitoriju
-
-Šī niša **nav e-veikals**. Tai nevajag ne grozu, ne preču katalogu — tai vajag
-vienkāršu lapu ar skaidru piedāvājumu un kontaktformu.
-
-Esošās kļūdas, ja veikalu tomēr turpina:
+Ja veikalu tomēr turpina, divas esošās kļūdas:
 - `Index.html:22` ielādē `script.js`, kura repozitorijā nav
 - `Index.html:6` norāda `style.css`, bet fails ir `Style.css` — uz GitHub Pages
   stils neielādēsies
@@ -123,11 +122,10 @@ Esošās kļūdas, ja veikalu tomēr turpina:
 
 ## Avoti
 
-- EUDR termiņi un atlikšana: https://trade.ec.europa.eu/access-to-markets/en/news/delay-until-december-2026-and-other-developments-implementation-eudr-regulation
-- EUDR 2026 atjauninājums: https://psqr.eu/publications-resources/eu-deforestation-regulation-eudr-2026-update-new-deadlines-for-companies/
-- EUDR atlikšanu hronoloģija: https://www.coolset.com/academy/eudr-delay-2025-explained
-- NIS2 direktīva: https://digital-strategy.ec.europa.eu/en/policies/nis2-directive
-- Amatnieku deficīts ES: https://tajhrservices.com/resources/construction-labor-shortage-europe
-- Siltuma sūkņu prasmju plaisa: https://ehpa.org/news-and-resources/projects/heat-pumps-need-people-closing-the-skills-gap/
-- AI un elektrotīkla ierobežojums: https://www.weforum.org/stories/2026/05/electricity-data-grid-connectivity-strategic-bottleneck-ai-transformation/
-- Latvijas demogrāfija: https://www.worldometers.info/demographics/latvia-demographics/
+- PID prasība no 01.11.2026: https://www.royaleinternational.com/2026/09/eu-customs-mandatory-product-identifiers-nov-2026/
+- PID datu sagatavošana: https://www.ukpworldwide.com/2026/08/21/eu-customs-changes-again-why-product-data-needs-to-be-ready-for-1-november-2026/
+- ES €3 muitas nodeva: https://trade.ec.europa.eu/access-to-markets/en/news/eu-applies-eu3-customs-duty-item-low-value-e-commerce-consignments
+- Esošā konkurence: https://apps.shopify.com/dutycode · https://apps.shopify.com/tariff-code-compliance
+- Shopify €3 nodevas atbalsts: https://powercommerce.com/blogs/shopify-updates/shopify-and-the-eu-s-3-per-tariff-line-duty-what-merchants-need-to-know-before-july-1-2026
+- Latvijas e-rēķinu atlikšana uz 2028: https://lvportals.lv/norises/376664-e-rekinu-sistemas-ieviesanu-uznemumiem-atliks-lidz-2028-gadam-2025
+- ES ViDA grafiks: https://edicomgroup.com/blog/vida-the-european-union-promotes-b2b-electronic-invoicing
