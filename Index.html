@@ -2,24 +2,35 @@
 <html lang="lv">
 <head>
     <meta charset="UTF-8">
-    <title>Mans Online Veikals</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nebijušu Lietu Veikals</title>
+    <link rel="stylesheet" href="Style.css">
 </head>
 <body>
     <header>
-        <h1>Mans Digitālais Veikals</h1>
+        <div>
+            <h1>Nebijušu Lietu Veikals</h1>
+            <p class="tagline">Katra prece šeit tiek izgudrota tieši tajā brīdī, kad tu to ieraugi. Pirms tam tās nebija.</p>
+        </div>
         <div id="cart-info">Grozā: <span id="cart-count">0</span> preces</div>
     </header>
 
-    <main id="product-grid">
-        </main>
+    <div class="layout">
+        <main id="product-grid"></main>
 
-    <aside id="shopping-cart">
-        <h2>Iepirkumu grozs</h2>
-        <ul id="cart-items"></ul>
-        <p><strong>Kopā: €<span id="total-price">0.00</span></strong></p>
-        <button onclick="checkout()">Noformēt pasūtījumu</button>
-    </aside>
+        <aside id="shopping-cart">
+            <h2>Iepirkumu grozs</h2>
+            <ul id="cart-items"></ul>
+            <p><strong>Kopā: €<span id="total-price">0.00</span></strong></p>
+            <button onclick="checkout()">Noformēt pasūtījumu</button>
+        </aside>
+    </div>
+
+    <dialog id="receipt">
+        <h2>Čeks</h2>
+        <div id="receipt-body"></div>
+        <button id="close-receipt">Aizvērt</button>
+    </dialog>
 
     <script src="script.js"></script>
 </body>
