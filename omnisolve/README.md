@@ -27,4 +27,4 @@ Konkrētā tehnoloģija (Python vai Node.js) tiks izvēlēta nākamajā solī.
 - [x] 2. solis: IP informācija (`/api/info`) un ātrie padomi (`/api/tips/{tip_id}`)
 - [x] 3. solis: frontend (`frontend/index.html`) – IP statuss un ātro padomu pogas
 - [x] 4. solis: soļu skaitītājs (DeviceMotion sensors, iPhone atļauja, dienas atiestatīšana, attālums m/km)
-- [x] 5. solis: AI jautājumu lodziņš (`POST /api/ask`, Claude; vajag `ANTHROPIC_API_KEY`)
+- [x] 5. solis: AI jautājumu lodziņš (`POST /api/ask` ar Claude; bez `ANTHROPIC_API_KEY` atbild pēc atslēgvārdiem) + `POST /api/ai/ask` (tikai atslēgvārdi)

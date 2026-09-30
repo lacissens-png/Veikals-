@@ -43,6 +43,27 @@ def get_quick_tip(tip_id: str):
     return {"tip_id": tip_id, "instruction": result}
 
 
+# Datu struktūra ienākošajam AI jautājumam
+class AIQuery(BaseModel):
+    question: str
+
+
+def keyword_answer(question: str) -> str:
+    # Gatavās atbildes pēc atslēgvārdiem (strādā arī bez AI API atslēgas)
+    user_question = question.lower()
+    if "riepu" in user_question:
+        return "Kā nomainīt riepu: 1. Nostādiet mašīnu uz līdzenas virsmas un pavelciet rokas bremzi. 2. Atskrūvējiet skrūves, pirms ceļat mašīnu ar domkratu. 3. Paceliet auto, noņemiet riteni un uzlieciet rezerves riteni."
+    if "inflācija" in user_question:
+        return "Inflācija ir vispārējs preču un pakalpojumu cenu līmeņa piepaugums ekonomikā, kā rezultātā naudas pirktspēja samazinās."
+    return f"AI Atbilde: Jautājums '{question}' ir saņemts. OmniSolve AI dzinējs analizē datus un sniedz tiešu atbildi bez reklāmām!"
+
+
+# Atbildes pēc atslēgvārdiem (testam, bez Claude)
+@app.post("/api/ai/ask")
+def ask_ai_keywords(query: AIQuery):
+    return {"question": query.question, "answer": keyword_answer(query.question)}
+
+
 # AI jautājumu lodziņš (Claude)
 AI_MODEL = "claude-opus-5-5"
 AI_SYSTEM_PROMPT = (
@@ -60,19 +81,26 @@ _ai_client = None
 
 
 def get_ai_client():
-    # Klientu veidojam tikai pirmajā pieprasījumā, lai serveris startē arī bez API atslēgas
+    # Klientu veidojam tikai pirmajā pieprasījumā, lai serveris startē arī bez API atslēgas.
+    # Atgriež None, ja AI nav konfigurēts.
     global _ai_client
     if _ai_client is None:
         try:
             _ai_client = anthropic.Anthropic()
         except anthropic.AnthropicError:
-            raise HTTPException(status_code=503, detail="AI nav konfigurēts: iestati ANTHROPIC_API_KEY.")
+            return None
     return _ai_client
+
+
+def offline_answer(question: str):
+    return {"answer": keyword_answer(question), "status": "offline"}
 
 
 @app.post("/api/ask")
 def ask_ai(body: Question):
     client = get_ai_client()
+    if client is None:
+        return offline_answer(body.question)
     try:
         response = client.beta.messages.create(
             model=AI_MODEL,
@@ -84,8 +112,8 @@ def ask_ai(body: Question):
             messages=[{"role": "user", "content": body.question}],
         )
     except TypeError:
-        # SDK neatrada nevienu autentifikācijas veidu (nav ANTHROPIC_API_KEY)
-        raise HTTPException(status_code=503, detail="AI nav konfigurēts: iestati ANTHROPIC_API_KEY.")
+        # SDK neatrada nevienu autentifikācijas veidu (nav ANTHROPIC_API_KEY) – atbildam pēc atslēgvārdiem
+        return offline_answer(body.question)
     except anthropic.AuthenticationError:
         raise HTTPException(status_code=503, detail="AI API atslēga nav derīga.")
     except anthropic.RateLimitError:
