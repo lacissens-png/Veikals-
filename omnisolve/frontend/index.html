@@ -50,6 +50,19 @@
                 Spied uz pogas augstāk, lai redzētu instrukciju...
             </div>
         </div>
+
+        <!-- AI jautājumu sadaļa -->
+        <div class="space-y-2">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Jautā AI palīgam</h2>
+            <textarea id="ai-question" rows="3" maxlength="2000" placeholder="Piem.: Kāpēc mans Wi-Fi ir lēns?"
+                class="w-full p-3 bg-slate-900 rounded-lg text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-cyan-500 resize-none"></textarea>
+            <button id="ai-btn" onclick="askAI()" class="w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white text-xs py-2 rounded font-medium transition">
+                Jautāt
+            </button>
+            <div id="ai-answer" class="p-3 bg-slate-900 rounded-lg text-sm text-slate-300 border border-slate-700 min-h-[50px] whitespace-pre-wrap">
+                Uzraksti jautājumu un spied "Jautāt"...
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript loģika -->
@@ -198,6 +211,41 @@
             button.innerText = "Apturēt";
             setStatus("Sensors ieslēgts – ej un skaiti soļus!");
         }
+
+        // 4. AI jautājumi (atbildi sagatavo Python backend ar Claude)
+        async function askAI() {
+            const input = document.getElementById("ai-question");
+            const answerBox = document.getElementById("ai-answer");
+            const button = document.getElementById("ai-btn");
+            const question = input.value.trim();
+            if (!question) {
+                answerBox.innerText = "Vispirms uzraksti jautājumu.";
+                return;
+            }
+
+            button.disabled = true;
+            button.innerText = "Domā...";
+            answerBox.innerText = "AI gatavo atbildi...";
+            try {
+                const response = await fetch(`${API_URL}/api/ask`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question }),
+                });
+                const data = await response.json();
+                answerBox.innerText = response.ok ? data.answer : (data.detail || "AI kļūda.");
+            } catch (error) {
+                answerBox.innerText = "Neizdevās savienoties ar serveri.";
+            } finally {
+                button.disabled = false;
+                button.innerText = "Jautāt";
+            }
+        }
+
+        // Ctrl+Enter (vai Cmd+Enter) nosūta jautājumu
+        document.getElementById("ai-question").addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) askAI();
+        });
 
         loadSteps();
         loadUserInfo();
