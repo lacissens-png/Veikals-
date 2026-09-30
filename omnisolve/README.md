@@ -28,3 +28,4 @@ Konkrētā tehnoloģija (Python vai Node.js) tiks izvēlēta nākamajā solī.
 - [x] 3. solis: frontend (`frontend/index.html`) – IP statuss un ātro padomu pogas
 - [x] 4. solis: soļu skaitītājs (DeviceMotion sensors, iPhone atļauja, dienas atiestatīšana, attālums m/km)
 - [x] 5. solis: AI jautājumu lodziņš (`POST /api/ask` ar Claude; bez `ANTHROPIC_API_KEY` atbild pēc atslēgvārdiem) + `POST /api/ai/ask` (tikai atslēgvārdi)
+- [x] 6. solis: Bizness un karjera – algas, pašnodarbinātā un cenas kalkulatori (`/api/business/...`, 2026. g. likmes)

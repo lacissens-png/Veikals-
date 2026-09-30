@@ -3,6 +3,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from backend.business import router as business_router
+
 app = FastAPI(title="OmniSolve API", version="1.0")
 
 app.add_middleware(
@@ -12,6 +14,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(business_router)
 
 @app.get("/")
 def read_root():

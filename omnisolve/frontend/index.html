@@ -51,6 +51,41 @@
             </div>
         </div>
 
+        <!-- Biznesa un karjeras sadaļa -->
+        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 space-y-3">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Bizness un karjera</h2>
+            <select id="biz-tool" onchange="showBizTool()" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500">
+                <option value="salary">Algas kalkulators (bruto → neto)</option>
+                <option value="self-employed">Pašnodarbinātā ienākumi</option>
+                <option value="price">Cenas / biznesa idejas aprēķins</option>
+            </select>
+
+            <form id="form-salary" class="biz-form grid grid-cols-2 gap-2" onsubmit="calcBiz(event, 'salary')">
+                <label><span class="block text-xs text-slate-400 mb-1">Bruto alga mēnesī, €</span><input name="gross" type="number" min="0" step="0.01" required value="1500" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Apgādājamie</span><input name="dependents" type="number" min="0" max="20" step="1" value="0" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <button class="col-span-2 bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded font-medium transition">Aprēķināt</button>
+            </form>
+
+            <form id="form-self-employed" class="biz-form hidden grid grid-cols-2 gap-2" onsubmit="calcBiz(event, 'self-employed')">
+                <label><span class="block text-xs text-slate-400 mb-1">Ieņēmumi mēnesī, €</span><input name="income" type="number" min="0" step="0.01" required value="2000" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Izdevumi mēnesī, €</span><input name="expenses" type="number" min="0" step="0.01" value="0" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label class="col-span-2 flex items-center gap-2 text-xs text-slate-400"><input name="has_job" type="checkbox"> Man ir arī algots darbs (neapliekamais minimums jau izmantots)</label>
+                <button class="col-span-2 bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded font-medium transition">Aprēķināt</button>
+            </form>
+
+            <form id="form-price" class="biz-form hidden grid grid-cols-2 gap-2" onsubmit="calcBiz(event, 'price')">
+                <label><span class="block text-xs text-slate-400 mb-1">Materiāli, €</span><input name="materials" type="number" min="0" step="0.01" value="100" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Darba stundas</span><input name="hours" type="number" min="0" step="0.5" value="5" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Stundas likme, €</span><input name="hourly_rate" type="number" min="0" step="0.01" value="20" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Uzcenojums, %</span><input name="margin" type="number" min="0" step="1" required value="30" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label class="col-span-2 flex items-center gap-2 text-xs text-slate-400"><input name="vat" type="checkbox"> Pievienot PVN 21%</label>
+                <button class="col-span-2 bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded font-medium transition">Aprēķināt</button>
+            </form>
+
+            <div id="biz-result" class="text-sm text-slate-300"></div>
+            <p class="text-[10px] text-slate-500">Aptuvens aprēķins pēc 2026. gada likmēm, nav nodokļu konsultācija.</p>
+        </div>
+
         <!-- AI jautājumu sadaļa -->
         <div class="space-y-2">
             <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Jautā AI palīgam</h2>
@@ -239,6 +274,69 @@
             } finally {
                 button.disabled = false;
                 button.innerText = "Jautāt";
+            }
+        }
+
+        // 5. Bizness un karjera (aprēķinus veic Python backend)
+        const BIZ_LABELS = {
+            salary: [
+                ["gross", "Bruto alga"], ["vsaoi_employee", "Sociālais nodoklis (10,5%)"],
+                ["income_tax", "Iedzīvotāju ienākuma nodoklis"], ["net", "Neto (uz rokas)", true],
+                ["employer_total_cost", "Darba devēja kopējās izmaksas"],
+            ],
+            "self-employed": [
+                ["profit", "Peļņa (ieņēmumi − izdevumi)"], ["vsaoi", "Sociālās iemaksas"],
+                ["income_tax", "Iedzīvotāju ienākuma nodoklis"], ["net", "Paliek tev", true],
+            ],
+            price: [
+                ["cost", "Pašizmaksa"], ["profit", "Tava peļņa"],
+                ["price_without_vat", "Cena bez PVN"], ["vat", "PVN"], ["price", "Cena klientam", true],
+            ],
+        };
+
+        function showBizTool() {
+            const tool = document.getElementById("biz-tool").value;
+            document.querySelectorAll(".biz-form").forEach(form => form.classList.add("hidden"));
+            document.getElementById(`form-${tool}`).classList.remove("hidden");
+            document.getElementById("biz-result").replaceChildren();
+        }
+
+        function formatEuro(value) {
+            return value.toLocaleString("lv-LV", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+        }
+
+        async function calcBiz(event, tool) {
+            event.preventDefault();
+            const params = new URLSearchParams();
+            for (const input of event.target.querySelectorAll("input")) {
+                if (input.type === "checkbox") params.set(input.name, input.checked);
+                else if (input.value !== "") params.set(input.name, input.value);
+            }
+            const result = document.getElementById("biz-result");
+            try {
+                const response = await fetch(`${API_URL}/api/business/${tool}?${params}`);
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+                const rows = BIZ_LABELS[tool].map(([key, label, highlight]) => {
+                    const row = document.createElement("div");
+                    row.className = "flex justify-between py-1 border-b border-slate-800" +
+                        (highlight ? " font-bold text-amber-400" : "");
+                    const name = document.createElement("span");
+                    name.innerText = label;
+                    const value = document.createElement("span");
+                    value.innerText = formatEuro(data[key]);
+                    row.append(name, value);
+                    return row;
+                });
+                if (tool === "self-employed" && !data.full_social_insurance) {
+                    const note = document.createElement("p");
+                    note.className = "text-xs text-slate-500 mt-1";
+                    note.innerText = "Peļņa ir zem minimālās algas (780 €) – maksā tikai 10% pensiju iemaksu.";
+                    rows.push(note);
+                }
+                result.replaceChildren(...rows);
+            } catch (error) {
+                result.innerText = "Neizdevās aprēķināt. Pārbaudi ievadītos skaitļus un servera savienojumu.";
             }
         }
 
