@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="OmniSolve API", version="1.0")
 
-# Atļaujam savienojumus no jebkuras vietas (noderēs, kad pieslēgsim frontend)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,44 +11,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Tech Hub rīku saraksts (vēlāk papildināsim ar jauniem rīkiem)
-TOOLS = [
-    {"id": "ip", "name": "Mana IP adrese", "description": "Parāda tavu publisko IP adresi", "endpoint": "/api/ip"},
-    {"id": "device", "name": "Ierīces informācija", "description": "Parāda pārlūku un ierīces datus", "endpoint": "/api/device"},
-]
-
-
-def get_client_ip(request: Request) -> str:
-    # Ja serveris ir aiz starpniekservera (hostingā), īstā IP ir galvenē X-Forwarded-For
-    forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    real_ip = request.headers.get("x-real-ip")
-    if real_ip:
-        return real_ip.strip()
-    return request.client.host if request.client else "nezināma"
-
-
 @app.get("/")
 def read_root():
     return {"message": "OmniSolve backend darbojas veiksmīgi!"}
 
-
-@app.get("/api/ip")
-def get_user_ip(request: Request):
-    return {"ip": get_client_ip(request), "status": "success"}
-
-
-@app.get("/api/device")
-def get_device_info(request: Request):
+# Uzlabots IP adreses un pieprasījuma punktu galamērķis
+@app.get("/api/info")
+def get_user_info(request: Request):
+    # Iegūstam klienta IP adresi no pieprasījuma galvenajām rindām
+    client_host = request.client.host
+    
+    # Pārbaudām, vai aizmugursistēma saņem datus
     return {
-        "ip": get_client_ip(request),
-        "user_agent": request.headers.get("user-agent", "nezināms"),
-        "language": request.headers.get("accept-language", "nezināma"),
-        "status": "success",
+        "ip_address": client_host,
+        "status": "active",
+        "tool": "Tech Hub - IP & Network"
     }
 
-
-@app.get("/api/tools")
-def list_tools():
-    return {"tools": TOOLS, "count": len(TOOLS)}
+# Pamācību datu bāze (ātrajiem jautājumiem / life hacks)
+@app.get("/api/tips/{tip_id}")
+def get_quick_tip(tip_id: str):
+    tips = {
+        "router": "Kā restartēt rūteri: 1. Izvelciet strāvas vadu no rozetes. 2. Pagaidiet 30 sekundes. 3. Pieslēdziet atpakaļ un pagaidiet 2 minūtes.",
+        "screenshot": "Ekrānuzņēmums: Windows (Win + Shift + S), Mac (Cmd + Shift + 3), Telefons (Barošana + Klusāk pogas).",
+        "eggs": "Olu vārīšanas laiks: Mīkstas (4 minūtes), Vidējas (6 minūtes), Cietas (9-10 minūtes)."
+    }
+    
+    result = tips.get(tip_id.lower(), "Padoms netika atrasts. Mēģiniet: router, screenshot, vai eggs.")
+    return {"tip_id": tip_id, "instruction": result}
