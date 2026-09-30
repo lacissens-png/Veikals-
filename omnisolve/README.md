@@ -24,3 +24,4 @@ Konkrētā tehnoloģija (Python vai Node.js) tiks izvēlēta nākamajā solī.
 ## Progress
 
 - [x] 1. solis: projekta mape un vide
+- [x] 2. solis: reālā IP noteikšana un pamata rīki (`/api/ip`, `/api/device`, `/api/tools`)
