@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniSolve - Viedais Palīgs</title>
+    <!-- Tailwind CSS modernam un tīram dizainam -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700">
+        <h1 class="text-2xl font-bold text-center mb-2 text-cyan-400">OmniSolve</h1>
+        <p class="text-sm text-slate-400 text-center mb-6">Tavs tehniskais un ikdienas universālais rīks</p>
+
+        <!-- IP Adreses sadaļa -->
+        <div class="mb-6 bg-slate-900 p-4 rounded-lg border border-slate-700">
+            <h2 class="text-sm font-semibold text-slate-300 mb-1">Tava IP adrese un statuss:</h2>
+            <div id="ip-info" class="text-cyan-300 font-mono text-sm">Ielādē datus...</div>
+        </div>
+
+        <!-- Ātro padomu sadaļa -->
+        <div class="space-y-3">
+            <h2 class="text-sm font-semibold text-slate-300">Ātrie dzīves un tehnikas padomi:</h2>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="getTip('router')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-3 rounded font-medium transition">Rūteris</button>
+                <button onclick="getTip('screenshot')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-3 rounded font-medium transition">Ekrānuzņēmums</button>
+                <button onclick="getTip('eggs')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-3 rounded font-medium transition">Olu vārīšana</button>
+            </div>
+            
+            <div id="tip-result" class="mt-4 p-3 bg-slate-900 rounded-lg text-sm text-slate-300 border border-slate-700 min-h-[60px] flex items-center">
+                Spied uz pogas augstāk, lai redzētu instrukciju...
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript, kas savieno lapu ar tavu Python backend -->
+    <script>
+        const API_URL = "http://127.0.0.1:8000";
+
+        // Automātiski ielādē IP informāciju, kad lapa atveras
+        async function loadUserInfo() {
+            try {
+                let response = await fetch(`${API_URL}/api/info`);
+                let data = await response.json();
+                document.getElementById("ip-info").innerText = `IP: ${data.ip_address} | Statuss: ${data.status}`;
+            } catch (error) {
+                document.getElementById("ip-info").innerText = "Neizdevās savienoties ar serveri.";
+            }
+        }
+
+        // Funkcija, lai iegūtu padomu pēc izvēlētā tipa
+        async function getTip(tipId) {
+            try {
+                let response = await fetch(`${API_URL}/api/tips/${tipId}`);
+                let data = await response.json();
+                document.getElementById("tip-result").innerText = data.instruction;
+            } catch (error) {
+                document.getElementById("tip-result").innerText = "Kļūda, ielādējot padomu.";
+            }
+        }
+
+        // Izpildām IP ielādi, lapai ielādējoties
+        loadUserInfo();
+    </script>
+</body>
+</html>
