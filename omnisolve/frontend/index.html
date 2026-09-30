@@ -22,10 +22,19 @@
         <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 text-center">
             <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Soļu Skaitītājs (Pedometer)</h2>
             <div class="text-3xl font-extrabold text-emerald-400" id="step-count">0</div>
-            <p class="text-xs text-slate-400 mt-1">Nolēstais attālums: <span id="distance" class="text-slate-200">0.00</span> km</p>
-            <button onclick="simulateStep()" class="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 px-4 rounded font-medium transition">
-                Spert soli (Testam)
-            </button>
+            <p class="text-xs text-slate-400 mt-1">Nolēstais attālums: <span id="distance" class="text-slate-200">0 m</span></p>
+            <p id="step-status" class="text-xs text-slate-500 mt-1">Sensors izslēgts</p>
+            <div class="mt-3 flex flex-wrap justify-center gap-2">
+                <button id="sensor-btn" onclick="toggleSensor()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 px-4 rounded font-medium transition">
+                    Sākt skaitīt
+                </button>
+                <button onclick="simulateStep()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-1.5 px-4 rounded font-medium transition">
+                    Spert soli (Testam)
+                </button>
+                <button onclick="resetSteps()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-1.5 px-4 rounded font-medium transition">
+                    Nodzēst
+                </button>
+            </div>
         </div>
 
         <!-- Ātro padomu sadaļa -->
@@ -69,34 +78,128 @@
             }
         }
 
-        // 3. Soļu skaitītāja loģika (saglabājas lokāli telefonā/pārlūkā)
-        let steps = parseInt(localStorage.getItem("omnisolve_steps")) || 0;
-        updateStepDisplay();
+        // 3. Soļu skaitītāja loģika (saglabājas lokāli telefonā/pārlūkā, katru dienu no nulles)
+        const STEPS_KEY = "omnisolve_steps";
+        const STEP_LENGTH_M = 0.7;     // aptuvenais viena soļa garums metros
+        const STEP_THRESHOLD = 11.5;   // m/s² – paātrinājums, virs kura uzskatām, ka sperts solis
+        const MIN_STEP_GAP_MS = 300;   // minimālais laiks starp diviem soļiem
+
+        let steps = 0;
+        let stepsDate = today();
+        let sensorOn = false;
+        let smoothed = 9.8;            // izlīdzinātais paātrinājums (sākumā – Zemes gravitācija)
+        let aboveThreshold = false;
+        let lastStepTime = 0;
+
+        function today() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function loadSteps() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STEPS_KEY));
+                if (saved && saved.date === today()) steps = saved.count;
+            } catch (error) {
+                steps = 0;
+            }
+            updateStepDisplay();
+        }
+
+        function saveSteps() {
+            try {
+                localStorage.setItem(STEPS_KEY, JSON.stringify({ date: stepsDate, count: steps }));
+            } catch (error) {
+                // Atmiņa nav pieejama (piem., privātais režīms) – skaitām tikai šajā sesijā
+            }
+        }
+
+        function addStep() {
+            // Ja pusnakts pārgāja, kamēr lapa bija atvērta, sākam jaunu dienu
+            if (stepsDate !== today()) {
+                stepsDate = today();
+                steps = 0;
+            }
+            steps += 1;
+            saveSteps();
+            updateStepDisplay();
+        }
 
         function simulateStep() {
-            steps += 1;
-            localStorage.setItem("omnisolve_steps", steps);
+            addStep();
+        }
+
+        function resetSteps() {
+            steps = 0;
+            stepsDate = today();
+            saveSteps();
             updateStepDisplay();
         }
 
         function updateStepDisplay() {
             document.getElementById("step-count").innerText = steps;
-            // Aptuvenais attālums: 1 solis ~ 0.7 metri
-            let distanceKm = (steps * 0.0007).toFixed(2);
-            document.getElementById("distance").innerText = distanceKm;
+            const meters = steps * STEP_LENGTH_M;
+            document.getElementById("distance").innerText =
+                meters < 1000 ? `${Math.round(meters)} m` : `${(meters / 1000).toFixed(2)} km`;
         }
 
-        // Automātiski mēģinām uztvert reālas ierīces kustības, ja atvērts telefonā
-        if (window.DeviceMotionEvent) {
-            window.addEventListener('devicemotion', function(event) {
-                let acc = event.accelerationIncludingGravity;
-                if (acc && (Math.abs(acc.x) > 12 || Math.abs(acc.y) > 12 || Math.abs(acc.z) > 12)) {
-                    // Ja telefons strauji pakustināts (simulē soļu speršanu kabatā)
-                    // Pievienojam nelielu slieksni, lai neskaitītu katru mikrokustību
+        // Soļa noteikšana: meklējam paātrinājuma "virsotni", kas pārsniedz slieksni
+        function handleMotion(event) {
+            const a = event.accelerationIncludingGravity;
+            if (!a || a.x === null) return;
+            const magnitude = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+            smoothed = smoothed * 0.8 + magnitude * 0.2;
+
+            const now = Date.now();
+            if (!aboveThreshold && smoothed > STEP_THRESHOLD && now - lastStepTime > MIN_STEP_GAP_MS) {
+                aboveThreshold = true;
+                lastStepTime = now;
+                addStep();
+            } else if (aboveThreshold && smoothed < STEP_THRESHOLD - 1) {
+                aboveThreshold = false;
+            }
+        }
+
+        function setStatus(text) {
+            document.getElementById("step-status").innerText = text;
+        }
+
+        async function toggleSensor() {
+            const button = document.getElementById("sensor-btn");
+
+            if (sensorOn) {
+                window.removeEventListener("devicemotion", handleMotion);
+                sensorOn = false;
+                button.innerText = "Sākt skaitīt";
+                setStatus("Sensors izslēgts");
+                return;
+            }
+
+            if (typeof DeviceMotionEvent === "undefined") {
+                setStatus("Šai ierīcei nav kustības sensora – izmanto testa pogu");
+                return;
+            }
+
+            // iPhone (iOS 13+) prasa lietotāja atļauju kustības sensoram
+            if (typeof DeviceMotionEvent.requestPermission === "function") {
+                try {
+                    const permission = await DeviceMotionEvent.requestPermission();
+                    if (permission !== "granted") {
+                        setStatus("Piekļuve sensoram netika atļauta");
+                        return;
+                    }
+                } catch (error) {
+                    setStatus("Neizdevās pieprasīt atļauju (vajag HTTPS)");
+                    return;
                 }
-            });
+            }
+
+            window.addEventListener("devicemotion", handleMotion);
+            sensorOn = true;
+            button.innerText = "Apturēt";
+            setStatus("Sensors ieslēgts – ej un skaiti soļus!");
         }
 
+        loadSteps();
         loadUserInfo();
     </script>
 </body>
