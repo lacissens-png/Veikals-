@@ -32,6 +32,20 @@
                 Spied uz pogas augstāk, lai redzētu instrukciju...
             </div>
         </div>
+
+        <!-- Soļu skaitītāja sadaļa -->
+        <div class="mt-6 bg-slate-900 p-4 rounded-lg border border-slate-700">
+            <h2 class="text-sm font-semibold text-slate-300 mb-2">Soļu skaitītājs (šodien):</h2>
+            <div class="text-center mb-3">
+                <div id="step-count" class="text-5xl font-bold text-cyan-400 font-mono">0</div>
+                <div id="step-status" class="text-xs text-slate-400 mt-1">Sensors izslēgts</div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <button id="sensor-btn" onclick="toggleSensor()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-1 rounded font-medium transition">Sākt</button>
+                <button onclick="simulateStep()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-2 px-1 rounded font-medium transition">+1 solis (tests)</button>
+                <button onclick="resetSteps()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-2 px-1 rounded font-medium transition">Nodzēst</button>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript, kas savieno lapu ar tavu Python backend -->
@@ -60,8 +74,126 @@
             }
         }
 
-        // Izpildām IP ielādi, lapai ielādējoties
+        // ===== Soļu skaitītājs =====
+        const STEPS_KEY = "omnisolve-steps";
+        const STEP_THRESHOLD = 11.5;   // m/s² – paātrinājums, virs kura uzskatām, ka sperts solis
+        const MIN_STEP_GAP_MS = 300;   // minimālais laiks starp diviem soļiem
+
+        let steps = 0;
+        let sensorOn = false;
+        let smoothed = 9.8;            // izlīdzinātais paātrinājums (sākumā – Zemes gravitācija)
+        let aboveThreshold = false;
+        let lastStepTime = 0;
+
+        function today() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        // Nolasām šodienas soļus no tālruņa atmiņas (jaunā dienā sākam no nulles)
+        function loadSteps() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STEPS_KEY));
+                if (saved && saved.date === today()) steps = saved.count;
+            } catch (error) {
+                steps = 0;
+            }
+            renderSteps();
+        }
+
+        function saveSteps() {
+            try {
+                localStorage.setItem(STEPS_KEY, JSON.stringify({ date: today(), count: steps }));
+            } catch (error) {
+                // Atmiņa nav pieejama (piem., privātais režīms) – skaitām tikai šajā sesijā
+            }
+        }
+
+        function renderSteps() {
+            document.getElementById("step-count").innerText = steps;
+        }
+
+        function addStep() {
+            // Ja pusnakts pārgāja, kamēr lapa bija atvērta, sākam jaunu dienu
+            try {
+                const saved = JSON.parse(localStorage.getItem(STEPS_KEY));
+                if (saved && saved.date !== today()) steps = 0;
+            } catch (error) {}
+            steps++;
+            saveSteps();
+            renderSteps();
+        }
+
+        // Soļa noteikšana: meklējam paātrinājuma "virsotni", kas pārsniedz slieksni
+        function handleMotion(event) {
+            const a = event.accelerationIncludingGravity;
+            if (!a || a.x === null) return;
+            const magnitude = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+            smoothed = smoothed * 0.8 + magnitude * 0.2;
+
+            const now = Date.now();
+            if (!aboveThreshold && smoothed > STEP_THRESHOLD && now - lastStepTime > MIN_STEP_GAP_MS) {
+                aboveThreshold = true;
+                lastStepTime = now;
+                addStep();
+            } else if (aboveThreshold && smoothed < STEP_THRESHOLD - 1) {
+                aboveThreshold = false;
+            }
+        }
+
+        function setStatus(text) {
+            document.getElementById("step-status").innerText = text;
+        }
+
+        async function toggleSensor() {
+            const button = document.getElementById("sensor-btn");
+
+            if (sensorOn) {
+                window.removeEventListener("devicemotion", handleMotion);
+                sensorOn = false;
+                button.innerText = "Sākt";
+                setStatus("Sensors izslēgts");
+                return;
+            }
+
+            if (typeof DeviceMotionEvent === "undefined") {
+                setStatus("Šai ierīcei nav kustības sensora – izmanto testa pogu");
+                return;
+            }
+
+            // iPhone (iOS 13+) prasa lietotāja atļauju kustības sensoram
+            if (typeof DeviceMotionEvent.requestPermission === "function") {
+                try {
+                    const permission = await DeviceMotionEvent.requestPermission();
+                    if (permission !== "granted") {
+                        setStatus("Piekļuve sensoram netika atļauta");
+                        return;
+                    }
+                } catch (error) {
+                    setStatus("Neizdevās pieprasīt atļauju (vajag HTTPS)");
+                    return;
+                }
+            }
+
+            window.addEventListener("devicemotion", handleMotion);
+            sensorOn = true;
+            button.innerText = "Apturēt";
+            setStatus("Sensors ieslēgts – ej un skaiti soļus!");
+        }
+
+        // Testēšanai pie datora, kur kustības sensora nav
+        function simulateStep() {
+            addStep();
+        }
+
+        function resetSteps() {
+            steps = 0;
+            saveSteps();
+            renderSteps();
+        }
+
+        // Izpildām IP ielādi un soļu nolasīšanu, lapai ielādējoties
         loadUserInfo();
+        loadSteps();
     </script>
 </body>
 </html>

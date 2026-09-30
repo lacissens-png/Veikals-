@@ -26,3 +26,4 @@ Konkrētā tehnoloģija (Python vai Node.js) tiks izvēlēta nākamajā solī.
 - [x] 1. solis: projekta mape un vide
 - [x] 2. solis: IP informācija (`/api/info`) un ātrie padomi (`/api/tips/{tip_id}`)
 - [x] 3. solis: frontend (`frontend/index.html`) – IP statuss un ātro padomu pogas
+- [x] 4. solis: soļu skaitītājs (DeviceMotionEvent + localStorage, testa poga datoram)
