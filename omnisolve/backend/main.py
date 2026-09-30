@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from backend.business import router as business_router
+from backend.cv import router as cv_router
 
 app = FastAPI(title="OmniSolve API", version="1.0")
 
@@ -16,6 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(business_router)
+app.include_router(cv_router)
 
 @app.get("/")
 def read_root():
@@ -100,24 +102,27 @@ def offline_answer(question: str):
     return {"answer": keyword_answer(question), "status": "offline"}
 
 
-@app.post("/api/ask")
-def ask_ai(body: Question):
+REFUSED = object()
+
+
+def call_claude(system: str, user_text: str):
+    """Nosūta tekstu Claude. Atgriež atbildes tekstu, REFUSED vai None (AI nav konfigurēts)."""
     client = get_ai_client()
     if client is None:
-        return offline_answer(body.question)
+        return None
     try:
         response = client.beta.messages.create(
             model=AI_MODEL,
             max_tokens=16000,
-            system=AI_SYSTEM_PROMPT,
+            system=system,
             output_config={"effort": "low"},
             betas=["server-side-fallback-2026-07-01"],
             fallbacks="default",
-            messages=[{"role": "user", "content": body.question}],
+            messages=[{"role": "user", "content": user_text}],
         )
     except TypeError:
-        # SDK neatrada nevienu autentifikācijas veidu (nav ANTHROPIC_API_KEY) – atbildam pēc atslēgvārdiem
-        return offline_answer(body.question)
+        # SDK neatrada nevienu autentifikācijas veidu (nav ANTHROPIC_API_KEY)
+        return None
     except anthropic.AuthenticationError:
         raise HTTPException(status_code=503, detail="AI API atslēga nav derīga.")
     except anthropic.RateLimitError:
@@ -128,7 +133,40 @@ def ask_ai(body: Question):
         raise HTTPException(status_code=502, detail="Neizdevās sazināties ar AI servisu.")
 
     if response.stop_reason == "refusal":
-        return {"answer": "Uz šo jautājumu es nevaru atbildēt.", "status": "refused"}
+        return REFUSED
+    return "".join(block.text for block in response.content if block.type == "text")
 
-    answer = "".join(block.text for block in response.content if block.type == "text")
+
+@app.post("/api/ask")
+def ask_ai(body: Question):
+    answer = call_claude(AI_SYSTEM_PROMPT, body.question)
+    if answer is None:
+        # AI nav konfigurēts – atbildam pēc atslēgvārdiem
+        return offline_answer(body.question)
+    if answer is REFUSED:
+        return {"answer": "Uz šo jautājumu es nevaru atbildēt.", "status": "refused"}
     return {"answer": answer, "status": "success"}
+
+
+# CV kopsavilkuma uzlabošana ar AI
+CV_SYSTEM_PROMPT = (
+    "Tu esi pieredzējis karjeras konsultants. Pārraksti lietotāja CV kopsavilkumu latviešu valodā: "
+    "2–4 teikumi, profesionāli, konkrēti, bez izdomātiem faktiem. Atgriez tikai jauno kopsavilkumu."
+)
+
+
+class CVSummary(BaseModel):
+    summary: str = Field(min_length=1, max_length=3000)
+    title: str = Field("", max_length=200)
+
+
+@app.post("/api/cv/improve")
+def improve_cv_summary(body: CVSummary):
+    text = f"Amats: {body.title}\n\nKopsavilkums:\n{body.summary}" if body.title else body.summary
+    improved = call_claude(CV_SYSTEM_PROMPT, text)
+    if improved is None:
+        return {"summary": body.summary, "status": "offline",
+                "message": "AI nav pieslēgts (vajag ANTHROPIC_API_KEY) – kopsavilkums netika mainīts."}
+    if improved is REFUSED:
+        return {"summary": body.summary, "status": "refused", "message": "AI nevarēja uzlabot šo tekstu."}
+    return {"summary": improved.strip(), "status": "success", "message": "Kopsavilkums uzlabots ar AI."}
