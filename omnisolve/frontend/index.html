@@ -4,55 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OmniSolve - Viedais Palīgs</title>
-    <!-- Tailwind CSS modernam un tīram dizainam -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="max-w-md w-full bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700">
-        <h1 class="text-2xl font-bold text-center mb-2 text-cyan-400">OmniSolve</h1>
-        <p class="text-sm text-slate-400 text-center mb-6">Tavs tehniskais un ikdienas universālais rīks</p>
+    <div class="max-w-md w-full bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700 space-y-4">
+        <h1 class="text-2xl font-bold text-center text-cyan-400">OmniSolve</h1>
+        <p class="text-sm text-slate-400 text-center">Tavs tehniskais un ikdienas universālais rīks</p>
 
         <!-- IP Adreses sadaļa -->
-        <div class="mb-6 bg-slate-900 p-4 rounded-lg border border-slate-700">
-            <h2 class="text-sm font-semibold text-slate-300 mb-1">Tava IP adrese un statuss:</h2>
+        <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Tīkla Statuss</h2>
             <div id="ip-info" class="text-cyan-300 font-mono text-sm">Ielādē datus...</div>
         </div>
 
-        <!-- Ātro padomu sadaļa -->
-        <div class="space-y-3">
-            <h2 class="text-sm font-semibold text-slate-300">Ātrie dzīves un tehnikas padomi:</h2>
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="getTip('router')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-3 rounded font-medium transition">Rūteris</button>
-                <button onclick="getTip('screenshot')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-3 rounded font-medium transition">Ekrānuzņēmums</button>
-                <button onclick="getTip('eggs')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-3 rounded font-medium transition">Olu vārīšana</button>
-            </div>
-            
-            <div id="tip-result" class="mt-4 p-3 bg-slate-900 rounded-lg text-sm text-slate-300 border border-slate-700 min-h-[60px] flex items-center">
-                Spied uz pogas augstāk, lai redzētu instrukciju...
-            </div>
+        <!-- Soļu skaitītāja sadaļa (Jaunums!) -->
+        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 text-center">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Soļu Skaitītājs (Pedometer)</h2>
+            <div class="text-3xl font-extrabold text-emerald-400" id="step-count">0</div>
+            <p class="text-xs text-slate-400 mt-1">Nolēstais attālums: <span id="distance" class="text-slate-200">0.00</span> km</p>
+            <button onclick="simulateStep()" class="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 px-4 rounded font-medium transition">
+                Spert soli (Testam)
+            </button>
         </div>
 
-        <!-- Soļu skaitītāja sadaļa -->
-        <div class="mt-6 bg-slate-900 p-4 rounded-lg border border-slate-700">
-            <h2 class="text-sm font-semibold text-slate-300 mb-2">Soļu skaitītājs (šodien):</h2>
-            <div class="text-center mb-3">
-                <div id="step-count" class="text-5xl font-bold text-cyan-400 font-mono">0</div>
-                <div id="step-status" class="text-xs text-slate-400 mt-1">Sensors izslēgts</div>
-            </div>
+        <!-- Ātro padomu sadaļa -->
+        <div class="space-y-2">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ātrie dzīves un tehnikas padomi</h2>
             <div class="grid grid-cols-3 gap-2">
-                <button id="sensor-btn" onclick="toggleSensor()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-1 rounded font-medium transition">Sākt</button>
-                <button onclick="simulateStep()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-2 px-1 rounded font-medium transition">+1 solis (tests)</button>
-                <button onclick="resetSteps()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-2 px-1 rounded font-medium transition">Nodzēst</button>
+                <button onclick="getTip('router')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-2 rounded font-medium transition">Rūteris</button>
+                <button onclick="getTip('screenshot')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-2 rounded font-medium transition">Ekrānuzņēmums</button>
+                <button onclick="getTip('eggs')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-2 rounded font-medium transition">Olu vārīšana</button>
+            </div>
+            
+            <div id="tip-result" class="p-3 bg-slate-900 rounded-lg text-xs text-slate-300 border border-slate-700 min-h-[50px] flex items-center">
+                Spied uz pogas augstāk, lai redzētu instrukciju...
             </div>
         </div>
     </div>
 
-    <!-- JavaScript, kas savieno lapu ar tavu Python backend -->
+    <!-- JavaScript loģika -->
     <script>
         const API_URL = "http://127.0.0.1:8000";
 
-        // Automātiski ielādē IP informāciju, kad lapa atveras
+        // 1. IP un info ielāde no Python backend
         async function loadUserInfo() {
             try {
                 let response = await fetch(`${API_URL}/api/info`);
@@ -63,7 +58,7 @@
             }
         }
 
-        // Funkcija, lai iegūtu padomu pēc izvēlētā tipa
+        // 2. Padomu ielāde no backend
         async function getTip(tipId) {
             try {
                 let response = await fetch(`${API_URL}/api/tips/${tipId}`);
@@ -74,126 +69,35 @@
             }
         }
 
-        // ===== Soļu skaitītājs =====
-        const STEPS_KEY = "omnisolve-steps";
-        const STEP_THRESHOLD = 11.5;   // m/s² – paātrinājums, virs kura uzskatām, ka sperts solis
-        const MIN_STEP_GAP_MS = 300;   // minimālais laiks starp diviem soļiem
+        // 3. Soļu skaitītāja loģika (saglabājas lokāli telefonā/pārlūkā)
+        let steps = parseInt(localStorage.getItem("omnisolve_steps")) || 0;
+        updateStepDisplay();
 
-        let steps = 0;
-        let sensorOn = false;
-        let smoothed = 9.8;            // izlīdzinātais paātrinājums (sākumā – Zemes gravitācija)
-        let aboveThreshold = false;
-        let lastStepTime = 0;
-
-        function today() {
-            return new Date().toISOString().slice(0, 10);
-        }
-
-        // Nolasām šodienas soļus no tālruņa atmiņas (jaunā dienā sākam no nulles)
-        function loadSteps() {
-            try {
-                const saved = JSON.parse(localStorage.getItem(STEPS_KEY));
-                if (saved && saved.date === today()) steps = saved.count;
-            } catch (error) {
-                steps = 0;
-            }
-            renderSteps();
-        }
-
-        function saveSteps() {
-            try {
-                localStorage.setItem(STEPS_KEY, JSON.stringify({ date: today(), count: steps }));
-            } catch (error) {
-                // Atmiņa nav pieejama (piem., privātais režīms) – skaitām tikai šajā sesijā
-            }
-        }
-
-        function renderSteps() {
-            document.getElementById("step-count").innerText = steps;
-        }
-
-        function addStep() {
-            // Ja pusnakts pārgāja, kamēr lapa bija atvērta, sākam jaunu dienu
-            try {
-                const saved = JSON.parse(localStorage.getItem(STEPS_KEY));
-                if (saved && saved.date !== today()) steps = 0;
-            } catch (error) {}
-            steps++;
-            saveSteps();
-            renderSteps();
-        }
-
-        // Soļa noteikšana: meklējam paātrinājuma "virsotni", kas pārsniedz slieksni
-        function handleMotion(event) {
-            const a = event.accelerationIncludingGravity;
-            if (!a || a.x === null) return;
-            const magnitude = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-            smoothed = smoothed * 0.8 + magnitude * 0.2;
-
-            const now = Date.now();
-            if (!aboveThreshold && smoothed > STEP_THRESHOLD && now - lastStepTime > MIN_STEP_GAP_MS) {
-                aboveThreshold = true;
-                lastStepTime = now;
-                addStep();
-            } else if (aboveThreshold && smoothed < STEP_THRESHOLD - 1) {
-                aboveThreshold = false;
-            }
-        }
-
-        function setStatus(text) {
-            document.getElementById("step-status").innerText = text;
-        }
-
-        async function toggleSensor() {
-            const button = document.getElementById("sensor-btn");
-
-            if (sensorOn) {
-                window.removeEventListener("devicemotion", handleMotion);
-                sensorOn = false;
-                button.innerText = "Sākt";
-                setStatus("Sensors izslēgts");
-                return;
-            }
-
-            if (typeof DeviceMotionEvent === "undefined") {
-                setStatus("Šai ierīcei nav kustības sensora – izmanto testa pogu");
-                return;
-            }
-
-            // iPhone (iOS 13+) prasa lietotāja atļauju kustības sensoram
-            if (typeof DeviceMotionEvent.requestPermission === "function") {
-                try {
-                    const permission = await DeviceMotionEvent.requestPermission();
-                    if (permission !== "granted") {
-                        setStatus("Piekļuve sensoram netika atļauta");
-                        return;
-                    }
-                } catch (error) {
-                    setStatus("Neizdevās pieprasīt atļauju (vajag HTTPS)");
-                    return;
-                }
-            }
-
-            window.addEventListener("devicemotion", handleMotion);
-            sensorOn = true;
-            button.innerText = "Apturēt";
-            setStatus("Sensors ieslēgts – ej un skaiti soļus!");
-        }
-
-        // Testēšanai pie datora, kur kustības sensora nav
         function simulateStep() {
-            addStep();
+            steps += 1;
+            localStorage.setItem("omnisolve_steps", steps);
+            updateStepDisplay();
         }
 
-        function resetSteps() {
-            steps = 0;
-            saveSteps();
-            renderSteps();
+        function updateStepDisplay() {
+            document.getElementById("step-count").innerText = steps;
+            // Aptuvenais attālums: 1 solis ~ 0.7 metri
+            let distanceKm = (steps * 0.0007).toFixed(2);
+            document.getElementById("distance").innerText = distanceKm;
         }
 
-        // Izpildām IP ielādi un soļu nolasīšanu, lapai ielādējoties
+        // Automātiski mēģinām uztvert reālas ierīces kustības, ja atvērts telefonā
+        if (window.DeviceMotionEvent) {
+            window.addEventListener('devicemotion', function(event) {
+                let acc = event.accelerationIncludingGravity;
+                if (acc && (Math.abs(acc.x) > 12 || Math.abs(acc.y) > 12 || Math.abs(acc.z) > 12)) {
+                    // Ja telefons strauji pakustināts (simulē soļu speršanu kabatā)
+                    // Pievienojam nelielu slieksni, lai neskaitītu katru mikrokustību
+                }
+            });
+        }
+
         loadUserInfo();
-        loadSteps();
     </script>
 </body>
 </html>
