@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniSolve - Viedais Palīgs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Drukājot (vai saglabājot PDF) rāda tikai CV priekšskatījumu */
+        @media print {
+            body { background: #fff !important; display: block !important; padding: 0 !important; min-height: 0 !important; }
+            body > div { max-width: none !important; background: #fff !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+            body > div > :not(#cv-section), #cv-section > :not(#cv-preview) { display: none !important; }
+            #cv-section { display: block !important; background: #fff !important; border: 0 !important; padding: 0 !important; }
+            #cv-preview { border-radius: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-start p-4 sm:pt-10">
+
+    <div class="max-w-md w-full bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700 space-y-4">
+        <h1 class="text-2xl font-bold text-center text-cyan-400">OmniSolve</h1>
+        <p class="text-sm text-slate-400 text-center">Tavs tehniskais un ikdienas universālais rīks</p>
+
+        <!-- Cilnes -->
+        <nav class="grid grid-cols-4 gap-1 bg-slate-900 p-1 rounded-lg border border-slate-700" role="tablist">
+            <button data-tab-btn="tech" role="tab" onclick="showTab('tech')" class="tab-btn py-2 rounded-md text-xs font-medium text-slate-400 hover:text-slate-100 transition">Tech</button>
+            <button data-tab-btn="health" role="tab" onclick="showTab('health')" class="tab-btn py-2 rounded-md text-xs font-medium text-slate-400 hover:text-slate-100 transition">Veselība</button>
+            <button data-tab-btn="business" role="tab" onclick="showTab('business')" class="tab-btn py-2 rounded-md text-xs font-medium text-slate-400 hover:text-slate-100 transition">Bizness</button>
+            <button data-tab-btn="cv" role="tab" onclick="showTab('cv')" class="tab-btn py-2 rounded-md text-xs font-medium text-slate-400 hover:text-slate-100 transition">CV</button>
+        </nav>
+
+        <!-- IP Adreses sadaļa -->
+        <div data-tab="tech" class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Tīkla Statuss</h2>
+            <div id="ip-info" class="text-cyan-300 font-mono text-sm">Ielādē datus...</div>
+        </div>
+
+        <!-- Soļu skaitītāja sadaļa (Jaunums!) -->
+        <div data-tab="health" class="bg-slate-900 p-4 rounded-lg border border-slate-700 text-center">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Soļu Skaitītājs (Pedometer)</h2>
+            <div class="text-3xl font-extrabold text-emerald-400" id="step-count">0</div>
+            <p class="text-xs text-slate-400 mt-1">Nolēstais attālums: <span id="distance" class="text-slate-200">0 m</span></p>
+            <p id="step-status" class="text-xs text-slate-500 mt-1">Sensors izslēgts</p>
+            <div class="mt-3 flex flex-wrap justify-center gap-2">
+                <button id="sensor-btn" onclick="toggleSensor()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 px-4 rounded font-medium transition">
+                    Sākt skaitīt
+                </button>
+                <button onclick="simulateStep()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-1.5 px-4 rounded font-medium transition">
+                    Spert soli (Testam)
+                </button>
+                <button onclick="resetSteps()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-1.5 px-4 rounded font-medium transition">
+                    Nodzēst
+                </button>
+            </div>
+        </div>
+
+        <!-- Ātro padomu sadaļa -->
+        <div data-tab="tech" class="space-y-2">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ātrie dzīves un tehnikas padomi</h2>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="getTip('router')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-2 rounded font-medium transition">Rūteris</button>
+                <button onclick="getTip('screenshot')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-2 rounded font-medium transition">Ekrānuzņēmums</button>
+                <button onclick="getTip('eggs')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 px-2 rounded font-medium transition">Olu vārīšana</button>
+            </div>
+            
+            <div id="tip-result" class="p-3 bg-slate-900 rounded-lg text-xs text-slate-300 border border-slate-700 min-h-[50px] flex items-center">
+                Spied uz pogas augstāk, lai redzētu instrukciju...
+            </div>
+        </div>
+
+        <!-- Biznesa un karjeras sadaļa -->
+        <div data-tab="business" class="bg-slate-900 p-4 rounded-lg border border-slate-700 space-y-3">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Bizness un karjera</h2>
+            <select id="biz-tool" onchange="showBizTool()" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500">
+                <option value="salary">Algas kalkulators (bruto → neto)</option>
+                <option value="self-employed">Pašnodarbinātā ienākumi</option>
+                <option value="price">Cenas / biznesa idejas aprēķins</option>
+            </select>
+
+            <form id="form-salary" class="biz-form grid grid-cols-2 gap-2" onsubmit="calcBiz(event, 'salary')">
+                <label><span class="block text-xs text-slate-400 mb-1">Bruto alga mēnesī, €</span><input name="gross" type="number" min="0" step="0.01" required value="1500" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Apgādājamie</span><input name="dependents" type="number" min="0" max="20" step="1" value="0" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <button class="col-span-2 bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded font-medium transition">Aprēķināt</button>
+            </form>
+
+            <form id="form-self-employed" class="biz-form hidden grid grid-cols-2 gap-2" onsubmit="calcBiz(event, 'self-employed')">
+                <label><span class="block text-xs text-slate-400 mb-1">Ieņēmumi mēnesī, €</span><input name="income" type="number" min="0" step="0.01" required value="2000" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Izdevumi mēnesī, €</span><input name="expenses" type="number" min="0" step="0.01" value="0" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label class="col-span-2 flex items-center gap-2 text-xs text-slate-400"><input name="has_job" type="checkbox"> Man ir arī algots darbs (neapliekamais minimums jau izmantots)</label>
+                <button class="col-span-2 bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded font-medium transition">Aprēķināt</button>
+            </form>
+
+            <form id="form-price" class="biz-form hidden grid grid-cols-2 gap-2" onsubmit="calcBiz(event, 'price')">
+                <label><span class="block text-xs text-slate-400 mb-1">Materiāli, €</span><input name="materials" type="number" min="0" step="0.01" value="100" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Darba stundas</span><input name="hours" type="number" min="0" step="0.5" value="5" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Stundas likme, €</span><input name="hourly_rate" type="number" min="0" step="0.01" value="20" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label><span class="block text-xs text-slate-400 mb-1">Uzcenojums, %</span><input name="margin" type="number" min="0" step="1" required value="30" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-amber-500"></label>
+                <label class="col-span-2 flex items-center gap-2 text-xs text-slate-400"><input name="vat" type="checkbox"> Pievienot PVN 21%</label>
+                <button class="col-span-2 bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded font-medium transition">Aprēķināt</button>
+            </form>
+
+            <div id="biz-result" class="text-sm text-slate-300"></div>
+            <p class="text-[10px] text-slate-500">Aptuvens aprēķins pēc 2026. gada likmēm, nav nodokļu konsultācija.</p>
+        </div>
+
+        <!-- CV rīka sadaļa -->
+        <div data-tab="cv" id="cv-section" class="bg-slate-900 p-4 rounded-lg border border-slate-700 space-y-3">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">CV veidotājs</h2>
+            <form id="cv-form" class="space-y-2" oninput="renderCV(); saveCV()">
+                <div class="grid grid-cols-2 gap-2">
+                    <label><span class="block text-xs text-slate-400 mb-1">Vārds, uzvārds</span><input name="name" maxlength="200" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></label>
+                    <label><span class="block text-xs text-slate-400 mb-1">Amats</span><input name="title" maxlength="200" placeholder="Piem.: Grāmatvede" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></label>
+                    <label><span class="block text-xs text-slate-400 mb-1">E-pasts</span><input name="email" type="email" maxlength="200" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></label>
+                    <label><span class="block text-xs text-slate-400 mb-1">Tālrunis</span><input name="phone" maxlength="50" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></label>
+                </div>
+                <label class="block"><span class="block text-xs text-slate-400 mb-1">Par mani (2–4 teikumi)</span><textarea name="summary" rows="3" maxlength="3000" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></textarea></label>
+                <label class="block"><span class="block text-xs text-slate-400 mb-1">Darba pieredze (katra vieta jaunā rindā: Amats | Uzņēmums | Gadi)</span><textarea name="experience" rows="3" maxlength="10000" placeholder="Pārdevēja | Maxima | 2022–2025" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></textarea></label>
+                <label class="block"><span class="block text-xs text-slate-400 mb-1">Izglītība (katra jaunā rindā)</span><textarea name="education" rows="2" maxlength="5000" placeholder="RTU, Datorzinātnes, 2021" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></textarea></label>
+                <label class="block"><span class="block text-xs text-slate-400 mb-1">Prasmes (atdalītas ar komatu)</span><input name="skills" maxlength="2000" placeholder="Excel, angļu valoda, B kategorija" class="w-full p-2 bg-slate-800 rounded text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-violet-500"></label>
+            </form>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="checkCV()" class="bg-violet-600 hover:bg-violet-500 text-white text-xs py-2 rounded font-medium transition">Pārbaudīt CV</button>
+                <button id="cv-ai-btn" onclick="improveCV()" class="bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-xs py-2 rounded font-medium transition">Uzlabot ar AI</button>
+                <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs py-2 rounded font-medium transition">Drukāt / PDF</button>
+            </div>
+            <div id="cv-feedback" class="text-sm text-slate-300"></div>
+
+            <!-- CV priekšskatījums (tikai tas tiek izdrukāts) -->
+            <div id="cv-preview" class="bg-white text-slate-900 rounded-lg p-5 text-sm space-y-3"></div>
+        </div>
+
+        <!-- AI jautājumu sadaļa -->
+        <div data-tab="tech" class="space-y-2">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Jautā AI palīgam</h2>
+            <textarea id="ai-question" rows="3" maxlength="2000" placeholder="Piem.: Kāpēc mans Wi-Fi ir lēns?"
+                class="w-full p-3 bg-slate-900 rounded-lg text-sm text-slate-100 border border-slate-700 focus:outline-none focus:border-cyan-500 resize-none"></textarea>
+            <button id="ai-btn" onclick="askAI()" class="w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white text-xs py-2 rounded font-medium transition">
+                Jautāt
+            </button>
+            <div id="ai-answer" class="p-3 bg-slate-900 rounded-lg text-sm text-slate-300 border border-slate-700 min-h-[50px] whitespace-pre-wrap">
+                Uzraksti jautājumu un spied "Jautāt"...
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript loģika -->
+    <script>
+        const API_URL = "http://127.0.0.1:8000";
+
+        // 0. Cilnes (izvēlētā cilne saglabājas pārlūkā)
+        const TAB_KEY = "omnisolve_tab";
+
+        function showTab(tab) {
+            document.querySelectorAll("[data-tab]").forEach(section => {
+                section.classList.toggle("hidden", section.dataset.tab !== tab);
+            });
+            document.querySelectorAll("[data-tab-btn]").forEach(button => {
+                const active = button.dataset.tabBtn === tab;
+                button.setAttribute("aria-selected", active);
+                button.classList.toggle("bg-cyan-600", active);
+                button.classList.toggle("text-white", active);
+                button.classList.toggle("text-slate-400", !active);
+            });
+            try { localStorage.setItem(TAB_KEY, tab); } catch (error) {}
+        }
+
+        function loadTab() {
+            let tab = "tech";
+            try { tab = localStorage.getItem(TAB_KEY) || tab; } catch (error) {}
+            showTab(document.querySelector(`[data-tab-btn="${tab}"]`) ? tab : "tech");
+        }
+
+        // 1. IP un info ielāde no Python backend
+        async function loadUserInfo() {
+            try {
+                let response = await fetch(`${API_URL}/api/info`);
+                let data = await response.json();
+                document.getElementById("ip-info").innerText = `IP: ${data.ip_address} | Statuss: ${data.status}`;
+            } catch (error) {
+                document.getElementById("ip-info").innerText = "Neizdevās savienoties ar serveri.";
+            }
+        }
+
+        // 2. Padomu ielāde no backend
+        async function getTip(tipId) {
+            try {
+                let response = await fetch(`${API_URL}/api/tips/${tipId}`);
+                let data = await response.json();
+                document.getElementById("tip-result").innerText = data.instruction;
+            } catch (error) {
+                document.getElementById("tip-result").innerText = "Kļūda, ielādējot padomu.";
+            }
+        }
+
+        // 3. Soļu skaitītāja loģika (saglabājas lokāli telefonā/pārlūkā, katru dienu no nulles)
+        const STEPS_KEY = "omnisolve_steps";
+        const STEP_LENGTH_M = 0.7;     // aptuvenais viena soļa garums metros
+        const STEP_THRESHOLD = 11.5;   // m/s² – paātrinājums, virs kura uzskatām, ka sperts solis
+        const MIN_STEP_GAP_MS = 300;   // minimālais laiks starp diviem soļiem
+
+        let steps = 0;
+        let stepsDate = today();
+        let sensorOn = false;
+        let smoothed = 9.8;            // izlīdzinātais paātrinājums (sākumā – Zemes gravitācija)
+        let aboveThreshold = false;
+        let lastStepTime = 0;
+
+        function today() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function loadSteps() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STEPS_KEY));
+                if (saved && saved.date === today()) steps = saved.count;
+            } catch (error) {
+                steps = 0;
+            }
+            updateStepDisplay();
+        }
+
+        function saveSteps() {
+            try {
+                localStorage.setItem(STEPS_KEY, JSON.stringify({ date: stepsDate, count: steps }));
+            } catch (error) {
+                // Atmiņa nav pieejama (piem., privātais režīms) – skaitām tikai šajā sesijā
+            }
+        }
+
+        function addStep() {
+            // Ja pusnakts pārgāja, kamēr lapa bija atvērta, sākam jaunu dienu
+            if (stepsDate !== today()) {
+                stepsDate = today();
+                steps = 0;
+            }
+            steps += 1;
+            saveSteps();
+            updateStepDisplay();
+        }
+
+        function simulateStep() {
+            addStep();
+        }
+
+        function resetSteps() {
+            steps = 0;
+            stepsDate = today();
+            saveSteps();
+            updateStepDisplay();
+        }
+
+        function updateStepDisplay() {
+            document.getElementById("step-count").innerText = steps;
+            const meters = steps * STEP_LENGTH_M;
+            document.getElementById("distance").innerText =
+                meters < 1000 ? `${Math.round(meters)} m` : `${(meters / 1000).toFixed(2)} km`;
+        }
+
+        // Soļa noteikšana: meklējam paātrinājuma "virsotni", kas pārsniedz slieksni
+        function handleMotion(event) {
+            const a = event.accelerationIncludingGravity;
+            if (!a || a.x === null) return;
+            const magnitude = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+            smoothed = smoothed * 0.8 + magnitude * 0.2;
+
+            const now = Date.now();
+            if (!aboveThreshold && smoothed > STEP_THRESHOLD && now - lastStepTime > MIN_STEP_GAP_MS) {
+                aboveThreshold = true;
+                lastStepTime = now;
+                addStep();
+            } else if (aboveThreshold && smoothed < STEP_THRESHOLD - 1) {
+                aboveThreshold = false;
+            }
+        }
+
+        function setStatus(text) {
+            document.getElementById("step-status").innerText = text;
+        }
+
+        async function toggleSensor() {
+            const button = document.getElementById("sensor-btn");
+
+            if (sensorOn) {
+                window.removeEventListener("devicemotion", handleMotion);
+                sensorOn = false;
+                button.innerText = "Sākt skaitīt";
+                setStatus("Sensors izslēgts");
+                return;
+            }
+
+            if (typeof DeviceMotionEvent === "undefined") {
+                setStatus("Šai ierīcei nav kustības sensora – izmanto testa pogu");
+                return;
+            }
+
+            // iPhone (iOS 13+) prasa lietotāja atļauju kustības sensoram
+            if (typeof DeviceMotionEvent.requestPermission === "function") {
+                try {
+                    const permission = await DeviceMotionEvent.requestPermission();
+                    if (permission !== "granted") {
+                        setStatus("Piekļuve sensoram netika atļauta");
+                        return;
+                    }
+                } catch (error) {
+                    setStatus("Neizdevās pieprasīt atļauju (vajag HTTPS)");
+                    return;
+                }
+            }
+
+            window.addEventListener("devicemotion", handleMotion);
+            sensorOn = true;
+            button.innerText = "Apturēt";
+            setStatus("Sensors ieslēgts – ej un skaiti soļus!");
+        }
+
+        // 4. AI jautājumi (atbildi sagatavo Python backend ar Claude)
+        async function askAI() {
+            const input = document.getElementById("ai-question");
+            const answerBox = document.getElementById("ai-answer");
+            const button = document.getElementById("ai-btn");
+            const question = input.value.trim();
+            if (!question) {
+                answerBox.innerText = "Vispirms uzraksti jautājumu.";
+                return;
+            }
+
+            button.disabled = true;
+            button.innerText = "Domā...";
+            answerBox.innerText = "AI gatavo atbildi...";
+            try {
+                const response = await fetch(`${API_URL}/api/ask`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question }),
+                });
+                const data = await response.json();
+                answerBox.innerText = response.ok ? data.answer : (data.detail || "AI kļūda.");
+            } catch (error) {
+                answerBox.innerText = "Neizdevās savienoties ar serveri.";
+            } finally {
+                button.disabled = false;
+                button.innerText = "Jautāt";
+            }
+        }
+
+        // 5. Bizness un karjera (aprēķinus veic Python backend)
+        const BIZ_LABELS = {
+            salary: [
+                ["gross", "Bruto alga"], ["vsaoi_employee", "Sociālais nodoklis (10,5%)"],
+                ["income_tax", "Iedzīvotāju ienākuma nodoklis"], ["net", "Neto (uz rokas)", true],
+                ["employer_total_cost", "Darba devēja kopējās izmaksas"],
+            ],
+            "self-employed": [
+                ["profit", "Peļņa (ieņēmumi − izdevumi)"], ["vsaoi", "Sociālās iemaksas"],
+                ["income_tax", "Iedzīvotāju ienākuma nodoklis"], ["net", "Paliek tev", true],
+            ],
+            price: [
+                ["cost", "Pašizmaksa"], ["profit", "Tava peļņa"],
+                ["price_without_vat", "Cena bez PVN"], ["vat", "PVN"], ["price", "Cena klientam", true],
+            ],
+        };
+
+        function showBizTool() {
+            const tool = document.getElementById("biz-tool").value;
+            document.querySelectorAll(".biz-form").forEach(form => form.classList.add("hidden"));
+            document.getElementById(`form-${tool}`).classList.remove("hidden");
+            document.getElementById("biz-result").replaceChildren();
+        }
+
+        function formatEuro(value) {
+            return value.toLocaleString("lv-LV", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+        }
+
+        async function calcBiz(event, tool) {
+            event.preventDefault();
+            const params = new URLSearchParams();
+            for (const input of event.target.querySelectorAll("input")) {
+                if (input.type === "checkbox") params.set(input.name, input.checked);
+                else if (input.value !== "") params.set(input.name, input.value);
+            }
+            const result = document.getElementById("biz-result");
+            try {
+                const response = await fetch(`${API_URL}/api/business/${tool}?${params}`);
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+                const rows = BIZ_LABELS[tool].map(([key, label, highlight]) => {
+                    const row = document.createElement("div");
+                    row.className = "flex justify-between py-1 border-b border-slate-800" +
+                        (highlight ? " font-bold text-amber-400" : "");
+                    const name = document.createElement("span");
+                    name.innerText = label;
+                    const value = document.createElement("span");
+                    value.innerText = formatEuro(data[key]);
+                    row.append(name, value);
+                    return row;
+                });
+                if (tool === "self-employed" && !data.full_social_insurance) {
+                    const note = document.createElement("p");
+                    note.className = "text-xs text-slate-500 mt-1";
+                    note.innerText = "Peļņa ir zem minimālās algas (780 €) – maksā tikai 10% pensiju iemaksu.";
+                    rows.push(note);
+                }
+                result.replaceChildren(...rows);
+            } catch (error) {
+                result.innerText = "Neizdevās aprēķināt. Pārbaudi ievadītos skaitļus un servera savienojumu.";
+            }
+        }
+
+        // 6. CV veidotājs (melnraksts saglabājas pārlūkā, pārbaude un AI – Python backend)
+        const CV_KEY = "omnisolve_cv";
+
+        function cvData() {
+            return Object.fromEntries(new FormData(document.getElementById("cv-form")));
+        }
+
+        function saveCV() {
+            try { localStorage.setItem(CV_KEY, JSON.stringify(cvData())); } catch (error) {}
+        }
+
+        function loadCV() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(CV_KEY)) || {};
+                const form = document.getElementById("cv-form");
+                for (const [name, value] of Object.entries(saved)) {
+                    if (form.elements[name]) form.elements[name].value = value;
+                }
+            } catch (error) {}
+            renderCV();
+        }
+
+        function el(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text) node.innerText = text;
+            return node;
+        }
+
+        function cvSection(title, children) {
+            const section = el("div");
+            section.append(el("h3", "text-xs font-bold uppercase tracking-wider text-violet-700 border-b border-slate-200 pb-1 mb-1", title), ...children);
+            return section;
+        }
+
+        function renderCV() {
+            const cv = cvData();
+            const lines = text => text.split("\n").map(line => line.trim()).filter(Boolean);
+            const parts = [];
+
+            parts.push(el("div", "text-xl font-bold", cv.name || "Tavs vārds"));
+            if (cv.title) parts.push(el("div", "text-violet-700 font-medium -mt-2", cv.title));
+            const contacts = [cv.email, cv.phone].filter(Boolean).join(" · ");
+            if (contacts) parts.push(el("div", "text-xs text-slate-500", contacts));
+
+            if (cv.summary.trim()) parts.push(cvSection("Par mani", [el("p", "", cv.summary.trim())]));
+            if (lines(cv.experience).length) {
+                parts.push(cvSection("Darba pieredze", lines(cv.experience).map(line => {
+                    const [role, company, years] = line.split("|").map(part => part.trim());
+                    const row = el("div", "flex justify-between gap-2");
+                    row.append(el("span", "", [role, company].filter(Boolean).join(", ")), el("span", "text-slate-500 whitespace-nowrap", years || ""));
+                    return row;
+                })));
+            }
+            if (lines(cv.education).length) {
+                parts.push(cvSection("Izglītība", lines(cv.education).map(line => el("div", "", line))));
+            }
+            const skills = cv.skills.split(",").map(skill => skill.trim()).filter(Boolean);
+            if (skills.length) {
+                const list = el("div", "flex flex-wrap gap-1");
+                list.append(...skills.map(skill => el("span", "bg-violet-100 text-violet-800 text-xs px-2 py-0.5 rounded", skill)));
+                parts.push(cvSection("Prasmes", [list]));
+            }
+            document.getElementById("cv-preview").replaceChildren(...parts);
+        }
+
+        async function postJSON(path, body) {
+            const response = await fetch(`${API_URL}${path}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || "Kļūda");
+            return data;
+        }
+
+        async function checkCV() {
+            const feedback = document.getElementById("cv-feedback");
+            try {
+                const data = await postJSON("/api/cv/check", cvData());
+                const list = el("ul", "list-disc pl-5 space-y-1 text-xs");
+                list.append(...data.tips.map(tip => el("li", "", tip)));
+                feedback.replaceChildren(el("div", "font-bold text-violet-400 mb-1", `CV novērtējums: ${data.score}/100`), list);
+            } catch (error) {
+                feedback.innerText = "Neizdevās pārbaudīt CV. Vai serveris darbojas?";
+            }
+        }
+
+        async function improveCV() {
+            const cv = cvData();
+            const feedback = document.getElementById("cv-feedback");
+            const button = document.getElementById("cv-ai-btn");
+            if (!cv.summary.trim()) {
+                feedback.innerText = "Vispirms uzraksti kopsavilkumu “Par mani”.";
+                return;
+            }
+            button.disabled = true;
+            button.innerText = "Domā...";
+            try {
+                const data = await postJSON("/api/cv/improve", { summary: cv.summary, title: cv.title });
+                document.getElementById("cv-form").elements.summary.value = data.summary;
+                renderCV();
+                saveCV();
+                feedback.innerText = data.message;
+            } catch (error) {
+                feedback.innerText = error.message === "Failed to fetch" ? "Neizdevās savienoties ar serveri." : error.message;
+            } finally {
+                button.disabled = false;
+                button.innerText = "Uzlabot ar AI";
+            }
+        }
+
+        // Ctrl+Enter (vai Cmd+Enter) nosūta jautājumu
+        document.getElementById("ai-question").addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) askAI();
+        });
+
+        loadTab();
+        loadSteps();
+        loadCV();
+        loadUserInfo();
+    </script>
+</body>
+</html>
