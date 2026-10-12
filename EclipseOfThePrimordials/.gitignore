@@ -1,0 +1,9 @@
+# Unreal build output
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+.vs/
+*.sln
+# Standalone core test binary
+Tests/eclipse_core_tests
