@@ -21,7 +21,7 @@ const Scene3Frame: React.FC<{ scene: Scene3Def }> = ({ scene }) => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#2b1a10" }}>
       <AbsoluteFill style={{ opacity: fade }}>
-        <ThreeCanvas width={width} height={height} shadows camera={{ fov: 40, near: 0.5, far: 300, position: [0, 3, 20] }}>
+        <ThreeCanvas width={width} height={height} shadows="soft" camera={{ fov: 40, near: 0.5, far: 300, position: [0, 3, 20] }}>
           <Art t={t} />
         </ThreeCanvas>
         <Caption scene={scene} t={t} vertical={vertical} />

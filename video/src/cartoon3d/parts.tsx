@@ -1,12 +1,14 @@
 import { useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
 import * as THREE from "three";
+import { cookieBump, cookieColor, plankColor } from "./textures";
 
 export type V3 = [number, number, number];
 export type Mood = "happy" | "sad" | "scared" | "wow" | "sleep";
 
 const BODY = "#dd9d4f";
 const CHIP = "#4f2c14";
+const CHOC = "#3a1d0c";
 const LIMB = "#8a5526";
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -23,29 +25,61 @@ export const Rig: React.FC<{ pos: V3; look: V3 }> = ({ pos, look }) => {
   return null;
 };
 
-export const Ball: React.FC<{ p?: V3; r?: number; s?: V3; c: string; glow?: boolean; o?: number }> = ({
-  p = [0, 0, 0],
-  r = 1,
-  s = [1, 1, 1],
-  c,
-  glow = false,
-  o = 1,
-}) => (
+export const Ball: React.FC<{
+  p?: V3;
+  r?: number;
+  s?: V3;
+  c: string;
+  glow?: boolean;
+  o?: number;
+  rough?: number;
+  metal?: number;
+}> = ({ p = [0, 0, 0], r = 1, s = [1, 1, 1], c, glow = false, o = 1, rough = 0.75, metal = 0 }) => (
   <mesh position={p} scale={[s[0] * r, s[1] * r, s[2] * r]} castShadow={!glow}>
     <sphereGeometry args={[1, 28, 20]} />
     {glow ? (
       <meshBasicMaterial color={c} fog={false} transparent={o < 1} opacity={o} />
     ) : (
-      <meshStandardMaterial color={c} roughness={0.75} />
+      <meshStandardMaterial color={c} roughness={rough} metalness={metal} />
     )}
   </mesh>
 );
 
-export const Box: React.FC<{ p: V3; s: V3; c: string; glow?: boolean; rot?: V3 }> = ({ p, s, c, glow = false, rot }) => (
+export const Box: React.FC<{
+  p: V3;
+  s: V3;
+  c: string;
+  glow?: boolean;
+  rot?: V3;
+  rough?: number;
+  metal?: number;
+  wood?: boolean;
+}> = ({ p, s, c, glow = false, rot, rough = 0.85, metal = 0, wood = false }) => (
   <mesh position={p} rotation={rot} castShadow={!glow} receiveShadow>
     <boxGeometry args={s} />
-    {glow ? <meshBasicMaterial color={c} /> : <meshStandardMaterial color={c} roughness={0.85} />}
+    {glow ? (
+      <meshBasicMaterial color={c} />
+    ) : (
+      <meshStandardMaterial color={c} roughness={rough} metalness={metal} map={wood ? plankColor() : null} />
+    )}
   </mesh>
+);
+
+/** Cepuma mīklas materiāls ar nelīdzenu, apceptu virsmu. */
+const Dough: React.FC = () => (
+  <meshStandardMaterial color="#ffffff" map={cookieColor()} bumpMap={cookieBump()} bumpScale={2.2} roughness={0.95} />
+);
+
+/** Šokolādes gabaliņi: neregulāri un nedaudz spīdīgi. */
+const Chips: React.FC<{ n?: number }> = ({ n = CHIPS.length }) => (
+  <>
+    {CHIPS.slice(0, n).map((c, i) => (
+      <mesh key={i} position={c} rotation={[i * 1.7, i * 2.3, i]} scale={[0.14 + (i % 3) * 0.02, 0.12, 0.09]} castShadow>
+        <icosahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial color={CHOC} roughness={0.32} flatShading />
+      </mesh>
+    ))}
+  </>
 );
 
 export const Limb: React.FC<{ a: V3; b: V3; r?: number; c?: string }> = ({ a, b, r = 0.065, c = LIMB }) => {
@@ -91,9 +125,9 @@ const useCookieGeometry = (notches: number) =>
     const g = new THREE.ExtrudeGeometry(shape, {
       depth: 0.2,
       bevelEnabled: true,
-      bevelThickness: 0.07,
-      bevelSize: 0.06,
-      bevelSegments: 4,
+      bevelThickness: 0.1,
+      bevelSize: 0.08,
+      bevelSegments: 8,
       curveSegments: 8,
     });
     g.translate(0, 0, -0.1);
@@ -110,6 +144,10 @@ const CHIPS: V3[] = [
   [-0.2, 0.1, -0.17],
   [0.4, 0.4, -0.17],
   [-0.4, -0.4, -0.17],
+  [-0.22, 0.42, 0.18],
+  [0.42, 0.3, 0.18],
+  [0.3, -0.62, 0.18],
+  [-0.78, 0.02, 0.17],
 ];
 
 const Face: React.FC<{ mood: Mood; t: number }> = ({ mood, t }) => {
@@ -121,8 +159,8 @@ const Face: React.FC<{ mood: Mood; t: number }> = ({ mood, t }) => {
       <Ball p={[0.55, -0.2, 0]} r={0.14} s={[1, 0.8, 0.25]} c="#ee8a7c" />
       {[-0.32, 0.32].map((ex) => (
         <group key={ex} position={[ex, 0.16, 0.02]} scale={[big, blink ? 0.12 : big, 1]}>
-          <Ball r={0.18} s={[1, 1, 0.45]} c="#ffffff" />
-          <Ball p={[0, -0.01, 0.07]} r={0.095} s={[1, 1, 0.5]} c="#201208" />
+          <Ball r={0.18} s={[1, 1, 0.45]} c="#ffffff" rough={0.15} />
+          <Ball p={[0, -0.01, 0.07]} r={0.095} s={[1, 1, 0.5]} c="#201208" rough={0.08} />
           <Ball p={[0.03, 0.04, 0.11]} r={0.03} c="#ffffff" glow />
         </group>
       ))}
@@ -172,12 +210,10 @@ export const Cookie3: React.FC<{
   const cy = (sit ? 1.12 : 1.5) * s;
   return (
     <group position={[p[0] + shake, p[1] + cy + bob * s, p[2]]} rotation={[0, turn + Math.sin(t * 1.3) * 0.1, 0]} scale={s}>
-      <mesh geometry={geo} castShadow>
-        <meshStandardMaterial color={BODY} roughness={0.9} />
+      <mesh geometry={geo} castShadow receiveShadow>
+        <Dough />
       </mesh>
-      {CHIPS.map((c, i) => (
-        <Ball key={i} p={c} r={0.11} s={[1, 0.85, 0.6]} c={CHIP} />
-      ))}
+      <Chips />
       <Face mood={mood} t={t} />
       {sit ? (
         <>
@@ -212,12 +248,10 @@ export const Mini3: React.FC<{ p: V3; t: number; r?: number; notch?: boolean; tu
   if (r <= 0.001) return null;
   return (
     <group position={p} scale={r} rotation={[0, turn, 0]}>
-      <mesh geometry={geo} castShadow>
-        <meshStandardMaterial color={BODY} roughness={0.9} />
+      <mesh geometry={geo} castShadow receiveShadow>
+        <Dough />
       </mesh>
-      {CHIPS.slice(0, 6).map((c, i) => (
-        <Ball key={i} p={c} r={0.11} s={[1, 0.85, 0.6]} c={CHIP} />
-      ))}
+      <Chips n={9} />
       <Face mood="happy" t={t + p[0]} />
     </group>
   );
@@ -245,12 +279,12 @@ export const Ant3: React.FC<{
           <Limb a={[0.12, 0.28, z * 0.1]} b={[0.26 + sw * z, 0, z * 0.34]} r={0.03} c={c} />
           <Limb a={[0.4, 0.7, z * 0.08]} b={[0.62, 1.0, z * 0.2]} r={0.022} c={c} />
           <Ball p={[0.5, 0.56, z * 0.14]} r={0.085} c="#ffffff" />
-          <Ball p={[0.56, 0.56, z * 0.17]} r={0.045} c="#111111" />
+          <Ball p={[0.56, 0.56, z * 0.17]} r={0.045} c="#111111" rough={0.1} />
         </group>
       ))}
-      <Ball p={[-0.5, 0.34, 0]} r={1} s={[0.36, 0.27, 0.28]} c={c} />
-      <Ball p={[-0.04, 0.32, 0]} r={0.21} c={c} />
-      <Ball p={[0.36, 0.52, 0]} r={0.26} c={c} />
+      <Ball p={[-0.5, 0.34, 0]} r={1} s={[0.36, 0.27, 0.28]} c={c} rough={0.25} />
+      <Ball p={[-0.04, 0.32, 0]} r={0.21} c={c} rough={0.25} />
+      <Ball p={[0.36, 0.52, 0]} r={0.26} c={c} rough={0.25} />
       {happy && (
         <mesh position={[0.55, 0.45, 0]} rotation={[0, Math.PI / 2, Math.PI]}>
           <torusGeometry args={[0.09, 0.02, 6, 16, Math.PI]} />
@@ -290,7 +324,7 @@ export const Bird3: React.FC<{
       {[-1, 1].map((z) => (
         <group key={z}>
           <Ball p={[-0.66, 1.24, z * 0.26]} r={1} s={[0.26, 0.2, 0.18]} c="#ffffff" />
-          <Ball p={[-0.76, 1.38, z * 0.33]} r={0.07} c="#111111" />
+          <Ball p={[-0.76, 1.38, z * 0.33]} r={0.07} c="#111111" rough={0.08} />
           <group position={[0.05, 1.05, z * 0.5]} rotation={[z * (fly ? 0.9 + flap * 0.7 : flap - 1.2), 0, 0]}>
             <Ball p={[fly ? 0.3 : 0.15, fly ? 0.55 : 0.35, 0]} r={1} s={fly ? [0.45, 0.8, 0.08] : [0.5, 0.42, 0.1]} c="#5b7fb5" />
           </group>
@@ -400,7 +434,7 @@ export const Crumb3: React.FC<{ t: number; start: number; from: V3; to: V3; dur?
       castShadow
     >
       <dodecahedronGeometry args={[0.17]} />
-      <meshStandardMaterial color={BODY} roughness={0.9} />
+      <meshStandardMaterial color={BODY} roughness={0.95} flatShading />
     </mesh>
   );
 };

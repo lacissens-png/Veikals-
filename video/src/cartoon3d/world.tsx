@@ -1,15 +1,37 @@
-import { useMemo } from "react";
+import { useThree } from "@react-three/fiber";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { rnd } from "../cartoon/util";
 import { Ball, Box, V3 } from "./parts";
+import { floorBump, floorColor, grainBump, grassColor, prng } from "./textures";
 
-export const Lights: React.FC<{ dim?: number; color?: string; from?: V3 }> = ({ dim = 1, color = "#fff6e6", from = [7, 13, 11] }) => (
+/** Apkārtnes gaisma atspīdumiem — bez tās metāls un spīdīgas virsmas izskatās plakanas. */
+const Env: React.FC<{ intensity: number }> = ({ intensity }) => {
+  const gl = useThree((st) => st.gl);
+  const scene = useThree((st) => st.scene);
+  const tex = useMemo(() => {
+    const pm = new THREE.PMREMGenerator(gl);
+    const t = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+    pm.dispose();
+    return t;
+  }, [gl]);
+  useLayoutEffect(() => {
+    scene.environment = tex;
+    scene.environmentIntensity = intensity;
+  });
+  return null;
+};
+
+export const Lights: React.FC<{ dim?: number; color?: string; from?: V3 }> = ({ dim = 1, color = "#fff1dc", from = [7, 13, 11] }) => (
   <>
-    <ambientLight intensity={1.1 * dim} color={color} />
-    <hemisphereLight args={["#ffffff", "#b08a60", 0.5 * dim]} />
-    <directionalLight position={from} intensity={2.0 * dim} color={color} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0005}>
+    <Env intensity={0.42 * dim} />
+    <ambientLight intensity={0.28 * dim} color={color} />
+    <hemisphereLight args={["#ffffff", "#8a6a48", 0.35 * dim]} />
+    <directionalLight position={from} intensity={2.3 * dim} color={color} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0005}>
       <orthographicCamera attach="shadow-camera" args={[-16, 16, 16, -16, 0.1, 70]} />
     </directionalLight>
+    <directionalLight position={[-9, 5, 8]} intensity={0.6 * dim} color="#cfe0ff" />
   </>
 );
 
@@ -29,21 +51,57 @@ export const Sky: React.FC<{ top: string; bottom: string }> = ({ top, bottom }) 
   );
 };
 
-export const Ground: React.FC<{ c: string; y?: number }> = ({ c, y = 0 }) => (
+export const Ground: React.FC<{ c: string; y?: number; kind?: "plain" | "wood" | "grass" }> = ({ c, y = 0, kind = "plain" }) => (
   <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, y, 0]} receiveShadow>
     <planeGeometry args={[400, 200]} />
-    <meshStandardMaterial color={c} roughness={1} />
+    {kind === "wood" ? (
+      <meshStandardMaterial color="#ffffff" map={floorColor()} bumpMap={floorBump()} bumpScale={1.2} roughness={0.55} />
+    ) : kind === "grass" ? (
+      <meshStandardMaterial color="#ffffff" map={grassColor()} roughness={1} />
+    ) : (
+      <meshStandardMaterial color={c} roughness={0.9} bumpMap={grainBump([80, 40])} bumpScale={0.4} />
+    )}
   </mesh>
 );
+
+/** Zāles stiebri ap varoņiem (viens kopīgs objekts ar tūkstošiem kopiju). */
+export const GrassBlades: React.FC = () => {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  const N = 6000;
+  useLayoutEffect(() => {
+    const m = ref.current;
+    if (!m) return;
+    const r = prng(91);
+    const o = new THREE.Object3D();
+    const col = new THREE.Color();
+    for (let i = 0; i < N; i++) {
+      o.position.set(r() * 34 - 17, 0.12, r() * 15 - 9);
+      o.rotation.set((r() - 0.5) * 0.7, r() * 6.28, (r() - 0.5) * 0.7);
+      const sc = 0.6 + r() * 0.9;
+      o.scale.set(1, sc, 1);
+      o.updateMatrix();
+      m.setMatrixAt(i, o.matrix);
+      m.setColorAt(i, col.setHSL(0.26 + r() * 0.07, 0.5 + r() * 0.2, 0.3 + r() * 0.16));
+    }
+    m.instanceMatrix.needsUpdate = true;
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+  }, []);
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, N]} receiveShadow>
+      <coneGeometry args={[0.035, 0.34, 3]} />
+      <meshStandardMaterial roughness={0.9} />
+    </instancedMesh>
+  );
+};
 
 export const Bakery3: React.FC<{ windowX?: number; evening?: number; dim?: number }> = ({ windowX = 2.2, evening = 0, dim = 1 }) => (
   <>
     <color attach="background" args={["#fbe7c6"]} />
     <Lights dim={dim} color={evening > 0.5 ? "#ffd2a0" : "#fff6e6"} />
-    <Ground c="#b97a4c" />
+    <Ground c="#b97a4c" kind="wood" />
     <mesh position={[0, 15, -3]} receiveShadow>
       <planeGeometry args={[400, 30]} />
-      <meshStandardMaterial color="#fbe7c6" roughness={1} />
+      <meshStandardMaterial color="#fbe7c6" roughness={1} bumpMap={grainBump()} bumpScale={0.5} />
     </mesh>
     {Array.from({ length: 40 }).map((_, i) => (
       <mesh key={i} position={[-23.4 + i * 1.2, 15, -2.98]}>
@@ -64,7 +122,7 @@ export const Bakery3: React.FC<{ windowX?: number; evening?: number; dim?: numbe
 
 export const Shelf3: React.FC<{ x?: number; y: number; w?: number; z?: number }> = ({ x = 0, y, w = 8.8, z = -1.6 }) => (
   <>
-    <Box p={[x, y - 0.14, z]} s={[w, 0.28, 1.6]} c="#8a5a34" />
+    <Box p={[x, y - 0.14, z]} s={[w, 0.28, 1.6]} c="#c9a27a" wood rough={0.6} />
     <Box p={[x - w / 2 + 0.8, y - 0.6, z - 0.5]} s={[0.25, 0.7, 0.6]} c="#6f4526" />
     <Box p={[x + w / 2 - 0.8, y - 0.6, z - 0.5]} s={[0.25, 0.7, 0.6]} c="#6f4526" />
   </>
@@ -96,7 +154,9 @@ export const Meadow3: React.FC<{ t: number; dim?: number; clouds?: boolean }> = 
     <>
       <Sky top={k("#5fb8ff")} bottom={k("#e6f7ff")} />
       <Lights dim={0.35 + 0.65 * dim} />
-      <Ground c="#6fbd54" />
+      <Ground c="#6fbd54" kind="grass" />
+      <GrassBlades />
+      <fog attach="fog" args={[k("#cfeaff"), 30, 110]} />
       <Ball p={[-9, -1.2, -14]} r={1} s={[13, 4.6, 6]} c="#93d36e" />
       <Ball p={[10, -1.4, -18]} r={1} s={[15, 5.4, 6]} c="#80c85e" />
       <Ball p={[8, 12, -45]} r={2.6} c="#ffe066" glow o={dim} />
@@ -134,7 +194,7 @@ export const Mushroom3: React.FC<{ p: V3 }> = ({ p }) => (
     </mesh>
     <mesh position={[0, 2.2, 0]} scale={[1, 0.8, 1]} castShadow>
       <sphereGeometry args={[2.3, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-      <meshStandardMaterial color="#e5484d" roughness={0.6} side={THREE.DoubleSide} />
+      <meshStandardMaterial color="#d93a3f" roughness={0.25} side={THREE.DoubleSide} />
     </mesh>
     {[
       [-1.2, 3.1, 1.4, 0.28],
@@ -152,7 +212,7 @@ export const Tree3: React.FC<{ p: V3; t: number; fed: boolean }> = ({ p, t, fed 
   <group position={p}>
     <mesh position={[0, 2.6, 0]} castShadow>
       <cylinderGeometry args={[0.3, 0.42, 5.2, 14]} />
-      <meshStandardMaterial color="#8a5a34" />
+      <meshStandardMaterial color="#7a5234" roughness={1} bumpMap={grainBump([3, 6])} bumpScale={3} />
     </mesh>
     <mesh position={[-0.9, 3.35, 0.2]} rotation={[0, 0, 1.25]} castShadow>
       <cylinderGeometry args={[0.13, 0.17, 1.9, 10]} />
