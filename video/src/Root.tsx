@@ -1,0 +1,47 @@
+import { Composition } from "remotion";
+import { Ad, AD_DURATION } from "./Ad";
+import { Cartoon } from "./cartoon/Cartoon";
+import { Cartoon3D } from "./cartoon3d/Cartoon3D";
+import { CARTOON3_SECONDS } from "./cartoon3d/script3d";
+import { CARTOON_FPS, CARTOON_SECONDS } from "./cartoon/script";
+import { FPS, HEIGHT, WIDTH } from "./theme";
+
+export const RemotionRoot: React.FC = () => {
+  return (
+    <>
+      <Composition id="VeikalsAd" component={Ad} durationInFrames={AD_DURATION} fps={FPS} width={WIDTH} height={HEIGHT} />
+      <Composition
+        id="CepumsVertical"
+        component={Cartoon}
+        durationInFrames={CARTOON_SECONDS * CARTOON_FPS}
+        fps={CARTOON_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="CepumsHorizontal"
+        component={Cartoon}
+        durationInFrames={CARTOON_SECONDS * CARTOON_FPS}
+        fps={CARTOON_FPS}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="Cepums3DVertical"
+        component={Cartoon3D}
+        durationInFrames={CARTOON3_SECONDS * CARTOON_FPS}
+        fps={CARTOON_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="Cepums3DHorizontal"
+        component={Cartoon3D}
+        durationInFrames={CARTOON3_SECONDS * CARTOON_FPS}
+        fps={CARTOON_FPS}
+        width={1920}
+        height={1080}
+      />
+    </>
+  );
+};
