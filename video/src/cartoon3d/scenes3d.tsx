@@ -156,9 +156,9 @@ const BirdScene: React.FC<P> = ({ t }) => {
   return (
     <>
       <Meadow3 t={t} />
-      <Rig pos={[Math.sin(t * 0.3) * 2 + 0.5, 3.8, 21]} look={[0.5, 2.9, 0]} />
+      <Rig pos={[Math.sin(t * 0.3) * 0.6 - 0.6, 3.8, 21]} look={[-0.6, 2.9, 0]} />
       <Tree3 p={[4.3, 0, -1.6]} t={t} fed={fed} />
-      <Ant3 p={[-4.1, 0, 0.5]} t={t} hop={fed ? Math.abs(Math.sin(t * 7)) * 0.2 : 0} />
+      <Ant3 p={[-3.7, 0, 0.5]} t={t} hop={fed ? Math.abs(Math.sin(t * 7)) * 0.2 : 0} />
       <Cookie3 p={[-2.2, 0, 0]} s={0.92} t={t} bites={t > 6 ? 2 : 1} mood={kMood} turn={0.5} arm={t > 5.4 && t < 7 ? "up" : fed ? "wave" : "down"} />
       <Bird3 p={[bx, (1 - land) * 9, 0.2]} t={t} s={1.35} fly={t < 1.7} hop={fed ? Math.abs(Math.sin(t * 5)) * 0.2 : 0} />
       {[5.6, 6.0, 6.4].map((s, i) => (
