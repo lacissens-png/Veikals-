@@ -7,7 +7,7 @@ import { font } from "./util";
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 /** Teicēja teksts: katrai rindai laiks proporcionāli tās garumam. */
-const Caption: React.FC<{ scene: SceneDef; t: number; vertical: boolean }> = ({ scene, t, vertical }) => {
+export const Caption: React.FC<{ scene: { seconds: number; lines: string[] }; t: number; vertical: boolean }> = ({ scene, t, vertical }) => {
   if (scene.lines.length === 0) return null;
   const lead = 0.7;
   const usable = scene.seconds - lead - 0.6;

@@ -1,20 +1,25 @@
-"""Ģenerē multenes fona mūziku (mūzikas lādītes skaņa) -> public/cepums-muzika.mp3.
+"""Ģenerē multenes fona mūziku (mūzikas lādītes skaņa).
 
-Palaist no video/ mapes:  python3 tools/make_music.py
+Palaist no video/ mapes:
+  python3 tools/make_music.py          -> public/cepums-muzika.mp3      (5 min, 2D multenei)
+  python3 tools/make_music.py --short  -> public/cepums-muzika-90s.mp3  (1:30, 3D multenei)
 """
+import sys
 import subprocess
 import wave
 
 import numpy as np
 
+SHORT = "--short" in sys.argv
+NAME = "public/cepums-muzika-90s" if SHORT else "public/cepums-muzika"
 SR = 32000
-TOTAL = 300.0
+TOTAL = 90.0 if SHORT else 300.0
 BPM = 96
 BEAT = 60 / BPM
 BAR = BEAT * 4
 
 # (sākums, beigas) sekundēs, kad skan skumjākā minora tēma — sakrīt ar ainām.
-WISTFUL = [(36, 88), (118, 138), (192, 229)]
+WISTFUL = [(14, 30), (40, 46), (63, 75)] if SHORT else [(36, 88), (118, 138), (192, 229)]
 
 MAJOR = [("C", [60, 64, 67]), ("G", [59, 62, 67]), ("Am", [57, 60, 64]), ("F", [57, 60, 65])]
 MINOR = [("Am", [57, 60, 64]), ("F", [57, 60, 65]), ("Dm", [57, 62, 65]), ("E", [56, 59, 64])]
@@ -67,16 +72,16 @@ def main():
     fade = int(2.5 * SR)
     buf[:fade] *= np.linspace(0, 1, fade)
     buf[-fade:] *= np.linspace(1, 0, fade)
-    with wave.open("public/cepums-muzika.wav", "wb") as w:
+    with wave.open(NAME + ".wav", "wb") as w:
         w.setnchannels(1)
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes((buf * 32767).astype(np.int16).tobytes())
     subprocess.run(
-        ["ffmpeg", "-loglevel", "error", "-y", "-i", "public/cepums-muzika.wav", "-b:a", "96k", "public/cepums-muzika.mp3"],
+        ["ffmpeg", "-loglevel", "error", "-y", "-i", NAME + ".wav", "-b:a", "96k", NAME + ".mp3"],
         check=True,
     )
-    subprocess.run(["rm", "public/cepums-muzika.wav"], check=True)
+    subprocess.run(["rm", NAME + ".wav"], check=True)
 
 
 if __name__ == "__main__":
